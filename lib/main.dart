@@ -167,7 +167,7 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
-// Página de Objetos Perdidos
+
 class LostItemsPage extends StatelessWidget {
   const LostItemsPage({super.key});
 
