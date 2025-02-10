@@ -2,7 +2,11 @@
 
 import 'package:flutter/material.dart';
 
-void main() {
+import 'MongoManager/MongoDB.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await MongoDB.connect();
   runApp(MyApp());
 }
 
@@ -28,7 +32,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 1; 
+  int _currentIndex = 1;
   late final List<Widget> _pages;
 
   @override
@@ -36,12 +40,12 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     _pages = [
-      SchedulePage(key: UniqueKey()), 
+      SchedulePage(key: UniqueKey()),
       HomePage(
         key: UniqueKey(),
-        onMailPressed: _navigateToLostItemsPage, 
+        onMailPressed: _navigateToLostItemsPage,
       ),
-      ProfilePage(key: UniqueKey()), 
+      ProfilePage(key: UniqueKey()),
     ];
   }
 
@@ -64,10 +68,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_currentIndex], 
+      body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) => _changePage(index), 
+        onTap: (index) => _changePage(index),
         backgroundColor: Colors.white,
         elevation: 10.0,
         selectedItemColor: Colors.black,
@@ -167,7 +171,6 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
-
 class LostItemsPage extends StatelessWidget {
   const LostItemsPage({super.key});
 
@@ -175,10 +178,9 @@ class LostItemsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true, 
-        title: const SizedBox.shrink(), 
+        automaticallyImplyLeading: true,
+        title: const SizedBox.shrink(),
         backgroundColor: Color.fromARGB(0, 255, 255, 255),
-        
       ),
       body: const Center(
         child: Text(
