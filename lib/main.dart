@@ -5,8 +5,12 @@ import 'package:flutter/material.dart';
 import 'MongoManager/MongoDB.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await MongoDB.connect();
+  //Ejemplo de como hacerlo TODO falta chekeos y Squemas
+  //MongoDB mongoDB = MongoDB();
+  //await mongoDB.connect();
+  //var users = mongoDB.getCollection("Users");
+  //await users.insertOne({"test1": "test1"});
+  //await mongoDB.close();
   runApp(MyApp());
 }
 
