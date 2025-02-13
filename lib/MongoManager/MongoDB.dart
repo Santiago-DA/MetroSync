@@ -33,4 +33,13 @@ class MongoDB {
     }
     return await collection.findOne();
   }
+
+  Future<List<Map<String, dynamic>>> findManyFrom(
+      String collectionName, SelectorBuilder? query) async {
+    var collection = _db.collection(collectionName);
+    if (query != null) {
+      return await collection.find(query).toList();
+    }
+    return await collection.find().toList();
+  }
 }

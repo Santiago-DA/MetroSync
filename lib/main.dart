@@ -10,7 +10,6 @@ Future<void> main() async {
   //Ejemplo de como hacerlo TODO falta chekeos y Squemas
   //MongoDB mongoDB = MongoDB();
   //await mongoDB.connect();
-  //print(await mongoDB.findOneFrom("Users", null));
   //await mongoDB.close();
   runApp(MyApp());
 }
