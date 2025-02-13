@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:flutter_prueba/MongoManager/Constant.dart';
 
@@ -19,5 +17,20 @@ class MongoDB {
 
   Future<void> close() async {
     await _db.close();
+  }
+
+  Future<void> insertInto(
+      String collectionName, Map<String, dynamic> document) async {
+    var collection = _db.collection(collectionName);
+    await collection.insertOne(document);
+  }
+
+  Future<Map<String, dynamic>?> findOneFrom(
+      String collectionName, SelectorBuilder? query) async {
+    var collection = _db.collection(collectionName);
+    if (query != null) {
+      return await collection.findOne(query);
+    }
+    return await collection.findOne();
   }
 }

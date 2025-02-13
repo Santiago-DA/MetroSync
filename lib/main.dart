@@ -1,6 +1,8 @@
 // ignore_for_file: deprecated_member_use, library_private_types_in_public_api, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_prueba/MongoManager/Constant.dart';
+import 'package:mongo_dart/mongo_dart.dart' show Db, DbCollection, where;
 
 import 'MongoManager/MongoDB.dart';
 
@@ -8,8 +10,7 @@ Future<void> main() async {
   //Ejemplo de como hacerlo TODO falta chekeos y Squemas
   //MongoDB mongoDB = MongoDB();
   //await mongoDB.connect();
-  //var users = mongoDB.getCollection("Users");
-  //await users.insertOne({"test1": "test1"});
+  //print(await mongoDB.findOneFrom("Users", null));
   //await mongoDB.close();
   runApp(MyApp());
 }
