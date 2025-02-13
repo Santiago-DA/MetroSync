@@ -26,20 +26,54 @@ class MongoDB {
   }
 
   Future<Map<String, dynamic>?> findOneFrom(
-      String collectionName, SelectorBuilder? query) async {
+      String collectionName, SelectorBuilder? selector) async {
     var collection = _db.collection(collectionName);
-    if (query != null) {
-      return await collection.findOne(query);
+    if (selector != null) {
+      return await collection.findOne(selector);
     }
     return await collection.findOne();
   }
 
   Future<List<Map<String, dynamic>>> findManyFrom(
-      String collectionName, SelectorBuilder? query) async {
+      String collectionName, SelectorBuilder? selector) async {
     var collection = _db.collection(collectionName);
-    if (query != null) {
-      return await collection.find(query).toList();
+    if (selector != null) {
+      return await collection.find(selector).toList();
     }
+
     return await collection.find().toList();
+  }
+
+  //TODO testing
+  Future<void> updateOneFrom(String collectionName, SelectorBuilder selector,
+      ModifierBuilder modifier) async {
+    var collection = _db.collection(collectionName);
+    await collection.updateOne(selector, modifier);
+  }
+
+  //TODO testing
+  Future<void> updateManyFrom(String collectionName, SelectorBuilder selector,
+      ModifierBuilder modifier) async {
+    var collection = _db.collection(collectionName);
+    await collection.updateMany(selector, modifier);
+  }
+
+//TODO testing
+  Future<void> replaceFrom(String collectionName, SelectorBuilder selector,
+      Map<String, dynamic> newDocument) async {
+    var collection = _db.collection(collectionName);
+    await collection.replaceOne(selector, newDocument);
+  }
+
+  //TODO testing
+  void deleteOneFrom(String collectionName, SelectorBuilder selector) {
+    var collection = _db.collection(collectionName);
+    collection.deleteOne(selector);
+  }
+
+  //TODO testing
+  void deleteManyFrom(String collectionName, SelectorBuilder selector) {
+    var collection = _db.collection(collectionName);
+    collection.deleteMany(selector);
   }
 }

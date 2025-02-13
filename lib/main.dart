@@ -2,13 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_prueba/MongoManager/Constant.dart';
-import 'package:mongo_dart/mongo_dart.dart' show Db, DbCollection, where;
+import 'package:mongo_dart/mongo_dart.dart'
+    show Db, DbCollection, where, modify;
 
 import 'MongoManager/MongoDB.dart';
 
 Future<void> main() async {
   //Ejemplo de como hacerlo TODO falta chekeos y Squemas
-  //MongoDB mongoDB = MongoDB();
+  MongoDB mongoDB = MongoDB();
   //await mongoDB.connect();
   //await mongoDB.close();
   runApp(MyApp());
