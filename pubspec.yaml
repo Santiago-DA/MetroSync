@@ -56,7 +56,14 @@ dev_dependencies:
 flutter:
 
   assets:
-    - assets/images/
+    - assets/images/BANDERA_UNIMET.jpg
+    - assets/images/horarios.jpg
+    - assets/images/logo.png
+    - assets/images/logo_unimet.png
+    - assets/images/objetos_perdidos.png
+    - assets/images/ofertas_feria.png
+    - assets/images/animacion_horario.jpg
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
