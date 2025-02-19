@@ -725,7 +725,7 @@ class CreateSchedulePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeSelector(
+  /*Widget _buildTimeSelector(
       {required String label, required List<String> items}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -756,4 +756,4 @@ class CreateSchedulePage extends StatelessWidget {
       ),
     );
   }
-}
+}*/
