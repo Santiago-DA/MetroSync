@@ -512,6 +512,8 @@ class CreateSchedulePage extends StatelessWidget {
 
   TextEditingController materiaNombreController = TextEditingController();
   String? diaSemana;
+  String? horaInicio;
+  String? horaFinal;
 
   final _formKey = GlobalKey<FormState>();
   final List<String> dias = [
@@ -621,16 +623,68 @@ class CreateSchedulePage extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Selector de hora grupo 1
-              _buildTimeSelector(
-                label: 'Hora de inicio',
-                items: horasGrupo1,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey[300]!),
+                ),
+                child: DropdownButtonFormField<String>(
+                  items: horasGrupo1.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    labelText: "Hora de inicio",
+                    labelStyle: TextStyle(color: Colors.grey[600]),
+                  ),
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Selecciona una hora';
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    horaInicio = value;
+                  },
+                ),
               ),
               const SizedBox(height: 20),
 
               // Selector de hora grupo 2
-              _buildTimeSelector(
-                label: 'Hora de cierre',
-                items: horasGrupo2,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey[300]!),
+                ),
+                child: DropdownButtonFormField<String>(
+                  items: horasGrupo2.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    labelText: "Hora de cierre",
+                    labelStyle: TextStyle(color: Colors.grey[600]),
+                  ),
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Selecciona una hora';
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    horaFinal = value;
+                  },
+                ),
               ),
               const SizedBox(height: 30),
 
@@ -652,7 +706,15 @@ class CreateSchedulePage extends StatelessWidget {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     var text = materiaNombreController.text;
-                    print("$text, $diaSemana"); //TODO
+                    //SnackBar
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: Duration(seconds: 2),
+                        content:
+                            Text("$text, $diaSemana, $horaInicio - $horaFinal"),
+                      ),
+                    );
+                    //Insercion a la BDD
                   }
                 },
               ),
