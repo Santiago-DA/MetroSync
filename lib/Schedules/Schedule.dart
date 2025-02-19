@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
+import 'package:flutter_prueba/MongoManager/MongoDB.dart';
 import 'package:flutter_prueba/User/User.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'TimeSlot.dart';
@@ -6,7 +7,6 @@ import 'package:logging/logging.dart';
 import 'dart:io';
 
 enum Day { lunes, martes, miercoles, jueves, viernes }
-
 class Schedule {
   //El usuario
   //La forma de almacenamiento que me dio deepseek
@@ -18,12 +18,31 @@ class Schedule {
   //.severe
   //.info
   Schedule(this._user); //Constructor declaration
-
+  MongoDB db = MongoDB();
   //Pasar la hora de inicio y fin como opciones fijas dadas por el sistemas
   void newslot(String day,String classname,TimeOfDay starthour,TimeOfDay endhour){
     //nombreClase.length > maxLongitud. Verificar en el frontend.
     TimeSlot newSlot= TimeSlot(classname, starthour, endhour);
     _aggnewSlot(day, newSlot);
+  }
+
+  void dbsave() async{
+    await db.connect();
+    String userID = _user.getid();
+    await db.insertInto('Schedules', {'userID':userID});
+    _user.getmyschedule().slotsPerDay.forEach((Day, TimeSlot)){
+      
+    }
+        slotsPerDay.forEach((day, timeSlots) {
+      print('Día: $day');
+      timeSlots.forEach((timeSlot) {
+        print('  TimeSlot: $timeSlot');
+      });
+    });
+
+
+    var table = await db.updateOneFrom('Users', where.eq("userID", userID), modify.addToSet('', value))
+    await db.close();
   }
 
   Day _strtoenum(String str){
@@ -82,4 +101,4 @@ class Schedule {
     slotsPerDay.remove(day);
   }
 }
-}
+}*/

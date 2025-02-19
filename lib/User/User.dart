@@ -1,4 +1,4 @@
-import '../Schedules/Schedule.dart';
+/*import '../Schedules/Schedule.dart';
 
 class User {
 
@@ -52,4 +52,4 @@ class User {
   void _changeusername(String newusername){
     _username=newusername;
   }
-}
+}*/

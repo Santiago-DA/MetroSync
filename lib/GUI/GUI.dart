@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_prueba/Schedules/ScheduleScreen.dart';
 import 'package:flutter_prueba/MongoManager/Constant.dart';
 import 'package:flutter_prueba/Schedules/Schedule.dart';
 import 'package:mongo_dart/mongo_dart.dart'
+
     show Db, DbCollection, where, modify;
 import '../MongoManager/MongoDB.dart';
 
@@ -35,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     _pages = [
-      SchedulePage(key: UniqueKey()),
+      ScheduleScreen(key: UniqueKey()), // <-- Nueva pantalla de horarios
       HomePage(
         key: UniqueKey(),
         onMailPressed: _navigateToLostItemsPage,
@@ -44,7 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
   }
 
-  // Método para navegar a la página de objetos perdidos
   void _navigateToLostItemsPage() {
     Navigator.push(
       context,
@@ -76,15 +77,15 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
-            label: '',
+            label: '', // Ícono para horarios
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: '',
+            label: '', // Ícono para inicio
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: '',
+            label: '', // Ícono para perfil
           ),
         ],
       ),
@@ -103,50 +104,31 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const Center(
-          child: Text(
-            'Página de Inicio',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Página de Inicio',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
-          ),
-        ),
-        Positioned(
-          top: 30,
-          right: 20,
-          child: IconButton(
-            icon: const Icon(Icons.outbox_rounded, size: 30),
-            onPressed: onMailPressed,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// Página de horarios
-class SchedulePage extends StatelessWidget {
-  const SchedulePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Página de Horarios',
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
+            const SizedBox(height: 20),
+            
+            ElevatedButton(
+              onPressed: onMailPressed,
+              child: const Text('Objetos Perdidos'),
+            ),
+          ],
         ),
       ),
     );
   }
 }
-
 
 
 
