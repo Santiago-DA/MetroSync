@@ -1,89 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
+
 class ScheduleScreen extends StatelessWidget {
   // Datos de ejemplo
-  
+
   final List<Map<String, dynamic>> materias = [
-  {
-    'nombre': 'Ec. Diferenciales',
-    'horario': '8:45 a.m - 10:30 a.m',
-    'aula': 'A1-205',
-    'color': Colors.blue[200]
-  },
-  {
-    'nombre': 'Cálculo Integral',
-    'horario': '10:45 a.m - 12:30 p.m',
-    'aula': 'B2-103',
-    'color': Colors.green[200]
-  },
-  {
-    'nombre': 'Física',
-    'horario': '1:00 p.m - 2:30 p.m',
-    'aula': 'C3-104',
-    'color': Colors.red[200]
-  },
-  {
-    'nombre': 'Química',
-    'horario': '3:00 p.m - 4:30 p.m',
-    'aula': 'D4-202',
-    'color': Colors.orange[200]
-  },
-];
+    {
+      'nombre': 'Ec. Diferenciales',
+      'horario': '8:45 a.m - 10:30 a.m',
+      'aula': 'A1-205',
+      'color': Colors.blue[200]
+    },
+    {
+      'nombre': 'Cálculo Integral',
+      'horario': '10:45 a.m - 12:30 p.m',
+      'aula': 'B2-103',
+      'color': Colors.green[200]
+    },
+    {
+      'nombre': 'Física',
+      'horario': '1:00 p.m - 2:30 p.m',
+      'aula': 'C3-104',
+      'color': Colors.red[200]
+    },
+    {
+      'nombre': 'Química',
+      'horario': '3:00 p.m - 4:30 p.m',
+      'aula': 'D4-202',
+      'color': Colors.orange[200]
+    },
+  ];
 
-final List<Map<String, dynamic>> huecosComunes = [
-  {
-    'nombre': 'Santiago',
-    'horario': '8:45 a.m - 10:30 a.m',
-    'color': Colors.orange[200]
-  },
-  {
-    'nombre': 'María',
-    'horario': '2:00 p.m - 3:30 p.m',
-    'color': Colors.purple[200]
-  },
-  {
-    'nombre': 'Luis',
-    'horario': '12:00 p.m - 1:30 p.m',
-    'color': Colors.blue[200]
-  },
-  {
-    'nombre': 'Carla',
-    'horario': '4:00 p.m - 5:30 p.m',
-    'color': Colors.green[200]
-  },
-];
+  final List<Map<String, dynamic>> huecosComunes = [
+    {
+      'nombre': 'Santiago',
+      'horario': '8:45 a.m - 10:30 a.m',
+      'color': Colors.orange[200]
+    },
+    {
+      'nombre': 'María',
+      'horario': '2:00 p.m - 3:30 p.m',
+      'color': Colors.purple[200]
+    },
+    {
+      'nombre': 'Luis',
+      'horario': '12:00 p.m - 1:30 p.m',
+      'color': Colors.blue[200]
+    },
+    {
+      'nombre': 'Carla',
+      'horario': '4:00 p.m - 5:30 p.m',
+      'color': Colors.green[200]
+    },
+  ];
 
-final List<Map<String, dynamic>> amigos = [
-  {
-    'nombre': 'Juan Pérez',
-    'usuario': '@juanperez',
-    'color': Colors.yellow[200]
-  },
-  {
-    'nombre': 'Ana Gómez',
-    'usuario': '@anagomez',
-    'color': Colors.pink[200]
-  },
-  {
-    'nombre': 'Pedro Ramírez',
-    'usuario': '@pedroramirez',
-    'color': Colors.teal[200]
-  },
-  {
-    'nombre': 'Laura Fernández',
-    'usuario': '@laurafernandez',
-    'color': Colors.cyan[200]
-  },
-];
-
+  final List<Map<String, dynamic>> amigos = [
+    {
+      'nombre': 'Juan Pérez',
+      'usuario': '@juanperez',
+      'color': Colors.yellow[200]
+    },
+    {'nombre': 'Ana Gómez', 'usuario': '@anagomez', 'color': Colors.pink[200]},
+    {
+      'nombre': 'Pedro Ramírez',
+      'usuario': '@pedroramirez',
+      'color': Colors.teal[200]
+    },
+    {
+      'nombre': 'Laura Fernández',
+      'usuario': '@laurafernandez',
+      'color': Colors.cyan[200]
+    },
+  ];
 
   ScheduleScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -91,7 +86,7 @@ final List<Map<String, dynamic>> amigos = [
               title: 'Mi Horario Hoy',
               items: materias,
               builder: _buildTarjetaMateria,
-             accion: IconButton(
+              accion: IconButton(
                 icon: const Icon(Icons.add_box, color: Colors.black),
                 onPressed: () {
                   Navigator.push(
@@ -119,7 +114,7 @@ final List<Map<String, dynamic>> amigos = [
     );
   }
 
-    Widget _buildSeccion({
+  Widget _buildSeccion({
     required String title,
     required List<Map<String, dynamic>> items,
     required Widget Function(BuildContext, Map<String, dynamic>) builder,
@@ -157,7 +152,8 @@ final List<Map<String, dynamic>> amigos = [
     );
   }
 
-  Widget _buildTarjetaMateria(BuildContext context, Map<String, dynamic> materia) {
+  Widget _buildTarjetaMateria(
+      BuildContext context, Map<String, dynamic> materia) {
     return Container(
       width: 200,
       margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -195,17 +191,17 @@ final List<Map<String, dynamic>> amigos = [
               ),
             ),
             const SizedBox(height: 8),
-           Center(
-            child: Text(
-              materia['aula'],
-              style: const TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+            Center(
+              child: Text(
+                materia['aula'],
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
               ),
             ),
-const SizedBox(height: 8),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -247,7 +243,6 @@ const SizedBox(height: 8),
               style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 4),
-            
           ],
         ),
       ),
@@ -296,7 +291,6 @@ const SizedBox(height: 8),
               ),
             ),
             const SizedBox(height: 4),
-            
             Text(
               amigo['usuario'],
               style: const TextStyle(
@@ -309,9 +303,8 @@ const SizedBox(height: 8),
       ),
     );
   }
-
-  
 }
+
 class WeekSchedule extends StatelessWidget {
   final Map<String, List<Map<String, dynamic>>> horarioSemanal = {
     'Lunes': [
@@ -368,14 +361,11 @@ class WeekSchedule extends StatelessWidget {
     ],
   };
 
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Horario Semanal'),
-        
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -392,42 +382,42 @@ class WeekSchedule extends StatelessWidget {
     );
   }
 
- Widget _buildBotonGigante(BuildContext context) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => CreateSchedulePage()),
-      );
-    },
-    child: Container(
-      margin: const EdgeInsets.all(16),
-      width: double.infinity,
-      height: 100,
-      decoration: BoxDecoration(
-        color: Colors.blue[100],
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          )
-        ],
-      ),
-      child: const Center(
-        child: Text(
-          'Crear Mi Horario',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
+  Widget _buildBotonGigante(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CreateSchedulePage()),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.all(16),
+        width: double.infinity,
+        height: 100,
+        decoration: BoxDecoration(
+          color: Colors.blue[100],
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
+        child: const Center(
+          child: Text(
+            'Crear Mi Horario',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildDia(
     BuildContext context, {
@@ -453,7 +443,8 @@ class WeekSchedule extends StatelessWidget {
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: materias.length,
-            itemBuilder: (context, index) => _buildTarjetaMateria(materias[index]),
+            itemBuilder: (context, index) =>
+                _buildTarjetaMateria(materias[index]),
           ),
         ),
         const Divider(thickness: 1.5),
@@ -516,18 +507,26 @@ class WeekSchedule extends StatelessWidget {
   }
 }
 
-
 class CreateSchedulePage extends StatelessWidget {
   CreateSchedulePage({super.key});
 
+  TextEditingController materiaNombreController = TextEditingController();
+  String? diaSemana;
+
   final _formKey = GlobalKey<FormState>();
-  final List<String> dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+  final List<String> dias = [
+    'Lunes',
+    'Martes',
+    'Miércoles',
+    'Jueves',
+    'Viernes'
+  ];
   final List<String> horasGrupo1 = _generarHoras(
     start: const TimeOfDay(hour: 7, minute: 0),
     end: const TimeOfDay(hour: 17, minute: 30),
     interval: const Duration(hours: 1, minutes: 45),
   );
-  
+
   final List<String> horasGrupo2 = _generarHoras(
     start: const TimeOfDay(hour: 8, minute: 30),
     end: const TimeOfDay(hour: 19, minute: 0),
@@ -566,6 +565,7 @@ class CreateSchedulePage extends StatelessWidget {
             children: [
               // Campo nombre materia
               TextFormField(
+                controller: materiaNombreController,
                 decoration: InputDecoration(
                   labelText: 'Nombre de la Materia',
                   border: OutlineInputBorder(
@@ -574,7 +574,8 @@ class CreateSchedulePage extends StatelessWidget {
                   filled: true,
                   fillColor: Colors.grey[50],
                   focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: const Color.fromARGB(255, 244, 209, 209)),
+                    borderSide: const BorderSide(
+                        color: const Color.fromARGB(255, 244, 209, 209)),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -612,7 +613,9 @@ class CreateSchedulePage extends StatelessWidget {
                     }
                     return null;
                   },
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    diaSemana = value;
+                  },
                 ),
               ),
               const SizedBox(height: 20),
@@ -640,14 +643,16 @@ class CreateSchedulePage extends StatelessWidget {
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 244, 209, 209),
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // Lógica para guardar
+                    var text = materiaNombreController.text;
+                    print("$text, $diaSemana"); //TODO
                   }
                 },
               ),
@@ -658,7 +663,8 @@ class CreateSchedulePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeSelector({required String label, required List<String> items}) {
+  Widget _buildTimeSelector(
+      {required String label, required List<String> items}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
