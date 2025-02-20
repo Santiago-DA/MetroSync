@@ -511,6 +511,7 @@ class CreateSchedulePage extends StatelessWidget {
   CreateSchedulePage({super.key});
 
   TextEditingController materiaNombreController = TextEditingController();
+  TextEditingController aulaController = TextEditingController();
   String? diaSemana;
   String? horaInicio;
   String? horaFinal;
@@ -590,6 +591,31 @@ class CreateSchedulePage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
+              //Ingreso de Aula
+              TextFormField(
+                controller: aulaController,
+                decoration: InputDecoration(
+                  labelText: 'Ingrese el Aula',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[50],
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        color: const Color.fromARGB(255, 244, 209, 209)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor ingresa el nombre';
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 20),
               // Selector de día
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -706,12 +732,13 @@ class CreateSchedulePage extends StatelessWidget {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     var text = materiaNombreController.text;
+                    var aux = aulaController.text;
                     //SnackBar
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         duration: Duration(seconds: 2),
-                        content:
-                            Text("$text, $diaSemana, $horaInicio - $horaFinal"),
+                        content: Text(
+                            "$text, $diaSemana, $horaInicio - $horaFinal, aula:$aux"),
                       ),
                     );
                     //Insercion a la BDD
@@ -725,7 +752,7 @@ class CreateSchedulePage extends StatelessWidget {
     );
   }
 
-  /*Widget _buildTimeSelector(
+  Widget _buildTimeSelector(
       {required String label, required List<String> items}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -756,4 +783,4 @@ class CreateSchedulePage extends StatelessWidget {
       ),
     );
   }
-}*/
+}
