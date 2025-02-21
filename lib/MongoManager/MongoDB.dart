@@ -1,5 +1,5 @@
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:flutter_prueba/MongoManager/Constant.dart';
+import 'package:metrosync/MongoManager/Constant.dart';
 
 class MongoDB {
   late Db _db;

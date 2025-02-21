@@ -1,4 +1,4 @@
-name: flutter_prueba
+name: metrosync
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -63,6 +63,7 @@ flutter:
     - assets/images/objetos_perdidos.png
     - assets/images/ofertas_feria.png
     - assets/images/animacion_horario.jpg
+    - assets/images/animacion_horario.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

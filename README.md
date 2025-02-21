@@ -1,6 +1,6 @@
-# flutter_prueba
+# metrosync
 
-A new Flutter project.
+A new Flutter development about connection in an university.
 
 ## Getting Started
 

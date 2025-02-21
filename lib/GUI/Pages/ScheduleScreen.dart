@@ -83,7 +83,9 @@ class ScheduleScreen extends StatelessWidget {
         child: Column(
           children: [
             _buildSeccion(
+              context: context,
               title: 'Mi Horario Hoy',
+
               items: materias,
               builder: _buildTarjetaMateria,
               accion: IconButton(
@@ -99,11 +101,13 @@ class ScheduleScreen extends StatelessWidget {
               ),
             ),
             _buildSeccion(
+              context: context,
               title: 'Huecos en Común',
               items: huecosComunes,
               builder: _buildTarjetaHueco,
             ),
             _buildSeccion(
+              context: context,
               title: 'Amigos',
               items: amigos,
               builder: _buildTarjetaAmigo,
@@ -115,6 +119,7 @@ class ScheduleScreen extends StatelessWidget {
   }
 
   Widget _buildSeccion({
+    required BuildContext context,
     required String title,
     required List<Map<String, dynamic>> items,
     required Widget Function(BuildContext, Map<String, dynamic>) builder,
@@ -124,16 +129,13 @@ class ScheduleScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(26.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.titleSmall,
               ),
               if (accion != null) accion,
             ],
@@ -147,7 +149,7 @@ class ScheduleScreen extends StatelessWidget {
             itemBuilder: (context, index) => builder(context, items[index]),
           ),
         ),
-        const Divider(thickness: 1.5),
+        Divider(thickness: 10, color: Theme.of(context).colorScheme.surface),
       ],
     );
   }
@@ -366,6 +368,8 @@ class WeekSchedule extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Horario Semanal'),
+        centerTitle: true,
+        titleTextStyle: Theme.of(context).textTheme.titleSmall,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -393,7 +397,7 @@ class WeekSchedule extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.all(16),
         width: double.infinity,
-        height: 100,
+        height: 80,
         decoration: BoxDecoration(
           color: Colors.blue[100],
           borderRadius: BorderRadius.circular(20),
@@ -405,14 +409,10 @@ class WeekSchedule extends StatelessWidget {
             )
           ],
         ),
-        child: const Center(
+        child:  Center(
           child: Text(
-            'Crear Mi Horario',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+            'Agregar clase',
+            style: Theme.of(context).textTheme.displayMedium,
           ),
         ),
       ),
@@ -439,7 +439,7 @@ class WeekSchedule extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 180,
+          height: 150,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: materias.length,
@@ -447,12 +447,13 @@ class WeekSchedule extends StatelessWidget {
                 _buildTarjetaMateria(materias[index]),
           ),
         ),
-        const Divider(thickness: 1.5),
+        Divider(thickness: 2, color: Theme.of(context).colorScheme.surface),
       ],
     );
   }
 
   Widget _buildTarjetaMateria(Map<String, dynamic> materia) {
+
     return Container(
       width: 200,
       margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -556,10 +557,13 @@ class CreateSchedulePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Crear Nuevo Horario'),
-        backgroundColor: const Color.fromARGB(255, 244, 209, 209),
+        title: const Text('Nueva Clase'),
+        centerTitle: true,
+        titleTextStyle: Theme.of(context).textTheme.displayMedium,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         foregroundColor: Colors.white,
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -567,6 +571,7 @@ class CreateSchedulePage extends StatelessWidget {
           child: Column(
             children: [
               // Campo nombre materia
+              const SizedBox(height: 20),
               TextFormField(
                 controller: materiaNombreController,
                 decoration: InputDecoration(
@@ -625,6 +630,7 @@ class CreateSchedulePage extends StatelessWidget {
                   border: Border.all(color: Colors.grey[300]!),
                 ),
                 child: DropdownButtonFormField<String>(
+                  style: Theme.of(context).textTheme.bodyMedium,
                   items: dias.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -657,6 +663,7 @@ class CreateSchedulePage extends StatelessWidget {
                   border: Border.all(color: Colors.grey[300]!),
                 ),
                 child: DropdownButtonFormField<String>(
+                  style: Theme.of(context).textTheme.bodyMedium,
                   items: horasGrupo1.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -690,6 +697,7 @@ class CreateSchedulePage extends StatelessWidget {
                   border: Border.all(color: Colors.grey[300]!),
                 ),
                 child: DropdownButtonFormField<String>(
+                  style: Theme.of(context).textTheme.bodyMedium,
                   items: horasGrupo2.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
