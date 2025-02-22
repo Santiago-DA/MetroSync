@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'WeekSchedule.dart';
 
-class ScheduleScreen extends StatelessWidget {
+class ScheduleScreen extends StatefulWidget {
+  ScheduleScreen({super.key});
+  @override
+  _ScheduleScreenState createState() => _ScheduleScreenState();
+}
+
+class _ScheduleScreenState extends State<ScheduleScreen> {
   // Datos de ejemplo
   final List<Map<String, dynamic>> materias = [
-    {
+       {
       'nombre': 'Ec. Diferenciales',
       'horario': '8:45 a.m - 10:30 a.m',
       'aula': 'A1-205',
       'profesor': 'Prof. García',
       'trimestre': 'XI',
+      'dias': ['Lunes', 'Miércoles', 'Viernes'],
     },
     {
       'nombre': 'Cálculo Integral',
@@ -17,6 +24,7 @@ class ScheduleScreen extends StatelessWidget {
       'aula': 'A2-102',
       'profesor': 'Prof. López',
       'trimestre': 'XI',
+      'dias': ['Martes', 'Jueves'],
     },
     {
       'nombre': 'Física',
@@ -24,6 +32,7 @@ class ScheduleScreen extends StatelessWidget {
       'aula': 'A3-101',
       'profesor': 'Prof. Martínez',
       'trimestre': 'XI',
+      'dias': ['Lunes', 'Miércoles'],
     },
     {
       'nombre': 'Química',
@@ -31,6 +40,7 @@ class ScheduleScreen extends StatelessWidget {
       'aula': 'A2-202',
       'profesor': 'Prof. Rodríguez',
       'trimestre': 'XI',
+      'dias': ['Viernes'],
     },
   ];
 
@@ -72,29 +82,65 @@ class ScheduleScreen extends StatelessWidget {
     },
   ];
 
-  ScheduleScreen({super.key});
+  void _agregarMateria(Map<String, dynamic> nuevaMateria) {
+    setState(() {
+      materias.add(nuevaMateria);
+    });
+  }
 
-  @override
+  String _obtenerDiaActual() {
+    final now = DateTime.now();
+    final weekday = now.weekday;
+    switch (weekday) {
+      case 1:
+        return 'Lunes';
+      case 2:
+        return 'Martes';
+      case 3:
+        return 'Miércoles';
+      case 4:
+        return 'Jueves';
+      case 5:
+        return 'Viernes';
+      case 6:
+        return 'Sábado';
+      case 7:
+        return 'Domingo';
+      default:
+        return '';
+    }
+  }
+
+  // Función para filtrar materias del día actual
+  List<Map<String, dynamic>> _materiasDelDia() {
+    final diaActual = "Lunes";
+    return materias.where((materia) {
+      final dias = List<String>.from(materia['dias'] ?? []);
+      return dias.contains(diaActual);
+    }).toList();
+  }
+
+    @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
             _buildSeccion(
               context: context,
-              title: 'Mi Horario Hoy',
-              items: materias,
+              title: 'Mi Horario Hoy ',
+              items: _materiasDelDia(),
               builder: _buildTarjetaMateria,
               accion: IconButton(
-                icon: Icon(Icons.add_box, color: colors.inversePrimary),
+                icon: Icon(Icons.add_box),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => WeekSchedule(),
+                      builder: (context) => WeekSchedule(
+                        materias: materias,
+                        onSubjectAdded: _agregarMateria,
+                      ),
                     ),
                   );
                 },

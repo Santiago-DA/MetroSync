@@ -1,70 +1,59 @@
 import 'package:flutter/material.dart';
 import 'CreateSchedulePage.dart';
 
-class WeekSchedule extends StatelessWidget {
-  final Map<String, List<Map<String, dynamic>>> horarioSemanal = {
-    'Lunes': [
-      {
-        'materia': 'Sistemas Operativos',
-        'horario': '8:00 - 10:00',
-        'aula': 'A1-301',
-        'profesor': 'Prof. García',
-        'trimestre': 'XI',
-      },
-      {
-        'materia': 'Física',
-        'horario': '10:30 - 12:30',
-        'aula': 'A2-105',
-        'profesor': 'Prof. López',
-        'trimestre': 'XI',
-      },
-    ],
-    'Martes': [
-      {
-        'materia': 'Química',
-        'horario': '9:00 - 11:00',
-        'aula': 'A3-204',
-        'profesor': 'Prof. Martínez',
-        'trimestre': 'XI',
-      },
-    ],
-    'Miércoles': [
-      {
-        'materia': 'Biología',
-        'horario': '8:30 - 10:30',
-        'aula': 'A2-102',
-        'profesor': 'Prof. Rodríguez',
-        'trimestre': 'XI',
-      },
-      {
-        'materia': 'Historia',
-        'horario': '11:00 - 13:00',
-        'aula': 'A1-303',
-        'profesor': 'Prof. Fernández',
-        'trimestre': 'XI',
-      },
-    ],
-    'Jueves': [
-      {
-        'materia': 'Literatura',
-        'horario': '10:00 - 12:00',
-        'aula': 'A1-101',
-        'profesor': 'Prof. Gómez',
-        'trimestre': 'XI',
-      },
-    ],
-    'Viernes': [
-      {
-        'materia': 'Educación Física',
-        'horario': '7:30 - 9:30',
-        'aula': 'Gimnasio',
-        'profesor': 'Prof. Pérez',
-        'trimestre': 'XI',
-      },
-    ],
-  };
+class WeekSchedule extends StatefulWidget {
+  final List<Map<String, dynamic>> materias;
+  final Function(Map<String, dynamic>) onSubjectAdded;
 
-  WeekSchedule({super.key});
+  const WeekSchedule({
+    super.key,
+    required this.materias,
+    required this.onSubjectAdded,
+  });
+
+  @override
+  State<WeekSchedule> createState() => _WeekScheduleState();
+}
+
+class _WeekScheduleState extends State<WeekSchedule> {
+  late List<Map<String, dynamic>> _materias;
+
+  @override
+  void initState() {
+    super.initState();
+    _materias = widget.materias;
+  }
+
+  @override
+  void didUpdateWidget(covariant WeekSchedule oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.materias != oldWidget.materias) {
+      setState(() {
+        _materias = widget.materias;
+      });
+    }
+  }
+
+  Map<String, List<Map<String, dynamic>>> get _horarioSemanal {
+    final horario = <String, List<Map<String, dynamic>>>{
+      'Lunes': [],
+      'Martes': [],
+      'Miércoles': [],
+      'Jueves': [],
+      'Viernes': [],
+    };
+
+    for (var materia in _materias) {
+      final dias = List<String>.from(materia['dias'] ?? []);
+      for (var dia in dias) {
+        if (horario.containsKey(dia)) {
+          final materiaCopy = Map<String, dynamic>.from(materia);
+          horario[dia]!.add(materiaCopy);
+        }
+      }
+    }
+    return horario;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +67,7 @@ class WeekSchedule extends StatelessWidget {
         child: Column(
           children: [
             _buildBotonGigante(context),
-            ...horarioSemanal.entries.map((entry) => _buildDia(
+            ..._horarioSemanal.entries.map((entry) => _buildDia(
                   context,
                   dia: entry.key,
                   materias: entry.value,
@@ -89,12 +78,100 @@ class WeekSchedule extends StatelessWidget {
     );
   }
 
+  Widget _buildTarjetaMateria(Map<String, dynamic> materia, BuildContext context) {
+    return GestureDetector(
+      onTap: () => _mostrarPopupMateria(context, materia),
+      child: Container(
+        width: 200,
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 6,
+              offset: const Offset(2, 2),
+            )
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                materia['nombre'],
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 10),
+              _buildInfoRow(Icons.access_time, materia['horario'], context),
+              const SizedBox(height: 8),
+              _buildInfoRow(Icons.location_on, materia['aula'], context),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _mostrarPopupMateria(BuildContext context, Map<String, dynamic> materia) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            materia['nombre'],
+            style: Theme.of(context).textTheme.displayLarge,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildInfoRow(Icons.access_time, materia['horario'], context),
+              const SizedBox(height: 8),
+              _buildInfoRow(Icons.location_on, materia['aula'], context),
+              const SizedBox(height: 8),
+              _buildInfoRow(Icons.person, materia['profesor'], context),
+              const SizedBox(height: 8),
+              _buildInfoRow(
+                  Icons.calendar_today, 
+                  'Trimestre: ${materia['trimestre']}', 
+                  context),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Cerrar',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildBotonGigante(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => CreateSchedulePage()),
+          MaterialPageRoute(
+            builder: (context) => CreateSchedulePage(
+              onSave: (nuevaMateria) {
+                widget.onSubjectAdded(nuevaMateria);
+                setState(() {
+                  _materias.add(nuevaMateria);
+                });
+              },
+            ),
+          ),
         );
       },
       child: Container(
@@ -153,46 +230,6 @@ class WeekSchedule extends StatelessWidget {
     );
   }
 
-  Widget _buildTarjetaMateria(Map<String, dynamic> materia, BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        _mostrarPopupMateria(context, materia);
-      },
-      child: Container(
-        width: 200,
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
-              offset: const Offset(2, 2),
-            )
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                materia['materia'],
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 10),
-              _buildInfoRow(Icons.access_time, materia['horario'], context),
-              const SizedBox(height: 8),
-              _buildInfoRow(Icons.location_on, materia['aula'], context),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildInfoRow(IconData icon, String text, BuildContext context) {
     return Row(
       children: [
@@ -206,46 +243,6 @@ class WeekSchedule extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  void _mostrarPopupMateria(BuildContext context, Map<String, dynamic> materia) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            materia['materia'],
-            style: Theme.of(context).textTheme.displayLarge,
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildInfoRow(Icons.access_time, materia['horario'], context),
-              const SizedBox(height: 8),
-              _buildInfoRow(Icons.location_on, materia['aula'], context),
-              const SizedBox(height: 8),
-              _buildInfoRow(Icons.person, materia['profesor'], context),
-              const SizedBox(height: 8),
-              _buildInfoRow(Icons.calendar_today, 'Trimestre: ${materia['trimestre']}', context),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Cerrar el diálogo
-              },
-              child: Text(
-                'Cerrar',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary, // Color secundario del tema
-                ),
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 }
