@@ -165,9 +165,9 @@ class _WeekScheduleState extends State<WeekSchedule> {
           MaterialPageRoute(
             builder: (context) => CreateSchedulePage(
               onSave: (nuevaMateria) {
-                widget.onSubjectAdded(nuevaMateria);
+                
                 setState(() {
-                  _materias.add(nuevaMateria);
+                  widget.onSubjectAdded(nuevaMateria);
                 });
               },
             ),

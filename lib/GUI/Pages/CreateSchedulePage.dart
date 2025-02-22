@@ -329,7 +329,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                             Text('Días: ${(newSubject['dias'] as List<String>).join(', ')}'),
                           ],
                         ),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
                         duration: const Duration(seconds: 2),
                       ),
                     );
