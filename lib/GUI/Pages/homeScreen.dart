@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 import 'package:metrosync/GUI/Pages/ScheduleScreen.dart';
-import 'package:metrosync/Schedules/Schedule.dart';
 
-//otras paginas
+// Otras páginas
 import 'lostitemsScreen.dart';
-import 'profileScreen.dart';
+import 'profileScreen.dart'; // Asegúrate de importar ProfilePage
 import 'homepageScreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,16 +22,18 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
+    // Lista de páginas
     _pages = [
-      ScheduleScreen(key: UniqueKey()), // <-- Nueva pantalla de horarios
+      ScheduleScreen(key: UniqueKey()), // Pantalla de horarios
       HomePage(
         key: UniqueKey(),
         onMailPressed: _navigateToLostItemsPage,
-      ),
-      ProfilePage(key: UniqueKey()),
+      ), // Pantalla de inicio
+      ProfilePage(key: UniqueKey()), // Pantalla de perfil
     ];
   }
 
+  // Navegar a la página de objetos perdidos
   void _navigateToLostItemsPage() {
     Navigator.push(
       context,
@@ -43,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Cambiar de página
   void _changePage(int index) {
     setState(() {
       _currentIndex = index;
@@ -53,10 +54,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: _pages[_currentIndex],
+      body: _pages[_currentIndex], // Mostrar la página actual
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) => _changePage(index),
+        onTap: (index) => _changePage(index), // Cambiar de página al tocar un ícono
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 10.0,
         selectedItemColor: Theme.of(context).colorScheme.inversePrimary,
