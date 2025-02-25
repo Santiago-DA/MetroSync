@@ -46,23 +46,44 @@ class HomePage extends StatelessWidget {
     final colors = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('MetroSync', style: theme.textTheme.titleSmall),
-        backgroundColor: colors.primary,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.mail, color: colors.inversePrimary),
-            onPressed: onMailPressed,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(60.0),
+          child: AppBar(
+            automaticallyImplyLeading: false,
+            title: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(width: 4),
+              Image.asset('assets/images/logo_solo.png'),
+                const SizedBox(width: 8), // Space between image and text
+                Text('MetroSync', style: theme.textTheme.titleSmall),
+
+              ],
+            ),
+            backgroundColor: colors.surface,
+            actions: [
+              IconButton(
+                icon: Icon(Icons.mail, color: colors.inversePrimary),
+                onPressed: onMailPressed,
+              ),
+              const SizedBox(width: 12)
+            ],
           ),
-        ],
-      ),
-      body: ListView(
+        ),
+
+
+        body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
+          Divider(thickness: 5, color: theme.colorScheme.secondary),
           // Carrusel de imágenes
-          SizedBox(
+          Container(
             width: 306,
             height: 164,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondary, // Color del tema
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: PageView(
@@ -108,7 +129,7 @@ class HomePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: Text('Etiquetas', style: theme.textTheme.bodyMedium),
+                child: Text('Etiquetas', style: theme.textTheme.labelMedium),
               ),
               const SizedBox(width: 16),
               // Ícono de reloj fuera del botón de Recientes
@@ -125,7 +146,7 @@ class HomePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: Text('Recientes', style: theme.textTheme.bodyMedium),
+                child: Text('Recientes', style: theme.textTheme.labelMedium),
               ),
             ],
           ),
@@ -178,8 +199,8 @@ class HomePage extends StatelessWidget {
                         ),
                         child: Text(
                           comment['label'] as String,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.inversePrimary,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: colors.surface,
                           ),
                         ),
                       ),
@@ -210,7 +231,7 @@ class HomePage extends StatelessWidget {
         width: 306,
         height: 164,
         decoration: BoxDecoration(
-          color: colors.primary,
+          color: colors.surface,
           borderRadius: BorderRadius.circular(10),
           image: DecorationImage(
             image: AssetImage(imagePath),

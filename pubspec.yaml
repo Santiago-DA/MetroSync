@@ -64,6 +64,7 @@ flutter:
     - assets/images/ofertas_feria.png
     - assets/images/animacion_horario.jpg
     - assets/images/animacion_horario.png
+    - assets/images/logo_solo.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

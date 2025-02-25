@@ -213,7 +213,7 @@ class _WeekScheduleState extends State<WeekSchedule> {
         width: double.infinity,
         height: 80,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondary,
+          color: Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(

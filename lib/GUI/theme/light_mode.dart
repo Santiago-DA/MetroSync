@@ -4,9 +4,10 @@ ThemeData lightMode = ThemeData(
   brightness: Brightness.light,
   colorScheme: ColorScheme.light(
     surface: Colors.grey[50]!,
-    
-    primary: const Color.fromARGB(255, 76, 129, 204)!,
-    secondary: const Color.fromARGB(255, 246, 170, 82),
+
+    primary: const Color.fromARGB(230, 254, 131, 1),
+    secondary: Colors.grey.shade900,
+
     inversePrimary: Colors.grey.shade900,
   ),
 
@@ -23,6 +24,18 @@ ThemeData lightMode = ThemeData(
       fontWeight: FontWeight.normal,
       ),
 
+      labelMedium: TextStyle(
+        color: Colors.white,
+        fontSize: 14.0,
+        fontWeight: FontWeight.normal,
+      ),
+
+      labelSmall: TextStyle(
+        color: Colors.white,
+        fontSize: 12.0,
+        fontWeight: FontWeight.normal,
+      ),
+
     displayLarge: TextStyle(
       color: Colors.black,
       fontSize: 32.0,
@@ -31,7 +44,7 @@ ThemeData lightMode = ThemeData(
 
     displayMedium: TextStyle(
       color: Colors.black,
-      fontSize: 24.0,
+      fontSize: 20.0,
       fontWeight: FontWeight.bold,
     ),
 
@@ -49,7 +62,7 @@ ThemeData lightMode = ThemeData(
 
     titleMedium: TextStyle(
       color: Colors.black,
-      fontSize: 45.0,
+      fontSize: 40.0,
       fontWeight: FontWeight.bold,
     ),
 
@@ -58,7 +71,7 @@ ThemeData lightMode = ThemeData(
       fontSize: 30.0,
       fontWeight: FontWeight.bold,
     ),
-    
+
 ),
 
   buttonTheme: ButtonThemeData(
@@ -73,4 +86,5 @@ ThemeData lightMode = ThemeData(
       ),
     )
   )
+
 );

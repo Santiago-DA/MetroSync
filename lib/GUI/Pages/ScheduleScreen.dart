@@ -99,8 +99,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            const SizedBox(height: 4),
             _buildSeccion(
               context: context,
+              height: 140,
               title: 'Mi Horario Hoy ',
               items: _materiasDelDia(),
               builder: _buildTarjetaMateria,
@@ -122,12 +124,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             ),
             _buildSeccion(
               context: context,
+              height: 130,
               title: 'Huecos en Común',
               items: huecosComunes,
               builder: _buildTarjetaHueco,
             ),
             _buildSeccion(
               context: context,
+              height: 180,
               title: 'Amigos',
               items: amigos,
               builder: _buildTarjetaAmigo,
@@ -140,6 +144,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   Widget _buildSeccion({
     required BuildContext context,
+    required double height,
     required String title,
     required List<Map<String, dynamic>> items,
     required Widget Function(BuildContext, Map<String, dynamic>) builder,
@@ -159,12 +164,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 title,
                 style: theme.textTheme.titleMedium,
               ),
+
               if (accion != null) accion,
+
             ],
           ),
         ),
         SizedBox(
-          height: 160,
+          height: height,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: items.length,
@@ -190,7 +197,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         width: 200,
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          color: theme.colorScheme.secondary, // Usar el color primario del tema
+          color: theme.colorScheme.primary, // Usar el color primario del tema
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
@@ -243,7 +250,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text('Cancelar', style: TextStyle(
-            color: Theme.of(context).colorScheme.secondary)),
+            color: Theme.of(context).colorScheme.primary)),
         ),
         TextButton(
           onPressed: () {
@@ -302,7 +309,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               child: Text(
                 'Cerrar',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.secondary,
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ),
@@ -319,7 +326,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       width: 200,
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-        color: theme.colorScheme.secondary, // Usar el color primario del tema
+        color: theme.colorScheme.primary, // Usar el color primario del tema
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
@@ -361,7 +368,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       width: 200,
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-        color: theme.colorScheme.secondary, // Usar el color primario del tema
+        color: theme.colorScheme.primary, // Usar el color primario del tema
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(

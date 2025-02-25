@@ -5,7 +5,7 @@ class DealsPage extends StatelessWidget {
   final List<Map<String, dynamic>> deals = [
     {
       'usuario': '@pinchopan',
-      'promocion': 'SUPER OMBO!',
+      'promocion': 'SUPER COMBO!',
       'imagen': 'assets/images/promo1.jpg', // Ruta de la imagen de la promoción
     },
     {

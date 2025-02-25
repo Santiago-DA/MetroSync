@@ -36,6 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('Perfil', style: theme.textTheme.displayMedium),
         centerTitle: true,
         backgroundColor: colors.primary,
@@ -116,8 +117,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             child: Text(
                               'Amigos',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colors.inversePrimary,
+                              style: theme.textTheme.labelSmall?.copyWith(
+
                               ),
                             ),
                           ),
@@ -135,9 +136,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             child: Text(
                               'Sincronizados',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colors.inversePrimary,
-                              ),
+                              style: theme.textTheme.labelSmall
                             ),
                           ),
                         ],
