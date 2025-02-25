@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import "EditProfilePage.dart";
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -8,11 +9,10 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String _nombre = 'Gabriel Garcia';
+  String _nombre = 'Gabriel';
+  String _apellido = 'Garcia';
   String _usuario = '@gabgaru';
-
-
-  
+  String _descripcion = 'Soy Sr abolito majestuoso';
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _nombre,
+                        "$_nombre $_apellido",
                         style: theme.textTheme.displayLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -88,6 +88,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 4),
                       Text(
                         _usuario,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: colors.inversePrimary.withOpacity(0.7),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        _descripcion,
                         style: theme.textTheme.bodyLarge?.copyWith(
                           color: colors.inversePrimary.withOpacity(0.7),
                         ),
@@ -274,11 +281,14 @@ void _editarPerfil() async {
       MaterialPageRoute(
         builder: (context) => EditProfilePage(
           currentName: _nombre,
+          currentLastName: _apellido,
+          currentDescription: _descripcion,
           currentUsername: _usuario,
-          onSave: (nuevoNombre, nuevoUsuario) {
+          onSave: (nuevoNombre, nuevoApellido, nuevaDescripcion) {
             setState(() {
               _nombre = nuevoNombre;
-              _usuario = nuevoUsuario;
+              _apellido = nuevoApellido;
+              _descripcion = nuevaDescripcion;
             });
           },
         ),
