@@ -4,11 +4,12 @@ import 'CreateSchedulePage.dart';
 class WeekSchedule extends StatefulWidget {
   final List<Map<String, dynamic>> materias;
   final Function(Map<String, dynamic>) onSubjectAdded;
-
+  final Function(Map<String, dynamic>) onSubjectDeleted;
   const WeekSchedule({
     super.key,
     required this.materias,
     required this.onSubjectAdded,
+    required this.onSubjectDeleted
   });
 
   @override
@@ -32,6 +33,13 @@ class _WeekScheduleState extends State<WeekSchedule> {
         _materias = widget.materias;
       });
     }
+  }
+  void _eliminarMateria(Map<String, dynamic> materia) {
+    // Actualizar lista local y padre
+    setState(() {
+      _materias.removeWhere((m) => m['nombre'] == materia['nombre']);
+    });
+    widget.onSubjectDeleted(materia); // Notificar al padre
   }
 
   Map<String, List<Map<String, dynamic>>> get _horarioSemanal {
@@ -81,6 +89,7 @@ class _WeekScheduleState extends State<WeekSchedule> {
   Widget _buildTarjetaMateria(Map<String, dynamic> materia, BuildContext context) {
     return GestureDetector(
       onTap: () => _mostrarPopupMateria(context, materia),
+      onLongPress: () => _mostrarDialogoEliminar(context, materia), 
       child: Container(
         width: 200,
         margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -115,7 +124,32 @@ class _WeekScheduleState extends State<WeekSchedule> {
       ),
     );
   }
-
+  void _mostrarDialogoEliminar(BuildContext context, Map<String, dynamic> materia) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('Eliminar materia', style: Theme.of(context).textTheme.displayLarge),
+      content: Text('¿Seguro que quieres eliminar ${materia['nombre']}?', 
+               style: Theme.of(context).textTheme.bodyMedium),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Cancelar', style: TextStyle(
+            color: Theme.of(context).colorScheme.secondary)),
+        ),
+        TextButton(
+          onPressed: () =>  {
+             _eliminarMateria(materia),
+              Navigator.pop(context),
+          },
+          child: Text('Eliminar', style: TextStyle(
+            color: Theme.of(context).colorScheme.error)),
+        ),
+      ],
+    ),
+  );
+}
+  
   void _mostrarPopupMateria(BuildContext context, Map<String, dynamic> materia) {
     showDialog(
       context: context,
@@ -179,7 +213,7 @@ class _WeekScheduleState extends State<WeekSchedule> {
         width: double.infinity,
         height: 80,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.secondary,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(

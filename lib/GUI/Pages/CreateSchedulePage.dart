@@ -60,8 +60,8 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
       appBar: AppBar(
         title: const Text('Nueva Clase'),
         centerTitle: true,
-        titleTextStyle: theme.textTheme.titleMedium,
-        backgroundColor: colors.primary,
+        titleTextStyle: theme.textTheme.titleSmall,
+        backgroundColor: colors.surface,
         foregroundColor: colors.inversePrimary,
       ),
       body: Padding(
@@ -75,6 +75,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
               // Campo nombre materia
               const SizedBox(height: 30), // Más espacio
               TextFormField(
+                cursorColor: colors.inversePrimary,
                 controller: materiaNombreController,
                 style: TextStyle(color: Colors.black), // Texto negro
                 decoration: InputDecoration(
@@ -101,6 +102,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
 
               // Ingreso de Aula
               TextFormField(
+                cursorColor: colors.inversePrimary,
                 controller: aulaController,
                 style: TextStyle(color: Colors.black), // Texto negro
                 decoration: InputDecoration(
@@ -127,6 +129,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
 
               // Campo nombre del profesor
               TextFormField(
+                cursorColor: colors.inversePrimary,
                 controller: profesorController,
                 style: TextStyle(color: Colors.black), // Texto negro
                 decoration: InputDecoration(
@@ -157,7 +160,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                 decoration: BoxDecoration(
                   color: colors.surface,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: colors.primary),
+                  border: Border.all(color: colors.inversePrimary),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,7 +200,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                 decoration: BoxDecoration(
                   color: colors.surface,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: colors.primary),
+                  border: Border.all(color: colors.inversePrimary),
                 ),
                 child: DropdownButtonFormField<String>(
                   style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black), // Texto negro
@@ -231,7 +234,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                 decoration: BoxDecoration(
                   color: colors.surface,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: colors.primary),
+                  border: Border.all(color: colors.inversePrimary),
                 ),
                 child: DropdownButtonFormField<String>(
                   style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black), // Texto negro
@@ -265,7 +268,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                 decoration: BoxDecoration(
                   color: colors.surface,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: colors.primary),
+                  border: Border.all(color: colors.inversePrimary),
                 ),
                 child: DropdownButtonFormField<String>(
                   style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black), // Texto negro
@@ -340,8 +343,13 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                     Navigator.pop(context);
                   }
                 },
-                icon: Icon(Icons.save, color: colors.inversePrimary),
-                label: Text('Guardar Horario'),
+                icon: Icon(Icons.save, color: colors.surface),
+                label: Text('Guardar Horario', style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          color: colors.surface,
+          fontWeight: FontWeight.bold,
+        ),),
+                
+              
               ),
             ],
           ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'homeScreen.dart';
 
 //todavia le falta a esta screen, adicionalmente de la screen de registro
@@ -27,6 +26,7 @@ class LogInPageState extends State<LogInPage> {
               Text(
                 'Inicio de sesión',
                 style: Theme.of(context).textTheme.titleMedium,
+                
               ),
               const SizedBox(height: 20),
 
@@ -68,6 +68,9 @@ class LogInPageState extends State<LogInPage> {
                     MaterialPageRoute(builder: (context) => const HomeScreen()),
                   );
                 },
+                style: ElevatedButton.styleFrom(
+    foregroundColor: Theme.of(context).colorScheme.surface, // Color del texto
+  ),
                 child: const Text('Iniciar sesión'),
               ),
             ],

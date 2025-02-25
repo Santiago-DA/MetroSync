@@ -4,8 +4,9 @@ ThemeData lightMode = ThemeData(
   brightness: Brightness.light,
   colorScheme: ColorScheme.light(
     surface: Colors.grey[50]!,
-    primary: Colors.grey.shade200,
-    secondary: Colors.orange,
+    
+    primary: const Color.fromARGB(255, 76, 129, 204)!,
+    secondary: const Color.fromARGB(255, 246, 170, 82),
     inversePrimary: Colors.grey.shade900,
   ),
 
@@ -57,7 +58,7 @@ ThemeData lightMode = ThemeData(
       fontSize: 30.0,
       fontWeight: FontWeight.bold,
     ),
-
+    
 ),
 
   buttonTheme: ButtonThemeData(

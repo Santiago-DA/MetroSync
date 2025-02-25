@@ -159,6 +159,7 @@ class OnBoardingPageState extends State<OnBoardingPage> {
       dotsDecorator: DotsDecorator(
         size: Size(10.0, 10.0),
         color: colorScheme.secondary,
+        activeColor: colorScheme.surface,
         activeSize: Size(22.0, 10.0),
         activeShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(25.0)),

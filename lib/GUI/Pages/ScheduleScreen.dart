@@ -10,38 +10,6 @@ class ScheduleScreen extends StatefulWidget {
 class _ScheduleScreenState extends State<ScheduleScreen> {
   // Datos de ejemplo
   final List<Map<String, dynamic>> materias = [
-       {
-      'nombre': 'Ec. Diferenciales',
-      'horario': '8:45 a.m - 10:30 a.m',
-      'aula': 'A1-205',
-      'profesor': 'Prof. García',
-      'trimestre': 'XI',
-      'dias': ['Lunes', 'Miércoles', 'Viernes'],
-    },
-    {
-      'nombre': 'Cálculo Integral',
-      'horario': '10:45 a.m - 12:30 p.m',
-      'aula': 'A2-102',
-      'profesor': 'Prof. López',
-      'trimestre': 'XI',
-      'dias': ['Martes', 'Jueves'],
-    },
-    {
-      'nombre': 'Física',
-      'horario': '1:00 p.m - 2:30 p.m',
-      'aula': 'A3-101',
-      'profesor': 'Prof. Martínez',
-      'trimestre': 'XI',
-      'dias': ['Lunes', 'Miércoles'],
-    },
-    {
-      'nombre': 'Química',
-      'horario': '3:00 p.m - 4:30 p.m',
-      'aula': 'A2-202',
-      'profesor': 'Prof. Rodríguez',
-      'trimestre': 'XI',
-      'dias': ['Viernes'],
-    },
   ];
 
   final List<Map<String, dynamic>> huecosComunes = [
@@ -87,6 +55,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       materias.add(nuevaMateria);
     });
   }
+  void _eliminarMateria(Map<String, dynamic> materia) {
+  setState(() {
+    materias.removeWhere((m) => m['nombre'] == materia['nombre']);
+  });
+}
 
   String _obtenerDiaActual() {
     final now = DateTime.now();
@@ -140,6 +113,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       builder: (context) => WeekSchedule(
                         materias: materias,
                         onSubjectAdded: _agregarMateria,
+                        onSubjectDeleted: _eliminarMateria,
                       ),
                     ),
                   );
@@ -209,12 +183,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     return GestureDetector(
       onTap: () {
         _mostrarPopupMateria(context, materia);
+        
       },
+      onLongPress: () => _mostrarDialogoEliminar(context, materia),
       child: Container(
         width: 200,
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          color: theme.colorScheme.primary, // Usar el color primario del tema
+          color: theme.colorScheme.secondary, // Usar el color primario del tema
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
@@ -256,6 +232,31 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       ),
     );
   }
+  void _mostrarDialogoEliminar(BuildContext context, Map<String, dynamic> materia) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('Eliminar materia', style: Theme.of(context).textTheme.displayLarge),
+      content: Text('¿Seguro que quieres eliminar ${materia['nombre']}?', 
+               style: Theme.of(context).textTheme.bodyMedium),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Cancelar', style: TextStyle(
+            color: Theme.of(context).colorScheme.secondary)),
+        ),
+        TextButton(
+          onPressed: () {
+            _eliminarMateria(materia);
+            Navigator.pop(context);
+          },
+          child: Text('Eliminar', style: TextStyle(
+            color: Theme.of(context).colorScheme.error)),
+        ),
+      ],
+    ),
+  );
+}
 
   void _mostrarPopupMateria(BuildContext context, Map<String, dynamic> materia) {
     final theme = Theme.of(context);
@@ -318,7 +319,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       width: 200,
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary, // Usar el color primario del tema
+        color: theme.colorScheme.secondary, // Usar el color primario del tema
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
@@ -360,7 +361,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       width: 200,
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary, // Usar el color primario del tema
+        color: theme.colorScheme.secondary, // Usar el color primario del tema
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
@@ -412,7 +413,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               child: Text(
                 'Sincronizar',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.primary,
+                  color: theme.colorScheme.surface,
                 ),
               ),
             ),

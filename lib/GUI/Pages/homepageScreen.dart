@@ -47,8 +47,8 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('', style: theme.textTheme.titleMedium),
-        backgroundColor: colors.surface,
+        title: Text('MetroSync', style: theme.textTheme.titleSmall),
+        backgroundColor: colors.primary,
         actions: [
           IconButton(
             icon: Icon(Icons.mail, color: colors.inversePrimary),
@@ -78,6 +78,7 @@ class HomePage extends StatelessWidget {
 
           // Barra de búsqueda
           TextField(
+            cursorColor: colors.inversePrimary,
             decoration: InputDecoration(
               hintText: 'Buscar',
               hintStyle: theme.textTheme.bodyMedium,
@@ -102,7 +103,7 @@ class HomePage extends StatelessWidget {
                   print('Etiquetas presionado');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.primary,
+                  backgroundColor: colors.secondary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -119,7 +120,7 @@ class HomePage extends StatelessWidget {
                   print('Recientes presionado');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.primary,
+                  backgroundColor: colors.secondary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -172,7 +173,7 @@ class HomePage extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: colors.primary,
+                          color: colors.secondary,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
