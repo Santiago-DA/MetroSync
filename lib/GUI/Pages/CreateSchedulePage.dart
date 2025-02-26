@@ -75,9 +75,9 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
               // Campo nombre materia
               const SizedBox(height: 30), // Más espacio
               TextFormField(
-                cursorColor: colors.inversePrimary,
+                cursorColor: colors.primary,
                 controller: materiaNombreController,
-                style: TextStyle(color: Colors.black), // Texto negro
+                style: TextStyle(color:colors.inversePrimary), // Texto negro
                 decoration: InputDecoration(
                   labelText: 'Nombre de la Materia',
                   labelStyle: TextStyle(color: colors.inversePrimary), // Color del label
@@ -87,10 +87,11 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                   filled: true,
                   fillColor: colors.surface,
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: colors.inversePrimary),
+                    borderSide: BorderSide(color: colors.primary),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
+                
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingresa el nombre';
@@ -102,9 +103,9 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
 
               // Ingreso de Aula
               TextFormField(
-                cursorColor: colors.inversePrimary,
+                cursorColor: colors.primary,
                 controller: aulaController,
-                style: TextStyle(color: Colors.black), // Texto negro
+                style: TextStyle(color: colors.inversePrimary), // Texto negro
                 decoration: InputDecoration(
                   labelText: 'Ingrese el Aula',
                   labelStyle: TextStyle(color: colors.inversePrimary), // Color del label
@@ -114,7 +115,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                   filled: true,
                   fillColor: colors.surface,
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: colors.inversePrimary),
+                    borderSide: BorderSide(color: colors.primary),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -129,9 +130,9 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
 
               // Campo nombre del profesor
               TextFormField(
-                cursorColor: colors.inversePrimary,
+                cursorColor: colors.primary,
                 controller: profesorController,
-                style: TextStyle(color: Colors.black), // Texto negro
+                style: TextStyle(color:colors.inversePrimary), // Texto negro
                 decoration: InputDecoration(
                   labelText: 'Nombre del Profesor',
                   labelStyle: TextStyle(color: colors.inversePrimary), // Color del label
@@ -141,7 +142,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                   filled: true,
                   fillColor: colors.surface,
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: colors.inversePrimary),
+                    borderSide: BorderSide(color: colors.primary),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -174,6 +175,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                       spacing: 8,
                       children: dias.map((dia) {
                         return FilterChip(
+                          selectedColor: colors.primary,
                           label: Text(dia),
                           selected: selectedDias.contains(dia),
                           onSelected: (selected) {
@@ -203,7 +205,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                   border: Border.all(color: colors.inversePrimary),
                 ),
                 child: DropdownButtonFormField<String>(
-                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black), // Texto negro
+                  style: theme.textTheme.bodyMedium?.copyWith(color:colors.inversePrimary), // Texto negro
                   items: horasGrupo1.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -237,7 +239,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                   border: Border.all(color: colors.inversePrimary),
                 ),
                 child: DropdownButtonFormField<String>(
-                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black), // Texto negro
+                  style: theme.textTheme.bodyMedium?.copyWith(color:colors.inversePrimary), // Texto negro
                   items: horasGrupo2.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -271,7 +273,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                   border: Border.all(color: colors.inversePrimary),
                 ),
                 child: DropdownButtonFormField<String>(
-                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black), // Texto negro
+                  style: theme.textTheme.bodyMedium?.copyWith( color:colors.inversePrimary), // Texto negro
                   items: trimestres.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,

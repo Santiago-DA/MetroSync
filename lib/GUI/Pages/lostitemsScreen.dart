@@ -36,26 +36,19 @@ class LostItemsPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Buscar',
-                hintStyle: theme.textTheme.bodyMedium,
-                prefixIcon: Icon(Icons.search, color: colors.inversePrimary),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: colors.inversePrimary),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: colors.inversePrimary),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: colors.inversePrimary, width: 2),
-                ),
+             TextField(
+            cursorColor: colors.inversePrimary,
+            decoration: InputDecoration(
+              hintText: 'Buscar',
+              hintStyle: theme.textTheme.bodyMedium,
+              prefixIcon: Icon(Icons.search, color: colors.inversePrimary),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: colors.secondary),
               ),
             ),
-            const SizedBox(height: 20),
+          ),
+          const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
