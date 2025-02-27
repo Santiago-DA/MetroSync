@@ -1,4 +1,4 @@
-name: flutter_prueba
+name: metrosync
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -31,10 +31,13 @@ dependencies:
   flutter:
     sdk: flutter
   mongo_dart: ^0.10.4
+  provider: ^6.0.0
+  bcrypt: 1.1.3
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  introduction_screen: ^3.1.16
 
 dev_dependencies:
   flutter_test:
@@ -53,6 +56,17 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+
+  assets:
+    - assets/images/BANDERA_UNIMET.jpg
+    - assets/images/horarios.jpg
+    - assets/images/logo.png
+    - assets/images/logo_unimet.png
+    - assets/images/objetos_perdidos.png
+    - assets/images/ofertas_feria.png
+    - assets/images/animacion_horario.jpg
+    - assets/images/animacion_horario.png
+    - assets/images/logo_solo.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
