@@ -1,4 +1,4 @@
-import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
+
 
 import '../Schedules/Schedule.dart';
 import '../MongoManager/MongoDB.dart';
@@ -21,26 +21,41 @@ class User {
     return(_myschedule);
   }
 
-  Future<bool> loginUser(String username, String password) async{
-    //Buscar un usario en la BD que coincida
-    //Cargar la info
+ Future<bool> loginUser(String username, String password) async {
+  try {
     await _db.connect();
-    var usuarioExistente= await _db.findOneFrom('usuarios', where.eq('username',username));
-    if(usuarioExistente!=null){
-      bool isValid = BCrypt.checkpw(password, password);
-      //Ponerle un try just in case
-      _username=usuarioExistente['username'];
-      _name=usuarioExistente['name'];
-      _lastname=usuarioExistente['lastname'];
-      _email=usuarioExistente['email'];
-      _descripcion_perfil=usuarioExistente['description'];
-      //_myschedule=usuarioExistente['schedule'];
-      await _db.close();
-      return(isValid);
-    }else{
-      return (false);
+    var usuarioExistente = await _db.findOneFrom('usuarios', where.eq('username', username));
+    
+    if (usuarioExistente == null) return false;
+    
+    // Obtener la contraseña hasheada de la base de datos
+    final hashedPassword = usuarioExistente['password'] as String;
+    
+    // Verificar contraseña con BCrypt
+    final isValid = BCrypt.checkpw(password, hashedPassword);
+    
+    if (isValid) {
+      // Cargar datos del usuario
+      _username = usuarioExistente['username'] as String;
+      _name = usuarioExistente['name'] as String;
+      _lastname = usuarioExistente['lastname'] as String;
+      _email = usuarioExistente['email'] as String;
+      _descripcion_perfil = usuarioExistente['description'] as String;
+      
+      // Cargar horario si existe
+      if (usuarioExistente.containsKey('schedule')) {
+        // _myschedule = Schedule.fromMap(usuarioExistente['schedule']);
+      }
     }
+    
+    return isValid;
+  } catch (e) {
+    print('Error en login: $e');
+    return false;
+  } finally {
+    await _db.close();
   }
+}
 
   //Agregar el correo y todo lo demás
   Future<bool> registerUser(String username, String password,String email, String name, String lastname) async {
