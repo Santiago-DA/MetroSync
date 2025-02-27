@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../User/Current.dart';
 import "EditProfilePage.dart";
 
 class ProfilePage extends StatefulWidget {
+
   const ProfilePage({super.key});
 
   @override
