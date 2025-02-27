@@ -1,13 +1,15 @@
-/*import 'package:flutter/material.dart';
-import 'package:flutter_prueba/MongoManager/MongoDB.dart';
-import 'package:flutter_prueba/User/User.dart';
+import 'package:flutter/material.dart';
+import '../MongoManager/MongoDB.dart';
+import '../User/User.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'TimeSlot.dart';
 import 'package:logging/logging.dart';
 import 'dart:io';
 
+//Para guardar los documentos en la BD debo serializarlos a json.
 enum Day { lunes, martes, miercoles, jueves, viernes }
 class Schedule {
+  ///Hacer el metodo to js
   //El usuario
   //La forma de almacenamiento que me dio deepseek
   //Creacion de bloque
@@ -19,30 +21,12 @@ class Schedule {
   //.info
   Schedule(this._user); //Constructor declaration
   MongoDB db = MongoDB();
+
   //Pasar la hora de inicio y fin como opciones fijas dadas por el sistemas
   void newslot(String day,String classname,TimeOfDay starthour,TimeOfDay endhour){
     //nombreClase.length > maxLongitud. Verificar en el frontend.
     TimeSlot newSlot= TimeSlot(classname, starthour, endhour);
     _aggnewSlot(day, newSlot);
-  }
-
-  void dbsave() async{
-    await db.connect();
-    String userID = _user.getid();
-    await db.insertInto('Schedules', {'userID':userID});
-    _user.getmyschedule().slotsPerDay.forEach((Day, TimeSlot)){
-      
-    }
-        slotsPerDay.forEach((day, timeSlots) {
-      print('Día: $day');
-      timeSlots.forEach((timeSlot) {
-        print('  TimeSlot: $timeSlot');
-      });
-    });
-
-
-    var table = await db.updateOneFrom('Users', where.eq("userID", userID), modify.addToSet('', value))
-    await db.close();
   }
 
   Day _strtoenum(String str){
@@ -96,9 +80,19 @@ class Schedule {
   slots.removeAt(index);
   logger.info("Slot eliminado en $day: $className (${start.hour}:${start.minute} - ${end.hour}:${end.minute})");
 
-  // Opcional: Eliminar día del mapa si queda vacío
-  if (slots.isEmpty) {
-    slotsPerDay.remove(day);
+  //Actualizacion de la bd por cada metodo que cambie el horario
+  //Cargar desde la bd al iniciar la sesion
+
+  void loadfromBD(){
+    //Revisar si existe una colección con el PK del usuario 
+    //Si existe, cargarla, caso contrario. Se crea una.
   }
+
+  void updateday(){
+    //recibir el dia a actualizar desde el metodo de creacion
+    //añadir slot a la coleccion
+  }
+
+
 }
-}*/
+}
