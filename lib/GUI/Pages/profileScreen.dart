@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
 import '../../User/Current.dart';
-class ProfilePage extends StatelessWidget {
+import "EditProfilePage.dart";
+
+class ProfilePage extends StatefulWidget {
+
   const ProfilePage({super.key});
+
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  String _nombre = 'Gabriel';
+  String _apellido = 'Garcia';
+  String _usuario = '@gabgaru';
+  String _descripcion = 'Soy Sr abolito majestuoso';
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +38,7 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('Perfil', style: theme.textTheme.displayMedium),
         centerTitle: true,
         backgroundColor: colors.primary,
@@ -33,9 +47,9 @@ class ProfilePage extends StatelessWidget {
           // Botón de editar perfil
           IconButton(
             icon: Icon(Icons.edit, color: colors.inversePrimary),
-            onPressed: () {
-              print('Editar perfil presionado');
-            },
+            onPressed: _editarPerfil,
+              
+            
           ),
           // Botón de configuración
           IconButton(
@@ -69,14 +83,21 @@ class ProfilePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Gabriel Garcia',
+                        "$_nombre $_apellido",
                         style: theme.textTheme.displayLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '@gabgaru',
+                        _usuario,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: colors.inversePrimary.withOpacity(0.7),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        _descripcion,
                         style: theme.textTheme.bodyLarge?.copyWith(
                           color: colors.inversePrimary.withOpacity(0.7),
                         ),
@@ -91,15 +112,15 @@ class ProfilePage extends StatelessWidget {
                               _mostrarPopupAmigos(context, amigos);
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: colors.primary,
+                              backgroundColor: colors.secondary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
                             ),
                             child: Text(
                               'Amigos',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colors.inversePrimary,
+                              style: theme.textTheme.labelSmall?.copyWith(
+
                               ),
                             ),
                           ),
@@ -110,16 +131,14 @@ class ProfilePage extends StatelessWidget {
                               _mostrarPopupSincronizados(context, sincronizados);
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: colors.primary,
+                              backgroundColor: colors.secondary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
                             ),
                             child: Text(
                               'Sincronizados',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colors.inversePrimary,
-                              ),
+                              style: theme.textTheme.labelSmall
                             ),
                           ),
                         ],
@@ -204,7 +223,7 @@ class ProfilePage extends StatelessWidget {
                               ),
                             ),
                             ListTile(
-                              leading: Icon(Icons.question_answer, color: colors.primary),
+                              leading: Icon(Icons.question_answer, color: colors.inversePrimary),
                               title: Text(
                                 'Respuesta 2',
                                 style: theme.textTheme.displayMedium, // Título con displayMedium
@@ -222,7 +241,7 @@ class ProfilePage extends StatelessWidget {
                         ListView(
                           children: [
                             ListTile(
-                              leading: Icon(Icons.category, color: colors.primary),
+                              leading: Icon(Icons.category, color: colors.inversePrimary),
                               title: Text(
                                 'Objeto 1',
                                 style: theme.textTheme.displayMedium, // Título con displayMedium
@@ -233,7 +252,7 @@ class ProfilePage extends StatelessWidget {
                               ),
                             ),
                             ListTile(
-                              leading: Icon(Icons.category, color: colors.primary),
+                              leading: Icon(Icons.category, color: colors.inversePrimary),
                               title: Text(
                                 'Objeto 2',
                                 style: theme.textTheme.displayMedium, // Título con displayMedium
@@ -257,7 +276,26 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
-
+void _editarPerfil() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditProfilePage(
+          currentName: _nombre,
+          currentLastName: _apellido,
+          currentDescription: _descripcion,
+          currentUsername: _usuario,
+          onSave: (nuevoNombre, nuevoApellido, nuevaDescripcion) {
+            setState(() {
+              _nombre = nuevoNombre;
+              _apellido = nuevoApellido;
+              _descripcion = nuevaDescripcion;
+            });
+          },
+        ),
+      ),
+    );
+  }
   // Función para mostrar el popup de amigos
  void _mostrarPopupAmigos(BuildContext context, List<String> amigos) {
     final colors = Theme.of(context).colorScheme;

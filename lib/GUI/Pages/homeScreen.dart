@@ -60,8 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: (index) => _changePage(index), // Cambiar de página al tocar un ícono
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 10.0,
-        selectedItemColor: Theme.of(context).colorScheme.inversePrimary,
-        unselectedItemColor: Theme.of(context).colorScheme.secondary,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Theme.of(context).colorScheme.inversePrimary,
         showSelectedLabels: false,
         showUnselectedLabels: false,
         items: const [

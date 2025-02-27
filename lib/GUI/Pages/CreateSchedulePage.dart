@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class CreateSchedulePage extends StatelessWidget {
-  CreateSchedulePage({super.key});
+class CreateSchedulePage extends StatefulWidget {
+  final Function(Map<String, dynamic>) onSave;
 
-  TextEditingController materiaNombreController = TextEditingController();
-  TextEditingController aulaController = TextEditingController();
-  TextEditingController profesorController = TextEditingController(); // Nuevo controlador para el profesor
-  String? diaSemana;
+  const CreateSchedulePage({super.key, required this.onSave});
+
+  @override
+  _CreateSchedulePageState createState() => _CreateSchedulePageState();
+}
+
+class _CreateSchedulePageState extends State<CreateSchedulePage> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController materiaNombreController = TextEditingController();
+  final TextEditingController aulaController = TextEditingController();
+  final TextEditingController profesorController = TextEditingController();
+  List<String> selectedDias = [];
   String? horaInicio;
   String? horaFinal;
-  String? trimestre; // Nuevo campo para el trimestre
+  String? trimestre;
 
-  final _formKey = GlobalKey<FormState>();
-  final List<String> dias = [
-    'Lunes',
-    'Martes',
-    'Miércoles',
-    'Jueves',
-    'Viernes'
-  ];
+  final List<String> dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
   final List<String> horasGrupo1 = _generarHoras(
     start: const TimeOfDay(hour: 7, minute: 0),
     end: const TimeOfDay(hour: 17, minute: 30),
@@ -32,7 +33,6 @@ class CreateSchedulePage extends StatelessWidget {
     interval: const Duration(hours: 1, minutes: 45),
   );
 
-  // Lista de trimestres (I a XII)
   final List<String> trimestres = List.generate(12, (index) => '${index + 1}');
 
   static List<String> _generarHoras({
@@ -60,21 +60,24 @@ class CreateSchedulePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Nueva Clase'),
         centerTitle: true,
-        titleTextStyle: theme.textTheme.titleMedium,
-        backgroundColor: colors.primary,
+        titleTextStyle: theme.textTheme.titleSmall,
+        backgroundColor: colors.surface,
         foregroundColor: colors.inversePrimary,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
+          child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),  
           child: Column(
             children: [
               // Campo nombre materia
               const SizedBox(height: 30), // Más espacio
               TextFormField(
+                cursorColor: colors.primary,
                 controller: materiaNombreController,
-                style: TextStyle(color: Colors.black), // Texto negro
+                style: TextStyle(color:colors.inversePrimary), // Texto negro
                 decoration: InputDecoration(
                   labelText: 'Nombre de la Materia',
                   labelStyle: TextStyle(color: colors.inversePrimary), // Color del label
@@ -84,10 +87,11 @@ class CreateSchedulePage extends StatelessWidget {
                   filled: true,
                   fillColor: colors.surface,
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: colors.inversePrimary),
+                    borderSide: BorderSide(color: colors.primary),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
+                
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingresa el nombre';
@@ -99,8 +103,9 @@ class CreateSchedulePage extends StatelessWidget {
 
               // Ingreso de Aula
               TextFormField(
+                cursorColor: colors.primary,
                 controller: aulaController,
-                style: TextStyle(color: Colors.black), // Texto negro
+                style: TextStyle(color: colors.inversePrimary), // Texto negro
                 decoration: InputDecoration(
                   labelText: 'Ingrese el Aula',
                   labelStyle: TextStyle(color: colors.inversePrimary), // Color del label
@@ -110,7 +115,7 @@ class CreateSchedulePage extends StatelessWidget {
                   filled: true,
                   fillColor: colors.surface,
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: colors.inversePrimary),
+                    borderSide: BorderSide(color: colors.primary),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -125,8 +130,9 @@ class CreateSchedulePage extends StatelessWidget {
 
               // Campo nombre del profesor
               TextFormField(
+                cursorColor: colors.primary,
                 controller: profesorController,
-                style: TextStyle(color: Colors.black), // Texto negro
+                style: TextStyle(color:colors.inversePrimary), // Texto negro
                 decoration: InputDecoration(
                   labelText: 'Nombre del Profesor',
                   labelStyle: TextStyle(color: colors.inversePrimary), // Color del label
@@ -136,7 +142,7 @@ class CreateSchedulePage extends StatelessWidget {
                   filled: true,
                   fillColor: colors.surface,
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: colors.inversePrimary),
+                    borderSide: BorderSide(color: colors.primary),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -150,49 +156,56 @@ class CreateSchedulePage extends StatelessWidget {
               const SizedBox(height: 30), // Más espacio
 
               // Selector de día
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+             Container(
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: colors.surface,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: colors.primary),
+                  border: Border.all(color: colors.inversePrimary),
                 ),
-                child: DropdownButtonFormField<String>(
-                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black), // Texto negro
-                  items: dias.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    labelText: 'Día de la semana',
-                    labelStyle: TextStyle(color: colors.inversePrimary), // Color del label
-                  ),
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Selecciona un día';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    diaSemana = value;
-                  },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Días de la semana',
+                      style: TextStyle(color: colors.inversePrimary),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      children: dias.map((dia) {
+                        return FilterChip(
+                          selectedColor: colors.primary,
+                          label: Text(dia),
+                          selected: selectedDias.contains(dia),
+                          onSelected: (selected) {
+                            setState(() {
+                              if (selected) {
+                                selectedDias.add(dia);
+                              } else {
+                                selectedDias.remove(dia);
+                              }
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 30), // Más espacio
-
+              const SizedBox(height: 20),
+               // Más espacio
+              
               // Selector de hora grupo 1
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
                   color: colors.surface,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: colors.primary),
+                  border: Border.all(color: colors.inversePrimary),
                 ),
                 child: DropdownButtonFormField<String>(
-                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black), // Texto negro
+                  style: theme.textTheme.bodyMedium?.copyWith(color:colors.inversePrimary), // Texto negro
                   items: horasGrupo1.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -223,10 +236,10 @@ class CreateSchedulePage extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: colors.surface,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: colors.primary),
+                  border: Border.all(color: colors.inversePrimary),
                 ),
                 child: DropdownButtonFormField<String>(
-                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black), // Texto negro
+                  style: theme.textTheme.bodyMedium?.copyWith(color:colors.inversePrimary), // Texto negro
                   items: horasGrupo2.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -249,7 +262,7 @@ class CreateSchedulePage extends StatelessWidget {
                   },
                 ),
               ),
-              const SizedBox(height: 30), // Más espacio
+              const SizedBox(height: 28), // Más espacio
 
               // Selector de trimestre
               Container(
@@ -257,10 +270,10 @@ class CreateSchedulePage extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: colors.surface,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: colors.primary),
+                  border: Border.all(color: colors.inversePrimary),
                 ),
                 child: DropdownButtonFormField<String>(
-                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black), // Texto negro
+                  style: theme.textTheme.bodyMedium?.copyWith( color:colors.inversePrimary), // Texto negro
                   items: trimestres.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -283,41 +296,65 @@ class CreateSchedulePage extends StatelessWidget {
                   },
                 ),
               ),
-              const SizedBox(height: 30), // Más espacio
+              const SizedBox(height: 29), // Más espacio
 
               // Botón de guardar
               ElevatedButton.icon(
-                icon: Icon(Icons.save, color: colors.inversePrimary),
-                label: Text(
-                  'Guardar Horario',
-                  style: TextStyle(color: colors.inversePrimary),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.secondary,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    var text = materiaNombreController.text;
-                    var aux = aulaController.text;
-                    var profesor = profesorController.text; // Obtener el nombre del profesor
-                    // SnackBar
+                    if (selectedDias.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Selecciona al menos un día')),
+                      );
+                      return;
+                    }
+                    
+                    final newSubject = {
+                      'nombre': materiaNombreController.text,
+                      'horario': '$horaInicio - $horaFinal',
+                      'aula': aulaController.text,
+                      'profesor': profesorController.text,
+                      'trimestre': trimestre,
+                      'dias': List<String>.from(selectedDias),
+                    };
+                    
+                    // Mostrar SnackBar con los datos
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        duration: Duration(seconds: 2),
-                        content: Text(
-                            "$text, $diaSemana, $horaInicio - $horaFinal, aula: $aux, profesor: $profesor, trimestre: $trimestre"),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Clase guardada exitosamente!',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                            SizedBox(height: 5),
+                            Text('Nombre: ${newSubject['nombre']}'),
+                            Text('Horario: ${newSubject['horario']}'),
+                            Text('Aula: ${newSubject['aula']}'),
+                            Text('Días: ${(newSubject['dias'] as List<String>).join(', ')}'),
+                          ],
+                        ),
+                        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                        duration: const Duration(seconds: 2),
                       ),
                     );
-                    // Insercion a la BDD
+                    
+                    // Guardar y cerrar
+                    widget.onSave(newSubject);
+                    await Future.delayed(const Duration(seconds: 2));
+                    Navigator.pop(context);
                   }
                 },
+                icon: Icon(Icons.save, color: colors.surface),
+                label: Text('Guardar Horario', style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          color: colors.surface,
+          fontWeight: FontWeight.bold,
+        ),),
+                
+              
               ),
             ],
+          ),
           ),
         ),
       ),

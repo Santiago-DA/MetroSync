@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+import 'RegisterPage.dart';
 import 'homeScreen.dart';
 
 //todavia le falta a esta screen, adicionalmente de la screen de registro
@@ -68,7 +68,33 @@ class LogInPageState extends State<LogInPage> {
                     MaterialPageRoute(builder: (context) => const HomeScreen()),
                   );
                 },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor:
+                      Theme.of(context).colorScheme.surface, // Color del texto
+                ),
                 child: const Text('Iniciar sesión'),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const RegisterScreen()),
+                  );
+                  print("HEY");
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: "¿No tienes cuenta? ",
+                    style: Theme.of(context).textTheme.labelSmall,
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: "Registrate",
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

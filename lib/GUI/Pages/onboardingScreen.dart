@@ -72,13 +72,18 @@ class OnBoardingPageState extends State<OnBoardingPage> {
           body: "Enterate de lo que piensan todos tus compañeros Universitarios.",
           image: ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: Image.asset(
-              'assets/images/logo_unimet.png',
-              width: 350,
-              height: 200,
-              errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                return Icon(Icons.error);
-              },
+            child: Container(
+              width: 360,
+              height: 185,
+              color: Colors.grey[50]!,
+              child: Image.asset(
+                'assets/images/logo_unimet.png',
+                width: 350,
+                height: 200,
+                errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                  return Icon(Icons.error);
+                },
+              ),
             ),
           ),
           decoration: pageDecoration.copyWith(
@@ -110,14 +115,21 @@ class OnBoardingPageState extends State<OnBoardingPage> {
         PageViewModel(
           title: "Ve tu horario y el horario de tus amigos",
           body: "Podrás organizarte mejor al ver los huecos que tienen en común.",
-          image: Image.asset(
+          image: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              width: 230,
+            color: Colors.grey[50]!,
+            child: Image.asset(
             'assets/images/animacion_horario.png',
             width: 350,
             height: 200,
             errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-              return Icon(Icons.error);
-            },
-          ),
+            return Icon(Icons.error);
+              },
+              ),
+              ),
+            ),
           decoration: pageDecoration.copyWith(
             pageColor: colorScheme.surface,
             titleTextStyle: Theme.of(context).textTheme.titleSmall,
@@ -141,15 +153,15 @@ class OnBoardingPageState extends State<OnBoardingPage> {
       skipOrBackFlex: 0,
       nextFlex: 0,
       showBackButton: false,
-      back: Icon(Icons.arrow_back, color: colorScheme.secondary),
+      back: Icon(Icons.arrow_back, color: colorScheme.primary),
       skip: Text(
         'Saltar',
-        style: TextStyle(fontWeight: FontWeight.w600, color: colorScheme.secondary),
+        style: TextStyle(fontWeight: FontWeight.w600, color: colorScheme.primary),
       ),
-      next: Icon(Icons.arrow_forward, color: colorScheme.secondary),
+      next: Icon(Icons.arrow_forward, color: colorScheme.primary),
       done: Text(
         'Listo',
-        style: TextStyle(fontWeight: FontWeight.w600, color: colorScheme.secondary),
+        style: TextStyle(fontWeight: FontWeight.w600, color: colorScheme.primary),
       ),
       curve: Curves.fastLinearToSlowEaseIn,
       controlsMargin: const EdgeInsets.all(16),
@@ -158,7 +170,8 @@ class OnBoardingPageState extends State<OnBoardingPage> {
           : const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
       dotsDecorator: DotsDecorator(
         size: Size(10.0, 10.0),
-        color: colorScheme.secondary,
+        color: colorScheme.primary,
+        activeColor: colorScheme.surface,
         activeSize: Size(22.0, 10.0),
         activeShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(25.0)),
