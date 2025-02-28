@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../User/Current.dart';
+import 'package:metrosync/User/Current.dart';
+import 'package:metrosync/User/User.dart';
 import "EditProfilePage.dart";
 
 class ProfilePage extends StatefulWidget {
-
   const ProfilePage({super.key});
 
   @override
@@ -11,11 +11,26 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String _nombre = 'Gabriel';
-  String _apellido = 'Garcia';
-  String _usuario = '@gabgaru';
-  String _descripcion = 'Soy Sr abolito majestuoso';
+  late String _nombre;
+  late String _apellido;
+  late String _usuario;
+  late String _descripcion;
 
+  @override
+  void initState() {
+    super.initState();
+    _cargarDatosUsuario();
+  }
+
+   void _cargarDatosUsuario() {
+    final user = Current().currentUser;
+    setState(() {
+      _nombre = user?.getname() ?? '';
+      _apellido = user?.getlastname() ?? '';
+      _usuario = user?.getusername() ?? '';
+      _descripcion = user?.getdescription() ?? '';
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -151,128 +166,128 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 20),
 
             // Pestañas de "Publicaciones", "Respuestas" y "Objetos"
-            DefaultTabController(
-              length: 3, // Número de pestañas
-              child: Column(
-                children: [
-                  // Barra de pestañas
-                  TabBar(
-                    labelColor: colors.inversePrimary,
-                    unselectedLabelColor: colors.inversePrimary.withOpacity(0.5),
-                    indicatorColor: colors.inversePrimary,
-                    labelStyle: theme.textTheme.displayLarge?.copyWith(
-                      fontSize: 16, // Reducir el tamaño de fuente
-                    ),
-                    unselectedLabelStyle: theme.textTheme.displayLarge?.copyWith(
-                      fontSize: 14, // Reducir el tamaño de fuente
-                    ),
-                    tabs: const [
-                      Tab(text: 'Publicaciones'),
-                      Tab(text: 'Respuestas'),
-                      Tab(text: 'Objetos'),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
+        //     DefaultTabController(
+        //       length: 3, // Número de pestañas
+        //       child: Column(
+        //         children: [
+        //           // Barra de pestañas
+        //           TabBar(
+        //             labelColor: colors.inversePrimary,
+        //             unselectedLabelColor: colors.inversePrimary.withOpacity(0.5),
+        //             indicatorColor: colors.inversePrimary,
+        //             labelStyle: theme.textTheme.displayLarge?.copyWith(
+        //               fontSize: 16, // Reducir el tamaño de fuente
+        //             ),
+        //             unselectedLabelStyle: theme.textTheme.displayLarge?.copyWith(
+        //               fontSize: 14, // Reducir el tamaño de fuente
+        //             ),
+        //             tabs: const [
+        //               Tab(text: 'Publicaciones'),
+        //               Tab(text: 'Respuestas'),
+        //               Tab(text: 'Objetos'),
+        //             ],
+        //           ),
+        //           const SizedBox(height: 20),
 
-                  // Contenido de las pestañas
-                  SizedBox(
-                    height: 400, // Altura fija para el contenido de las pestañas
-                    child: TabBarView(
-                      children: [
-                        // Contenido de "Publicaciones"
-                        ListView(
-                          children: [
-                            ListTile(
-                              leading: Icon(Icons.post_add, color: colors.inversePrimary),
-                              title: Text(
-                                'Publicación 1',
-                                style: theme.textTheme.displayMedium, // Título con displayMedium
-                              ),
-                              subtitle: Text(
-                                'Descripción de la publicación 1',
-                                style: theme.textTheme.bodyLarge, // Descripción con bodyLarge
-                              ),
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.post_add, color: colors.inversePrimary),
-                              title: Text(
-                                'Publicación 2',
-                                style: theme.textTheme.displayMedium, // Título con displayMedium
-                              ),
-                              subtitle: Text(
-                                'Descripción de la publicación 2',
-                                style: theme.textTheme.bodyLarge, // Descripción con bodyLarge
-                              ),
-                            ),
-                            // Agrega más publicaciones aquí
-                          ],
-                        ),
+        //           // Contenido de las pestañas
+        //           SizedBox(
+        //             height: 400, // Altura fija para el contenido de las pestañas
+        //             child: TabBarView(
+        //               children: [
+        //                 // Contenido de "Publicaciones"
+        //                 ListView(
+        //                   children: [
+        //                     ListTile(
+        //                       leading: Icon(Icons.post_add, color: colors.inversePrimary),
+        //                       title: Text(
+        //                         'Publicación 1',
+        //                         style: theme.textTheme.displayMedium, // Título con displayMedium
+        //                       ),
+        //                       subtitle: Text(
+        //                         'Descripción de la publicación 1',
+        //                         style: theme.textTheme.bodyLarge, // Descripción con bodyLarge
+        //                       ),
+        //                     ),
+        //                     ListTile(
+        //                       leading: Icon(Icons.post_add, color: colors.inversePrimary),
+        //                       title: Text(
+        //                         'Publicación 2',
+        //                         style: theme.textTheme.displayMedium, // Título con displayMedium
+        //                       ),
+        //                       subtitle: Text(
+        //                         'Descripción de la publicación 2',
+        //                         style: theme.textTheme.bodyLarge, // Descripción con bodyLarge
+        //                       ),
+        //                     ),
+        //                     // Agrega más publicaciones aquí
+        //                   ],
+        //                 ),
 
-                        // Contenido de "Respuestas"
-                        ListView(
-                          children: [
-                            ListTile(
-                              leading: Icon(Icons.question_answer, color: colors.inversePrimary),
-                              title: Text(
-                                'Creacion de Figma',
-                                style: theme.textTheme.displayMedium, // Título con displayMedium
-                              ),
-                              subtitle: Text(
-                                'Te odio Gabriel Garcia por crear este figma',
-                                style: theme.textTheme.bodyLarge, // Descripción con bodyLarge
-                              ),
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.question_answer, color: colors.inversePrimary),
-                              title: Text(
-                                'Respuesta 2',
-                                style: theme.textTheme.displayMedium, // Título con displayMedium
-                              ),
-                              subtitle: Text(
-                                'Descripción de la respuesta 2',
-                                style: theme.textTheme.bodyLarge, // Descripción con bodyLarge
-                              ),
-                            ),
-                            // Agrega más respuestas aquí
-                          ],
-                        ),
+        //                 // Contenido de "Respuestas"
+        //                 ListView(
+        //                   children: [
+        //                     ListTile(
+        //                       leading: Icon(Icons.question_answer, color: colors.inversePrimary),
+        //                       title: Text(
+        //                         'Creacion de Figma',
+        //                         style: theme.textTheme.displayMedium, // Título con displayMedium
+        //                       ),
+        //                       subtitle: Text(
+        //                         'Te odio Gabriel Garcia por crear este figma',
+        //                         style: theme.textTheme.bodyLarge, // Descripción con bodyLarge
+        //                       ),
+        //                     ),
+        //                     ListTile(
+        //                       leading: Icon(Icons.question_answer, color: colors.inversePrimary),
+        //                       title: Text(
+        //                         'Respuesta 2',
+        //                         style: theme.textTheme.displayMedium, // Título con displayMedium
+        //                       ),
+        //                       subtitle: Text(
+        //                         'Descripción de la respuesta 2',
+        //                         style: theme.textTheme.bodyLarge, // Descripción con bodyLarge
+        //                       ),
+        //                     ),
+        //                     // Agrega más respuestas aquí
+        //                   ],
+        //                 ),
 
-                        // Contenido de "Objetos"
-                        ListView(
-                          children: [
-                            ListTile(
-                              leading: Icon(Icons.category, color: colors.inversePrimary),
-                              title: Text(
-                                'Objeto 1',
-                                style: theme.textTheme.displayMedium, // Título con displayMedium
-                              ),
-                              subtitle: Text(
-                                'Descripción del objeto 1',
-                                style: theme.textTheme.bodyLarge, // Descripción con bodyLarge
-                              ),
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.category, color: colors.inversePrimary),
-                              title: Text(
-                                'Objeto 2',
-                                style: theme.textTheme.displayMedium, // Título con displayMedium
-                              ),
-                              subtitle: Text(
-                                'Descripción del objeto 2',
-                                style: theme.textTheme.bodyLarge, // Descripción con bodyLarge
-                              ),
-                            ),
-                            // Agrega más objetos aquí
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        //                 // Contenido de "Objetos"
+        //                 ListView(
+        //                   children: [
+        //                     ListTile(
+        //                       leading: Icon(Icons.category, color: colors.inversePrimary),
+        //                       title: Text(
+        //                         'Objeto 1',
+        //                         style: theme.textTheme.displayMedium, // Título con displayMedium
+        //                       ),
+        //                       subtitle: Text(
+        //                         'Descripción del objeto 1',
+        //                         style: theme.textTheme.bodyLarge, // Descripción con bodyLarge
+        //                       ),
+        //                     ),
+        //                     ListTile(
+        //                       leading: Icon(Icons.category, color: colors.inversePrimary),
+        //                       title: Text(
+        //                         'Objeto 2',
+        //                         style: theme.textTheme.displayMedium, // Título con displayMedium
+        //                       ),
+        //                       subtitle: Text(
+        //                         'Descripción del objeto 2',
+        //                         style: theme.textTheme.bodyLarge, // Descripción con bodyLarge
+        //                       ),
+        //                     ),
+        //                     // Agrega más objetos aquí
+        //                   ],
+        //                 ),
+        //               ],
+        //             ),
+        //           ),
+        //         ],
+        //       ),
+        //     ),
           ],
-        ),
+         ),
       ),
     );
   }
@@ -285,17 +300,22 @@ void _editarPerfil() async {
           currentLastName: _apellido,
           currentDescription: _descripcion,
           currentUsername: _usuario,
-          onSave: (nuevoNombre, nuevoApellido, nuevaDescripcion) {
-            setState(() {
-              _nombre = nuevoNombre;
-              _apellido = nuevoApellido;
-              _descripcion = nuevaDescripcion;
-            });
+          onSave: (nuevoNombre, nuevoApellido, nuevaDescripcion) async {
+            final user = Current().currentUser;
+            if (user != null) {
+              await user.updateProfile(
+                  nuevoNombre, 
+                  nuevoApellido, 
+                  nuevaDescripcion
+              );
+              _cargarDatosUsuario();
+            }
           },
         ),
       ),
     );
   }
+}
   // Función para mostrar el popup de amigos
  void _mostrarPopupAmigos(BuildContext context, List<String> amigos) {
     final colors = Theme.of(context).colorScheme;
@@ -370,4 +390,3 @@ void _editarPerfil() async {
       },
     );
   }
-}

@@ -53,16 +53,19 @@ class LogInPageState extends State<LogInPage> {
                         TextFormField(
                           controller: _usernameController,
                           decoration: InputDecoration(
-                            labelText: 'Correo',
+                            labelText: 'Username',
                             labelStyle: TextStyle(color: Colors.grey),
                             border: OutlineInputBorder(),
                             filled: true,
                             fillColor: Colors.white,
+                            floatingLabelStyle: TextStyle(
+      color: Theme.of(context).colorScheme.inversePrimary,
+    ),
                           ),
                           style: TextStyle(color: Colors.black),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Por favor ingresa tu correo';
+                              return 'Por favor ingresa tu username';
                             }
                             return null;
                           },
@@ -79,6 +82,9 @@ class LogInPageState extends State<LogInPage> {
                             border: OutlineInputBorder(),
                             filled: true,
                             fillColor: Colors.white,
+                            floatingLabelStyle: TextStyle(
+      color: Theme.of(context).colorScheme.inversePrimary,
+    ),
                           ),
                           style: TextStyle(color: Colors.black),
                           validator: (value) {

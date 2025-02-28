@@ -1,29 +1,44 @@
 import 'package:flutter/material.dart';
 
-class TimeSlot{
-  //Nombre de clase (con limte de caracteres por la BD)
-  //Hora inicio de clase (Ofrecer horas y minutos por separado, guardarlo con algun tipo de formato de hora)
-  //Hora final de la clase
-  //Atributos finales no pueden  darse un valor luego de que hayan sido inicializados. Si no son finales, debes inicializarlos de una o (preferiblemente, con el constructor). No pueden ser null por una actualizacion "Null safty" de dart (2.12)
+class TimeSlot {
   final String _classname;
   final TimeOfDay _starthour;
   final TimeOfDay _endhour;
+  final String _profesor;
+  final String _trimestre;
+  final String _lugar;
   
-  TimeSlot(this._classname,this._starthour,this._endhour);
-  
+  TimeSlot(
+    this._classname,
+    this._starthour,
+    this._endhour,
+    this._profesor,
+    this._trimestre,
+    this._lugar
+  );
+
   String toString() {
-    return '$_classname : $_starthour - $_endhour';
+    return '$_classname - $_trimestre\nProf: $_profesor\nLugar: $_lugar\nHorario: $_starthour - $_endhour';
+  }
+   Map<String, dynamic> toJson() {
+    return {
+      'classname': _classname,
+      'start': {'hour': _starthour.hour, 'minute': _starthour.minute},
+      'end': {'hour': _endhour.hour, 'minute': _endhour.minute},
+      'profesor': _profesor,
+      'trimestre': _trimestre,
+      'lugar': _lugar,
+    };
   }
 
-  String getclassname(){
-    return _classname;
-  }
 
-  TimeOfDay getstarthour(){
-    return _starthour;
-  }
-
-  TimeOfDay getendhour(){
-    return _endhour;
-  }
+  // Getters existentes
+  String getclassname() => _classname;
+  TimeOfDay getstarthour() => _starthour;
+  TimeOfDay getendhour() => _endhour;
+  
+  // Nuevos getters
+  String getProfesor() => _profesor;
+  String getTrimestre() => _trimestre;
+  String getLugar() => _lugar;
 }

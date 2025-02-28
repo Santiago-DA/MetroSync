@@ -11,9 +11,10 @@ import 'User/User.dart';
 
 Future<void> main() async {
   //Ejemplo de como hacerlo TODO falta chekeos y squemas
-  MongoDB db = MongoDB();
-  User Sant=User();
-  Sant.registerUser('fer','Hp123456789**','santi@gmail.com','Santiago','Fernandez');
+  WidgetsFlutterBinding.ensureInitialized();
+  await MongoDB.connect();
+  // User Sant=User();
+  // await Sant.registerUser('fer','Hp123456789**','santi@gmail.com','Santiago','Fernandez');
   //###########################Gabriel##############################
   /*Tiene que funcionar:
     ~Crear bloques de hora

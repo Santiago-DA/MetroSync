@@ -9,24 +9,46 @@ import 'dart:io';
 //Para guardar los documentos en la BD debo serializarlos a json.
 enum Day { lunes, martes, miercoles, jueves, viernes }
 class Schedule {
-  ///Hacer el metodo to js
-  //El usuario
-  //La forma de almacenamiento que me dio deepseek
-  //Creacion de bloque
+ final String _username;
   Map<Day, List<TimeSlot>> slotsPerDay = {};
-  final User _user;
   var logger=Logger("MyLogger");
-  //.warning
-  //.severe
-  //.info
-  Schedule(this._user); //Constructor declaration
+  
+  Schedule(this._username);  //Constructor declaration
   MongoDB db = MongoDB();
 
   //Pasar la hora de inicio y fin como opciones fijas dadas por el sistemas
-  void newslot(String day,String classname,TimeOfDay starthour,TimeOfDay endhour){
-    //nombreClase.length > maxLongitud. Verificar en el frontend.
-    TimeSlot newSlot= TimeSlot(classname, starthour, endhour);
+  void newslot(
+    String day,
+    String classname,
+    TimeOfDay starthour,
+    TimeOfDay endhour,
+    String profesor,
+    String trimestre,
+    String lugar
+  ) {
+    TimeSlot newSlot = TimeSlot(
+      classname,
+      starthour,
+      endhour,
+      profesor,
+      trimestre,
+      lugar
+    );
     _aggnewSlot(day, newSlot);
+  }
+   Future<void> loadfromBD() async {
+    try {
+      await MongoDB.connect();
+      var scheduleData = await db.findOneFrom('Schedules', where.eq('username', _username));
+      
+      if (scheduleData != null) {
+        // Lógica para cargar los slots desde JSON
+      }
+    } catch (e) {
+      print('Error cargando horario: $e');
+    } finally {
+      await MongoDB.close();
+    }
   }
 
   Day _strtoenum(String str){
@@ -43,6 +65,13 @@ class Schedule {
         return Day.viernes;
     }
     return Day.lunes;
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'username': _username,
+      'slots': slotsPerDay.map((key, value) => 
+        MapEntry(key.toString(), value.map((slot) => slot.toJson()).toList())),
+    };
   }
 
   //Literally made on china
@@ -67,10 +96,10 @@ class Schedule {
   
   // Buscar el slot específico
   final index = slots.indexWhere((slot) =>
-    slot.getclassname() == className &&
-    slot.getstarthour() == start &&
-    slot.getendhour() == end);
-
+      slot.getclassname() == className &&
+      slot.getstarthour() == start &&
+      slot.getendhour() == end);
+      
   if (index == -1) {
     logger.warning("Slot no encontrado en $day: $className (${start.hour}:${start.minute} - ${end.hour}:${end.minute})");
     return;
@@ -83,15 +112,13 @@ class Schedule {
   //Actualizacion de la bd por cada metodo que cambie el horario
   //Cargar desde la bd al iniciar la sesion
 
-  void loadfromBD(){
-    //Revisar si existe una colección con el PK del usuario 
-    //Si existe, cargarla, caso contrario. Se crea una.
-  }
+
 
   void updateday(){
     //recibir el dia a actualizar desde el metodo de creacion
     //añadir slot a la coleccion
   }
+ 
 
 
 }

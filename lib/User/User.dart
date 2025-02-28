@@ -4,10 +4,11 @@ import '../Schedules/Schedule.dart';
 import '../MongoManager/MongoDB.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:bcrypt/bcrypt.dart';
+import "Current.dart";
 class User {
   //Agregar descripcion de perfil
   final MongoDB _db = MongoDB();
-  late Schedule _myschedule;
+  // late Schedule _myschedule;
   late String _username;
   String? _email;
   String? _name;
@@ -17,14 +18,17 @@ class User {
   //Me volvi un 8 okey? no me juzguen
   User();
 
-  Schedule getmyschedule(){
-    return(_myschedule);
+  // Schedule getmyschedule(){
+  //   return(_myschedule);
+  // }
+  String? getdescription() {
+    return _descripcion_perfil;
   }
 
  Future<bool> loginUser(String username, String password) async {
   try {
-    await _db.connect();
-    var usuarioExistente = await _db.findOneFrom('usuarios', where.eq('username', username));
+    await MongoDB.connect();
+    var usuarioExistente = await _db.findOneFrom('Users', where.eq('username', username));
     
     if (usuarioExistente == null) return false;
     
@@ -40,12 +44,10 @@ class User {
       _name = usuarioExistente['name'] as String;
       _lastname = usuarioExistente['lastname'] as String;
       _email = usuarioExistente['email'] as String;
-      _descripcion_perfil = usuarioExistente['description'] as String;
+      _descripcion_perfil = usuarioExistente['description'] as String? ?? '';
       
-      // Cargar horario si existe
-      if (usuarioExistente.containsKey('schedule')) {
-        // _myschedule = Schedule.fromMap(usuarioExistente['schedule']);
-      }
+      // Actualizar instancia global
+      Current().setUser(this);
     }
     
     return isValid;
@@ -53,46 +55,73 @@ class User {
     print('Error en login: $e');
     return false;
   } finally {
-    await _db.close();
+    await MongoDB.close();
   }
 }
 
   //Agregar el correo y todo lo demás
-  Future<bool> registerUser(String username, String password,String email, String name, String lastname) async {
-    //guardar el user en la BD
-    //Revisar si ya existe un registro
-    // Conectarse a la base de datos
-    await _db.connect();
-    // Verificar si el nombre de usuario ya existe
-    var usuarioExistente =
-        await _db.findOneFrom('usuarios', where.eq('username', username));
+  Future<bool> registerUser(String username, String password, String email, String name, String lastname) async {
+  try {
+    await MongoDB.connect();
+    var usuarioExistente = await _db.findOneFrom('Users', where.eq('username', username));
     if (usuarioExistente != null) {
-      // Si el nombre de usuario ya existe, lanzar una alerta
       print('Error: El nombre de usuario ya existe.');
-      return(false);
-    } else {
-      String hash = BCrypt.hashpw(password, BCrypt.gensalt());
-      _email=email;
-      _name=name;
-      _lastname=lastname;
-      _username=username;
-      // Si el nombre de usuario no existe, guardar los datos del nuevo usuario
-      var nuevoUsuario = {
-        'username': _username,
-        'password':
-            hash, // hashear la contraseña antes de guardarla
-        'name': _name,
-        'lastname': _lastname,
-        'email': _email,
-        'schedule': _myschedule,
-        'description':_descripcion_perfil
-      };
-      await _db.insertInto('usuarios', nuevoUsuario);
-      await _db.close();
-      return(true);
+      return false;
     }
-  }
+    _descripcion_perfil = '';
+    String hash = BCrypt.hashpw(password, BCrypt.gensalt());
+    _email = email;
+    _name = name;
+    _lastname = lastname;
+    _username = username;
 
+    // Generar un _id único como String
+    var nuevoUsuario = {
+      '_id': username, // Usar username como _id (o generar un UUID)
+      'username': _username,
+      'password': hash,
+      'name': _name,
+      'lastname': _lastname,
+      'email': _email,
+      'description': _descripcion_perfil,
+    };
+
+    await _db.insertInto('Users', nuevoUsuario);
+    Current().setUser(this);
+    return true;
+  } catch (e) {
+    print('Error en registro: $e');
+    return false;
+  } finally {
+    await MongoDB.close();
+  }
+}
+Future<void> updateProfile(String newName, String newLastname, String newDescription) async {
+  try {
+    await MongoDB.connect();
+    await _db.updateOneFrom(
+      'Users',
+      where.eq('username', _username),
+      modify
+        .set('name', newName)
+        .set('lastname', newLastname)
+        .set('description', newDescription)
+    );
+    
+    _name = newName;
+    _lastname = newLastname;
+    _descripcion_perfil = newDescription;
+    
+    // Actualizar instancia global
+    Current().setUser(this);
+    
+  } catch (e) {
+    print('Error actualizando perfil: $e');
+    throw e;
+  } finally {
+    await MongoDB.close();
+  }
+}
 
   String getusername(){
     return(_username);
