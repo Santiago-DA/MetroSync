@@ -59,8 +59,9 @@ class LogInPageState extends State<LogInPage> {
                             filled: true,
                             fillColor: Colors.white,
                             floatingLabelStyle: TextStyle(
-      color: Theme.of(context).colorScheme.inversePrimary,
-    ),
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
+                            ),
                           ),
                           style: TextStyle(color: Colors.black),
                           validator: (value) {
@@ -83,8 +84,9 @@ class LogInPageState extends State<LogInPage> {
                             filled: true,
                             fillColor: Colors.white,
                             floatingLabelStyle: TextStyle(
-      color: Theme.of(context).colorScheme.inversePrimary,
-    ),
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
+                            ),
                           ),
                           style: TextStyle(color: Colors.black),
                           validator: (value) {
@@ -133,13 +135,13 @@ class LogInPageState extends State<LogInPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const RegisterScreen()),
+                            builder: (context) => RegisterScreen()),
                       );
                     },
                     child: RichText(
                       text: TextSpan(
                         text: "¿No tienes cuenta? ",
-                        style: Theme.of(context).textTheme.labelSmall,
+                        style: Theme.of(context).textTheme.bodyMedium,
                         children: <TextSpan>[
                           TextSpan(
                             text: "Registrate",
@@ -147,9 +149,8 @@ class LogInPageState extends State<LogInPage> {
                                 .textTheme
                                 .labelSmall
                                 ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary),
+                                    color:
+                                        Theme.of(context).colorScheme.primary),
                           ),
                         ],
                       ),
