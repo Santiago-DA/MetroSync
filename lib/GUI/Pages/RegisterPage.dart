@@ -7,6 +7,7 @@ class RegisterScreen extends StatelessWidget {
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   RegisterScreen({super.key});
 
   @override
@@ -141,6 +142,27 @@ class RegisterScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       //confirmar clave?
+                      TextFormField(
+                        controller: _confirmPasswordController,
+                        decoration: InputDecoration(
+                          labelText: 'Confirmar contraseña',
+                          labelStyle: TextStyle(color: Colors.grey),
+                          border: OutlineInputBorder(),
+                          filled: true,
+                          fillColor: Colors.white,
+                          floatingLabelStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.inversePrimary,
+                          ),
+                        ),
+                        style: TextStyle(color: Colors.black),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingresa la misma contraseña';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
