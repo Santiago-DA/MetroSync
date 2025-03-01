@@ -64,8 +64,14 @@ class User {
   try {
     await MongoDB.connect();
     var usuarioExistente = await _db.findOneFrom('Users', where.eq('username', username));
+    var correoExistente = await _db.findOneFrom('Users', where.eq('email', email));
+
     if (usuarioExistente != null) {
       print('Error: El nombre de usuario ya existe.');
+      return false;
+    }
+    if (correoExistente != null) {
+      print('Error: El correo ya esta registrado.');
       return false;
     }
     _descripcion_perfil = '';

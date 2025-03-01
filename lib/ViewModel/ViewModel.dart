@@ -16,37 +16,40 @@ class VM extends ChangeNotifier {
   Future<bool> logIn(String username, String password) async {
   _isLoading = true;
   _errorMessage = null;
-  notifyListeners();
+
   
   try {
     final success = await _currentUser.loginUser(username, password);
     _isLoading = false;
-    notifyListeners();
+
     return success;
   } catch (e) {
     _isLoading = false;
     _errorMessage = 'Error en el login: ${e.toString()}';
-    notifyListeners();
+
     return false;
   }
 }
 
-  Future<void> register(String username, String password,String email,String name, String lastname) async {
+  Future<bool> register(String username, String password,String email,String name, String lastname) async {
     _isLoading = true;
     _errorMessage = null;
-    notifyListeners();
+
     try {
       final success = await _currentUser.registerUser(username, password,email,name,lastname);
+      _isLoading = false;
       if (success) {
         _errorMessage = null;
+        return success;
+
       } else {
         _errorMessage = 'Credenciales inválidas';
+        return false;
       }
     } catch (e) {
       _errorMessage = 'Error en el login: ${e.toString()}';
-    } finally {
       _isLoading = false;
-      notifyListeners();
+      return false;
     }
   }
 

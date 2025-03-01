@@ -20,6 +20,7 @@ ThemeData darkMode = ThemeData(
       fontSize: 14.0,
       fontWeight: FontWeight.normal,
     ),
+
     labelMedium: TextStyle(
       color: Colors.black,
       fontSize: 14.0,

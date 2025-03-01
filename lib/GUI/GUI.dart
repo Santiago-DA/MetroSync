@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Bottom Navigation Bar',
         theme: lightMode,
+        darkTheme: darkMode,
         home: OnBoardingPage(),
       ),
     );
