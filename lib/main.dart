@@ -8,9 +8,7 @@ import 'MongoManager/MongoDB.dart';
 import 'GUI/GUI.dart';
 import 'User/User.dart';
 
-
 Future<void> main() async {
-  //Ejemplo de como hacerlo TODO falta chekeos y squemas
   WidgetsFlutterBinding.ensureInitialized();
   await MongoDB.connect();
   // User Sant=User();
@@ -29,4 +27,3 @@ Future<void> main() async {
   //###########################Gabriel##############################
   runApp(MyApp());
 }
-

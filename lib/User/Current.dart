@@ -1,4 +1,5 @@
 import 'User.dart';
+
 class Current {
   static final Current _instance = Current._internal();
   User? currentUser;
@@ -11,5 +12,9 @@ class Current {
 
   void setUser(User user) {
     currentUser = user;
+  }
+
+  void logout() {
+    currentUser = null;
   }
 }
