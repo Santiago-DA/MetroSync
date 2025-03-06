@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class TimeSlot {
   final String _classname;
   final TimeOfDay _starthour;
@@ -7,7 +8,7 @@ class TimeSlot {
   final String _profesor;
   final String _trimestre;
   final String _lugar;
-  
+ 
   TimeSlot(
     this._classname,
     this._starthour,
@@ -16,7 +17,16 @@ class TimeSlot {
     this._trimestre,
     this._lugar
   );
-
+  factory TimeSlot.fromJson(Map<String, dynamic> json) {
+    return TimeSlot(
+      json['classname'],
+      TimeOfDay(hour: json['start']['hour'], minute: json['start']['minute']),
+      TimeOfDay(hour: json['end']['hour'], minute: json['end']['minute']),
+      json['profesor'],
+      json['trimestre'],
+      json['lugar'],
+    );
+  }
   String toString() {
     return '$_classname - $_trimestre\nProf: $_profesor\nLugar: $_lugar\nHorario: $_starthour - $_endhour';
   }
@@ -32,11 +42,13 @@ class TimeSlot {
   }
 
 
+
+
   // Getters existentes
   String getclassname() => _classname;
   TimeOfDay getstarthour() => _starthour;
   TimeOfDay getendhour() => _endhour;
-  
+ 
   // Nuevos getters
   String getProfesor() => _profesor;
   String getTrimestre() => _trimestre;

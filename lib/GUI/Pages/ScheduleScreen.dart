@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'WeekSchedule.dart';
 import 'package:flutter/foundation.dart';
-
+import 'package:metrosync/Schedules/Schedule.dart'; // Importar la clase Schedule
+import 'package:metrosync/Schedules/TimeSlot.dart'; 
+import 'package:metrosync/User/Current.dart'; 
 class ScheduleScreen extends StatefulWidget {
   ScheduleScreen({super.key});
   @override
@@ -9,10 +11,82 @@ class ScheduleScreen extends StatefulWidget {
 }
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
-  // Datos de ejemplo
-  final List<Map<String, dynamic>> materias = [
-  ];
+  late Schedule _schedule; // Horario del usuario
+  late String _username ; // Nombre de usuario actual (debe ser dinámico en una app real)
 
+  @override
+  void initState() {
+    super.initState();
+    final currentUser = Current().currentUser;
+    if (currentUser != null) {
+      _username = currentUser.getusername(); // Asignar el nombre de usuario logueado
+    } else {
+      // Si no hay usuario logueado, manejar el caso (por ejemplo, redirigir al login)
+      _username = 'usuario_no_logueado'; // O manejar de otra manera
+    }
+    _schedule = Schedule(_username); // Inicializa el horario
+    _loadSchedule(); // Carga el horario desde la base de datos
+  }
+
+  // Cargar el horario desde la base de datos
+  Future<void> _loadSchedule() async {
+    await _schedule.loadfromBD();
+    setState(() {}); // Actualiza la UI
+  }
+
+  // Añadir una materia al horario
+  void _agregarMateria(TimeSlot nuevaMateria, String dia) async {
+    setState(() {
+      _schedule.newslot(dia, nuevaMateria); // Añadir al horario
+    });
+    // Guardar cambios en la base de datos
+  }
+
+  // Eliminar una materia del horario
+  void _eliminarMateria(TimeSlot materia, String dia) async {
+    setState(() {
+      _schedule.removeSlot(
+        _schedule.strtoenum(dia),
+        materia.getclassname(),
+        materia.getstarthour(),
+        materia.getendhour(),
+      );
+    });
+     // Guardar cambios en la base de datos
+  }
+
+  // Obtener las materias del día actual
+  List<TimeSlot> _materiasDelDia() {
+    final diaActual = _obtenerDiaActual();
+    final dayEnum = _schedule.strtoenum(diaActual);
+    return _schedule.slotsPerDay[dayEnum] ?? [];
+  }
+
+  // Obtener el día actual
+  String _obtenerDiaActual() {
+    final now = DateTime.now();
+    final weekday = now.weekday;
+    switch (weekday) {
+      case 1:
+        return 'Lunes';
+      case 2:
+        return 'Martes';
+      case 3:
+        return 'Miércoles';
+      case 4:
+        return 'Jueves';
+      case 5:
+        return 'Viernes';
+      case 6:
+        return 'Sábado';
+      case 7:
+        return 'Domingo';
+      default:
+        return '';
+    }
+  }
+
+ 
   final List<Map<String, dynamic>> huecosComunes = [
     
   ];
@@ -139,16 +213,7 @@ final List<Map<String, dynamic>> amigos = [
     ],
   },
 ];
-  void _agregarMateria(Map<String, dynamic> nuevaMateria) {
-    setState(() {
-      materias.add(nuevaMateria);
-    });
-  }
-  void _eliminarMateria(Map<String, dynamic> materia) {
-  setState(() {
-    materias.removeWhere((m) => m['nombre'] == materia['nombre']);
-  });
-}
+
 List<TimeOfDay> parseHorario(String horario) {
   List<String> parts = horario.split(' - ');
   TimeOfDay start = _parseTimePart(parts[0]);
@@ -264,34 +329,34 @@ for (var interval in fixedIntervals) {
 
   return result;
 }
-void _sincronizarConAmigo(Map<String, dynamic> amigo) {
-  Map<String, List<List<TimeOfDay>>> commonFreeTime =
-      _calculateCommonFreeTime(materias, amigo['materias']);
+// void _sincronizarConAmigo(Map<String, dynamic> amigo) {
+//   Map<String, List<List<TimeOfDay>>> commonFreeTime =
+//       _calculateCommonFreeTime(materias, amigo['materias']);
 
-  List<Map<String, dynamic>> nuevosHuecos = [];
-  String currentDay = _obtenerDiaActual();
+//   List<Map<String, dynamic>> nuevosHuecos = [];
+//   String currentDay = _obtenerDiaActual();
 
-  if (commonFreeTime.containsKey(currentDay)) {
-    for (var interval in commonFreeTime[currentDay]!) {
-      String horario = '${_formatTime(interval[0])} - ${_formatTime(interval[1])}';
-      nuevosHuecos.add({
-        'nombre': amigo['nombre'],
-        'horario': horario,
-        'dias': [currentDay],
-      });
-    }
-  }
+//   if (commonFreeTime.containsKey(currentDay)) {
+//     for (var interval in commonFreeTime[currentDay]!) {
+//       String horario = '${_formatTime(interval[0])} - ${_formatTime(interval[1])}';
+//       nuevosHuecos.add({
+//         'nombre': amigo['nombre'],
+//         'horario': horario,
+//         'dias': [currentDay],
+//       });
+//     }
+//   }
 
-  setState(() {
-    // Eliminar huecos anteriores del mismo amigo y día
-    huecosComunes.removeWhere((h) => 
-        h['nombre'] == amigo['nombre'] && 
-        h['dias'].contains(currentDay));
+//   setState(() {
+//     // Eliminar huecos anteriores del mismo amigo y día
+//     huecosComunes.removeWhere((h) => 
+//         h['nombre'] == amigo['nombre'] && 
+//         h['dias'].contains(currentDay));
 
-    // Agregar nuevos huecos
-    huecosComunes.addAll(nuevosHuecos);
-  });
-}
+//     // Agregar nuevos huecos
+//     huecosComunes.addAll(nuevosHuecos);
+//   });
+// }
 
 String _formatTime(TimeOfDay time) {
   String period = time.hour >= 12 ? 'p.m.' : 'a.m.';
@@ -300,40 +365,12 @@ String _formatTime(TimeOfDay time) {
   String minute = time.minute.toString().padLeft(2, '0');
   return '$hour:$minute $period';
 }
-  String _obtenerDiaActual() {
-    final now = DateTime.now();
-    final weekday = now.weekday;
-    switch (weekday) {
-      case 1:
-        return 'Lunes';
-      case 2:
-        return 'Martes';
-      case 3:
-        return 'Miércoles';
-      case 4:
-        return 'Jueves';
-      case 5:
-        return 'Viernes';
-      case 6:
-        return 'Sábado';
-      case 7:
-        return 'Domingo';
-      default:
-        return '';
-    }
-  }
+   // Añadir una materia al horario
 
-  // Función para filtrar materias del día actual
-  List<Map<String, dynamic>> _materiasDelDia() {
-    final diaActual = _obtenerDiaActual();
-    
-    return materias.where((materia) {
-      final dias = List<String>.from(materia['dias'] ?? []);
-      return dias.contains(diaActual);
-    }).toList();
-  }
 
-    @override
+  // Obtener las materias del día actual
+  
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
@@ -343,7 +380,7 @@ String _formatTime(TimeOfDay time) {
             _buildSeccion(
               context: context,
               height: 140,
-              title: 'Mi Horario Hoy ',
+              title: 'Mi Horario Hoy',
               items: _materiasDelDia(),
               builder: _buildTarjetaMateria,
               accion: IconButton(
@@ -353,7 +390,7 @@ String _formatTime(TimeOfDay time) {
                     context,
                     MaterialPageRoute(
                       builder: (context) => WeekSchedule(
-                        materias: materias,
+                        schedule: _schedule, // Pasar el horario completo
                         onSubjectAdded: _agregarMateria,
                         onSubjectDeleted: _eliminarMateria,
                       ),
@@ -361,21 +398,21 @@ String _formatTime(TimeOfDay time) {
                   );
                 },
               ),
-            ),
-            _buildSeccion(
-              context: context,
-              height: 130,
-              title: 'Huecos en Común',
-              items: huecosComunes,
-              builder: _buildTarjetaHueco,
-            ),
-            _buildSeccion(
-              context: context,
-              height: 180,
-              title: 'Amigos',
-              items: amigos,
-              builder: _buildTarjetaAmigo,
-            ),
+              ),
+            // _buildSeccion(
+            //   context: context,
+            //   height: 130,
+            //   title: 'Huecos en Común',
+            //   items: huecosComunes,
+            //   builder: _buildTarjetaHueco,
+            // ),
+            // _buildSeccion(
+            //   context: context,
+            //   height: 180,
+            //   title: 'Amigos',
+            //   items: amigos,
+            //   builder: _buildTarjetaAmigo,
+            // ),
           ],
         ),
       ),
@@ -386,8 +423,8 @@ String _formatTime(TimeOfDay time) {
     required BuildContext context,
     required double height,
     required String title,
-    required List<Map<String, dynamic>> items,
-    required Widget Function(BuildContext, Map<String, dynamic>) builder,
+    required List<TimeSlot> items,
+    required Widget Function(BuildContext, TimeSlot) builder,
     Widget? accion,
   }) {
     final theme = Theme.of(context);
@@ -404,9 +441,7 @@ String _formatTime(TimeOfDay time) {
                 title,
                 style: theme.textTheme.titleMedium,
               ),
-
               if (accion != null) accion,
-
             ],
           ),
         ),
@@ -423,29 +458,24 @@ String _formatTime(TimeOfDay time) {
     );
   }
 
-  Widget _buildTarjetaMateria(
-      BuildContext context, Map<String, dynamic> materia) {
+  Widget _buildTarjetaMateria(BuildContext context, TimeSlot materia) {
     final theme = Theme.of(context);
 
     return GestureDetector(
-      onTap: () {
-        _mostrarPopupMateria(context, materia);
-        
-      },
+      onTap: () => _mostrarPopupMateria(context, materia),
       onLongPress: () => _mostrarDialogoEliminar(context, materia),
       child: Container(
         width: 200,
-        height: 180,
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          color: theme.colorScheme.primary, // Usar el color primario del tema
+          color: theme.colorScheme.primary,
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
               blurRadius: 6,
               offset: const Offset(2, 2),
-            )
+            ),
           ],
         ),
         child: Padding(
@@ -454,111 +484,100 @@ String _formatTime(TimeOfDay time) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                materia['nombre'],
-                style: theme.textTheme.displaySmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                materia['horario'],
+                materia.getclassname(),
                 style: theme.textTheme.bodyLarge,
               ),
               const SizedBox(height: 8),
-              Center(
-                child: Text(
-                  materia['aula'],
-                  style: theme.textTheme.displayLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              Text(
+                '${materia.getstarthour().format(context)} - ${materia.getendhour().format(context)}',
+                style: theme.textTheme.bodyMedium,
               ),
               const SizedBox(height: 8),
+              Text(
+                materia.getLugar(),
+                style: theme.textTheme.bodyMedium,
+              ),
             ],
           ),
         ),
       ),
     );
   }
-  void _mostrarDialogoEliminar(BuildContext context, Map<String, dynamic> materia) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text('Eliminar materia', style: Theme.of(context).textTheme.displayLarge),
-      content: Text('¿Seguro que quieres eliminar ${materia['nombre']}?', 
-               style: Theme.of(context).textTheme.bodyMedium),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('Cancelar', style: TextStyle(
-            color: Theme.of(context).colorScheme.primary)),
-        ),
-        TextButton(
-          onPressed: () {
-            _eliminarMateria(materia);
-            Navigator.pop(context);
-          },
-          child: Text('Eliminar', style: TextStyle(
-            color: Theme.of(context).colorScheme.error)),
-        ),
-      ],
-    ),
-  );
-}
 
-  void _mostrarPopupMateria(BuildContext context, Map<String, dynamic> materia) {
-    final theme = Theme.of(context);
-
+  void _mostrarDialogoEliminar(BuildContext context, TimeSlot materia) {
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            materia['nombre'],
-            style: theme.textTheme.displayLarge,
+      builder: (context) => AlertDialog(
+        title: Text('Eliminar materia', style: Theme.of(context).textTheme.displayLarge),
+        content: Text('¿Seguro que quieres eliminar ${materia.getclassname()}?', 
+                 style: Theme.of(context).textTheme.bodyMedium),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancelar', style: TextStyle(
+              color: Theme.of(context).colorScheme.secondary)),
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Horario: ${materia['horario']}',
-                style: theme.textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Aula: ${materia['aula']}',
-                style: theme.textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Profesor: ${materia['profesor']}',
-                style: theme.textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Trimestre: ${materia['trimestre']}',
-                style: theme.textTheme.bodyMedium,
-              ),
-            ],
+          TextButton(
+            onPressed: () {
+              _eliminarMateria(materia, _obtenerDiaActual());
+              Navigator.pop(context);
+            },
+            child: Text('Eliminar', style: TextStyle(
+              color: Theme.of(context).colorScheme.error)),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Cerrar el popup
-              },
-              child: Text(
-                'Cerrar',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+        ],
+      ),
     );
   }
+
+  void _mostrarPopupMateria(BuildContext context, TimeSlot materia) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          materia.getclassname(),
+          style: Theme.of(context).textTheme.displayLarge,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Horario: ${materia.getstarthour().format(context)} - ${materia.getendhour().format(context)}',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Aula: ${materia.getLugar()}',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Profesor: ${materia.getProfesor()}',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Trimestre: ${materia.getTrimestre()}',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Cerrar',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildTarjetaHueco(BuildContext context, Map<String, dynamic> hueco) {
     final theme = Theme.of(context);
@@ -647,24 +666,24 @@ String _formatTime(TimeOfDay time) {
             ),
             const SizedBox(height: 8),
             // Botón para sincronizar
-            ElevatedButton(
+            // ElevatedButton(
               
-              onPressed: () => _sincronizarConAmigo(amigo),
+            //   onPressed: () => _sincronizarConAmigo(amigo),
               
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.inversePrimary,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: Text(
-                'Sincronizar',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.surface,
-                ),
-              ),
-            ),
+            //   style: ElevatedButton.styleFrom(
+            //     backgroundColor: theme.colorScheme.inversePrimary,
+            //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(20),
+            //     ),
+            //   ),
+            //   child: Text(
+            //     'Sincronizar',
+            //     style: theme.textTheme.bodySmall?.copyWith(
+            //       color: theme.colorScheme.surface,
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:metrosync/Schedules/Schedule.dart'; // Importar la clase Schedule
+import 'package:metrosync/Schedules/TimeSlot.dart'; // Importar la clase TimeSlot
+
 
 class CreateSchedulePage extends StatefulWidget {
-  final Function(Map<String, dynamic>) onSave;
+  final Function(TimeSlot, String) onSave; // Cambiar para recibir TimeSlot y String
+
 
   const CreateSchedulePage({super.key, required this.onSave});
+
 
   @override
   _CreateSchedulePageState createState() => _CreateSchedulePageState();
 }
+
 
 class _CreateSchedulePageState extends State<CreateSchedulePage> {
   final _formKey = GlobalKey<FormState>();
@@ -20,6 +26,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
   String? horaFinal;
   String? trimestre;
 
+
   final List<String> dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
   final List<String> horasGrupo1 = _generarHoras(
     start: const TimeOfDay(hour: 7, minute: 0),
@@ -27,14 +34,26 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
     interval: const Duration(hours: 1, minutes: 45),
   );
 
+
   final List<String> horasGrupo2 = _generarHoras(
     start: const TimeOfDay(hour: 8, minute: 30),
     end: const TimeOfDay(hour: 19, minute: 0),
     interval: const Duration(hours: 1, minutes: 45),
   );
 
+
   final List<String> trimestres = List.generate(12, (index) => '${index + 1}');
 
+
+  // Convertir String a TimeOfDay
+  TimeOfDay _parseTime(String timeStr) {
+    final format = DateFormat('h:mm a');
+    final date = format.parse(timeStr);
+    return TimeOfDay(hour: date.hour, minute: date.minute);
+  }
+
+
+  // Generar lista de horas
   static List<String> _generarHoras({
     required TimeOfDay start,
     required TimeOfDay end,
@@ -44,6 +63,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
     DateTime current = DateTime(2023, 1, 1, start.hour, start.minute);
     final endTime = DateTime(2023, 1, 1, end.hour, end.minute);
 
+
     while (current.isBefore(endTime) || current.isAtSameMomentAs(endTime)) {
       horas.add(DateFormat('h:mm a').format(current));
       current = current.add(interval);
@@ -51,10 +71,12 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
     return horas;
   }
 
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+
 
     return Scaffold(
       appBar: AppBar(
@@ -69,292 +91,308 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),  
-          child: Column(
-            children: [
-              // Campo nombre materia
-              const SizedBox(height: 30), // Más espacio
-              TextFormField(
-                cursorColor: colors.primary,
-                controller: materiaNombreController,
-                style: TextStyle(color:colors.inversePrimary), // Texto negro
-                decoration: InputDecoration(
-                  labelText: 'Nombre de la Materia',
-                  labelStyle: TextStyle(color: colors.inversePrimary), // Color del label
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  filled: true,
-                  fillColor: colors.surface,
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: colors.primary),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa el nombre';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 30), // Más espacio
-
-              // Ingreso de Aula
-              TextFormField(
-                cursorColor: colors.primary,
-                controller: aulaController,
-                style: TextStyle(color: colors.inversePrimary), // Texto negro
-                decoration: InputDecoration(
-                  labelText: 'Ingrese el Aula',
-                  labelStyle: TextStyle(color: colors.inversePrimary), // Color del label
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  filled: true,
-                  fillColor: colors.surface,
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: colors.primary),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa el nombre';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 30), // Más espacio
-
-              // Campo nombre del profesor
-              TextFormField(
-                cursorColor: colors.primary,
-                controller: profesorController,
-                style: TextStyle(color:colors.inversePrimary), // Texto negro
-                decoration: InputDecoration(
-                  labelText: 'Nombre del Profesor',
-                  labelStyle: TextStyle(color: colors.inversePrimary), // Color del label
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  filled: true,
-                  fillColor: colors.surface,
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: colors.primary),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa el nombre del profesor';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 30), // Más espacio
-
-              // Selector de día
-             Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: colors.inversePrimary),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Días de la semana',
-                      style: TextStyle(color: colors.inversePrimary),
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              children: [
+                // Campo nombre materia
+                const SizedBox(height: 30),
+                TextFormField(
+                  cursorColor: colors.primary,
+                  controller: materiaNombreController,
+                  style: TextStyle(color: colors.inversePrimary),
+                  decoration: InputDecoration(
+                    labelText: 'Nombre de la Materia',
+                    labelStyle: TextStyle(color: colors.inversePrimary),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      children: dias.map((dia) {
-                        return FilterChip(
-                          selectedColor: colors.primary,
-                          label: Text(dia),
-                          selected: selectedDias.contains(dia),
-                          onSelected: (selected) {
-                            setState(() {
-                              if (selected) {
-                                selectedDias.add(dia);
-                              } else {
-                                selectedDias.remove(dia);
-                              }
-                            });
-                          },
-                        );
-                      }).toList(),
+                    filled: true,
+                    fillColor: colors.surface,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: colors.primary),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-               // Más espacio
-              
-              // Selector de hora grupo 1
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: colors.inversePrimary),
-                ),
-                child: DropdownButtonFormField<String>(
-                  style: theme.textTheme.bodyMedium?.copyWith(color:colors.inversePrimary), // Texto negro
-                  items: horasGrupo1.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    labelText: "Hora de inicio",
-                    labelStyle: TextStyle(color: colors.inversePrimary), // Color del label
                   ),
                   validator: (value) {
-                    if (value == null) {
-                      return 'Selecciona una hora';
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa el nombre';
                     }
                     return null;
                   },
-                  onChanged: (value) {
-                    horaInicio = value;
-                  },
                 ),
-              ),
-              const SizedBox(height: 30), // Más espacio
+                const SizedBox(height: 30),
 
-              // Selector de hora grupo 2
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: colors.inversePrimary),
-                ),
-                child: DropdownButtonFormField<String>(
-                  style: theme.textTheme.bodyMedium?.copyWith(color:colors.inversePrimary), // Texto negro
-                  items: horasGrupo2.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
+
+                // Ingreso de Aula
+                TextFormField(
+                  cursorColor: colors.primary,
+                  controller: aulaController,
+                  style: TextStyle(color: colors.inversePrimary),
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    labelText: "Hora de cierre",
-                    labelStyle: TextStyle(color: colors.inversePrimary), // Color del label
+                    labelText: 'Ingrese el Aula',
+                    labelStyle: TextStyle(color: colors.inversePrimary),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    fillColor: colors.surface,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: colors.primary),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   validator: (value) {
-                    if (value == null) {
-                      return 'Selecciona una hora';
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa el aula';
                     }
                     return null;
                   },
-                  onChanged: (value) {
-                    horaFinal = value;
-                  },
                 ),
-              ),
-              const SizedBox(height: 28), // Más espacio
+                const SizedBox(height: 30),
 
-              // Selector de trimestre
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: colors.inversePrimary),
-                ),
-                child: DropdownButtonFormField<String>(
-                  style: theme.textTheme.bodyMedium?.copyWith( color:colors.inversePrimary), // Texto negro
-                  items: trimestres.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text('Trimestre $value'),
-                    );
-                  }).toList(),
+
+                // Campo nombre del profesor
+                TextFormField(
+                  cursorColor: colors.primary,
+                  controller: profesorController,
+                  style: TextStyle(color: colors.inversePrimary),
                   decoration: InputDecoration(
-                    border: InputBorder.none,
-                    labelText: 'Trimestre',
-                    labelStyle: TextStyle(color: colors.inversePrimary), // Color del label
+                    labelText: 'Nombre del Profesor',
+                    labelStyle: TextStyle(color: colors.inversePrimary),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    fillColor: colors.surface,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: colors.primary),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   validator: (value) {
-                    if (value == null) {
-                      return 'Selecciona un trimestre';
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa el nombre del profesor';
                     }
                     return null;
                   },
-                  onChanged: (value) {
-                    trimestre = value;
-                  },
                 ),
-              ),
-              const SizedBox(height: 29), // Más espacio
+                const SizedBox(height: 30),
 
-              // Botón de guardar
-              ElevatedButton.icon(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    if (selectedDias.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Selecciona al menos un día')),
-                      );
-                      return;
-                    }
-                    
-                    final newSubject = {
-                      'nombre': materiaNombreController.text,
-                      'horario': '$horaInicio - $horaFinal',
-                      'aula': aulaController.text,
-                      'profesor': profesorController.text,
-                      'trimestre': trimestre,
-                      'dias': List<String>.from(selectedDias),
-                    };
-                    
-                    // Mostrar SnackBar con los datos
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Clase guardada exitosamente!',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                            SizedBox(height: 5),
-                            Text('Nombre: ${newSubject['nombre']}'),
-                            Text('Horario: ${newSubject['horario']}'),
-                            Text('Aula: ${newSubject['aula']}'),
-                            Text('Días: ${(newSubject['dias'] as List<String>).join(', ')}'),
-                          ],
-                        ),
-                        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                        duration: const Duration(seconds: 2),
+
+                // Selector de día
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: colors.inversePrimary),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Días de la semana',
+                        style: TextStyle(color: colors.inversePrimary),
                       ),
-                    );
-                    
-                    // Guardar y cerrar
-                    widget.onSave(newSubject);
-                    await Future.delayed(const Duration(seconds: 2));
-                    Navigator.pop(context);
-                  }
-                },
-                icon: Icon(Icons.save, color: colors.surface),
-                label: Text('Guardar Horario', style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-          color: colors.surface,
-          fontWeight: FontWeight.bold,
-        ),),
-                
-              
-              ),
-            ],
-          ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        children: dias.map((dia) {
+                          return FilterChip(
+                            selectedColor: colors.primary,
+                            label: Text(dia),
+                            selected: selectedDias.contains(dia),
+                            onSelected: (selected) {
+                              setState(() {
+                                if (selected) {
+                                  selectedDias.add(dia);
+                                } else {
+                                  selectedDias.remove(dia);
+                                }
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+
+                // Selector de hora grupo 1
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: colors.inversePrimary),
+                  ),
+                  child: DropdownButtonFormField<String>(
+                    style: theme.textTheme.bodyMedium?.copyWith(color: colors.inversePrimary),
+                    items: horasGrupo1.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      labelText: "Hora de inicio",
+                      labelStyle: TextStyle(color: colors.inversePrimary),
+                    ),
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Selecciona una hora';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      horaInicio = value;
+                    },
+                  ),
+                ),
+                const SizedBox(height: 30),
+
+
+                // Selector de hora grupo 2
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: colors.inversePrimary),
+                  ),
+                  child: DropdownButtonFormField<String>(
+                    style: theme.textTheme.bodyMedium?.copyWith(color: colors.inversePrimary),
+                    items: horasGrupo2.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      labelText: "Hora de cierre",
+                      labelStyle: TextStyle(color: colors.inversePrimary),
+                    ),
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Selecciona una hora';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      horaFinal = value;
+                    },
+                  ),
+                ),
+                const SizedBox(height: 28),
+
+
+                // Selector de trimestre
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: colors.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: colors.inversePrimary),
+                  ),
+                  child: DropdownButtonFormField<String>(
+                    style: theme.textTheme.bodyMedium?.copyWith(color: colors.inversePrimary),
+                    items: trimestres.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text('Trimestre $value'),
+                      );
+                    }).toList(),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      labelText: 'Trimestre',
+                      labelStyle: TextStyle(color: colors.inversePrimary),
+                    ),
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Selecciona un trimestre';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      trimestre = value;
+                    },
+                  ),
+                ),
+                const SizedBox(height: 29),
+
+
+                // Botón de guardar
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      if (selectedDias.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Selecciona al menos un día')),
+                        );
+                        return;
+                      }
+
+
+                      if (horaInicio == null || horaFinal == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Selecciona una hora de inicio y cierre')),
+                        );
+                        return;
+                      }
+
+
+                      // Convertir las horas de String a TimeOfDay
+                      final startTime = _parseTime(horaInicio!);
+                      final endTime = _parseTime(horaFinal!);
+
+
+                      // Crear un TimeSlot para cada día seleccionado
+                      for (final dia in selectedDias) {
+                        final newSlot = TimeSlot(
+                          materiaNombreController.text,
+                          startTime,
+                          endTime,
+                          profesorController.text,
+                          trimestre!,
+                          aulaController.text,
+                        );
+
+
+                        // Llamar a onSave con el TimeSlot y el día
+                        widget.onSave(newSlot, dia);
+                      }
+
+
+                      // Mostrar SnackBar de éxito
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Clase guardada exitosamente!'),
+                          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+
+
+                      // Cerrar la página después de guardar
+                      await Future.delayed(const Duration(seconds: 2));
+                      Navigator.pop(context);
+                    }
+                  },
+                  icon: Icon(Icons.save, color: colors.surface),
+                  label: Text(
+                    'Guardar Materia',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: colors.surface,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

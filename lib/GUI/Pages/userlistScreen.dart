@@ -108,3 +108,70 @@ class UserListItem extends StatelessWidget {
     );
   }
 }
+
+// import 'package:flutter/material.dart';
+// import 'package:metrosync/MongoManager/MongoDB.dart'; // Importar MongoDB
+
+
+
+
+
+
+
+// class Userlist extends StatefulWidget {
+//   const Userlist({super.key});
+
+//   @override
+//   State<Userlist> createState() => _UserlistState();
+// }
+
+// class _UserlistState extends State<Userlist> {
+//   List<Map<String, dynamic>> users = []; // Lista para almacenar los usuarios
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadUsers(); // Cargar la lista de usuarios al iniciar la pantalla
+//   }
+
+//   // Método para cargar los usuarios desde la base de datos
+//   Future<void> _loadUsers() async {
+//     try {
+//       await MongoDB.connect(); // Conectar a la base de datos
+//       var userCollection = MongoDB.db.collection('Users'); // Obtener la colección de usuarios
+//       var userList = await userCollection.find().toList(); // Obtener todos los usuarios
+
+//       setState(() {
+//         users = userList; // Actualizar la lista de usuarios
+//       });
+//     } catch (e) {
+//       print('Error cargando usuarios: $e');
+//     } finally {
+//       await MongoDB.close(); // Cerrar la conexión a la base de datos
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Lista de Usuarios'),
+//         centerTitle: true,
+//       ),
+//       body: ListView.builder(
+//         itemCount: users.length,
+//         itemBuilder: (context, index) {
+//           final user = users[index];
+//           return ListTile(
+//             title: Text(user['username'] ?? 'Sin nombre'), // Mostrar el nombre de usuario
+//             subtitle: Text(user['email'] ?? 'Sin correo'), // Mostrar el correo del usuario
+//             onTap: () {
+//               // Acción al hacer clic en un usuario
+//               print('Usuario seleccionado: ${user['username']}');
+//             },
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
