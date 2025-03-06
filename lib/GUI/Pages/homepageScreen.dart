@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'DealsPage.dart';
 class HomePage extends StatelessWidget {
   final VoidCallback onMailPressed;
+  final VoidCallback onhandpressed;
   final List<Map<String, dynamic>> comments = [
     {
       'title': 'Título del Comentario 1',
@@ -37,7 +38,7 @@ class HomePage extends StatelessWidget {
 
   HomePage({
     super.key,
-    required this.onMailPressed,
+    required this.onMailPressed, required this.onhandpressed,
   });
 
   @override
@@ -54,23 +55,30 @@ class HomePage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(width: 4),
-              Image.asset('assets/images/logo_solo.png'),
-                const SizedBox(width: 8), // Space between image and text
+                Image.asset('assets/images/logo_solo.png'),
+                const SizedBox(width: 8),
                 Text('MetroSync', style: theme.textTheme.titleSmall),
-
               ],
             ),
             backgroundColor: colors.surface,
             actions: [
+              // Nuevo botón de handshake
+              IconButton(
+              icon: Icon(Icons.handshake, color: colors.inversePrimary),
+              onPressed: onhandpressed, // Usar la nueva función
+              ),
+
+              const SizedBox(width: 8), 
+    
+
               IconButton(
                 icon: Icon(Icons.mail, color: colors.inversePrimary),
                 onPressed: onMailPressed,
               ),
-              const SizedBox(width: 12)
+              const SizedBox(width: 12),
             ],
           ),
         ),
-
 
         body: ListView(
         padding: const EdgeInsets.all(16.0),

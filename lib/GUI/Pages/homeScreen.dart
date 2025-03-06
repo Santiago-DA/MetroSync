@@ -6,6 +6,7 @@ import 'package:metrosync/GUI/Pages/ScheduleScreen.dart';
 import 'lostitemsScreen.dart';
 import 'profileScreen.dart'; // Asegúrate de importar ProfilePage
 import 'homepageScreen.dart';
+import "userlistScreen.dart";
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
       HomePage(
         key: UniqueKey(),
         onMailPressed: _navigateToLostItemsPage,
+        onhandpressed: _navigateToUP,
       ), // Pantalla de inicio
       ProfilePage(key: UniqueKey()), // Pantalla de perfil
     ];
@@ -42,6 +44,16 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  void _navigateToUP() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Userlist(key: UniqueKey()),
+      ),
+    );
+  }
+
 
   // Cambiar de página
   void _changePage(int index) {
