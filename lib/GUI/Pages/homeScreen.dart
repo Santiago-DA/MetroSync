@@ -82,7 +82,10 @@ class _HomeScreenState extends State<HomeScreen> {
             label: '', // Ícono para horarios
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Opacity(
+            opacity: 0, // Ícono semi-transparente
+            child: Icon(Icons.home),
+          ),
             label: '', // Ícono para inicio
           ),
           BottomNavigationBarItem(
