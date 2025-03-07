@@ -4,8 +4,9 @@ ThemeData lightMode = ThemeData(
   brightness: Brightness.light,
   colorScheme: ColorScheme.light(
     surface: Colors.grey[50]!,
-    primary: const Color.fromARGB(230, 254, 131, 1),
-    secondary: Colors.grey.shade900,
+    primary: const Color.fromARGB(230, 42, 57, 124),
+    secondary: Colors.grey.shade800,
+    tertiary: const Color.fromARGB(230, 254, 131, 1),
 
     inversePrimary: Colors.grey.shade900,
   ),
@@ -22,11 +23,16 @@ ThemeData lightMode = ThemeData(
       fontSize: 14.0,
       fontWeight: FontWeight.normal,
       ),
+      labelLarge: TextStyle(
+        color: Colors.white,
+        fontSize: 25,
+        fontWeight: FontWeight.bold,
+      ),
 
       labelMedium: TextStyle(
         color: Colors.white,
         fontSize: 14.0,
-        fontWeight: FontWeight.normal,
+        fontWeight: FontWeight.bold,
       ),
 
       labelSmall: TextStyle(

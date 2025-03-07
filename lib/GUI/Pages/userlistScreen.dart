@@ -40,11 +40,7 @@ class _UserlistState extends State<Userlist> {
       appBar: AppBar(
         title: Text(
           'Usuarios',
-          style: TextStyle(
-            fontSize: 24.0,
-            fontWeight: FontWeight.bold,
-            color: const Color.fromARGB(255, 0, 0, 0),
-          ),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
       body: Column(
@@ -63,10 +59,11 @@ class _UserlistState extends State<Userlist> {
               ),
             ),
           ),
+          const SizedBox(height: 10,),
           Expanded(
             child: ListView.separated(
               itemCount: _filteredUsers.length,
-              separatorBuilder: (context, index) => Divider(height: 1, color: Colors.grey[300]), // Separador entre usuarios
+              separatorBuilder: (context, index) => Divider(height: 4, color: Theme.of(context).colorScheme.surface), // Separador entre usuarios
               itemBuilder: (context, index) {
                 return UserListItem(
                   userName: _filteredUsers[index],
@@ -104,6 +101,7 @@ class UserListItem extends StatelessWidget {
           print('Seguir a $userName');
         },
         child: Text('Seguir'),
+        style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.secondary, textStyle: TextStyle(color: Theme.of(context).colorScheme.surface))
       ),
     );
   }

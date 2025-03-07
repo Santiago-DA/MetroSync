@@ -88,7 +88,7 @@ class _WeekScheduleState extends State<WeekSchedule> {
         child: Center(
           child: Text(
             'Agregar clase',
-            style: Theme.of(context).textTheme.displayMedium,
+            style: Theme.of(context).textTheme.labelLarge,
           ),
         ),
       ),
@@ -150,17 +150,17 @@ class _WeekScheduleState extends State<WeekSchedule> {
             children: [
               Text(
                 materia.getclassname(),
-                style: theme.textTheme.bodyLarge,
+                style: theme.textTheme.labelMedium,
               ),
               const SizedBox(height: 10),
               Text(
                 '${materia.getstarthour().format(context)} - ${materia.getendhour().format(context)}',
-                style: theme.textTheme.bodyMedium,
+                style: theme.textTheme.labelMedium,
               ),
               const SizedBox(height: 8),
               Text(
                 materia.getLugar(),
-                style: theme.textTheme.bodyMedium,
+                style: theme.textTheme.labelMedium,
               ),
             ],
           ),

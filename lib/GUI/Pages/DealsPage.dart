@@ -4,24 +4,116 @@ class DealsPage extends StatelessWidget {
   // Datos de ejemplo para las publicaciones
   final List<Map<String, dynamic>> deals = [
     {
-      'usuario': '@pinchopan',
-      'promocion': 'SUPER COMBO!',
-      'imagen': 'assets/images/promo1.jpg', // Ruta de la imagen de la promoción
+      'usuario': '@hollychicken',
+      'promocion': '¡BOWL 2x1!',
+      'imagen': 'assets/images/promo_hollyshakes.webp', // Ruta de la imagen de la promoción
+      'menu': [
+        {
+          "nombre": "Bowl de Pollo Teriyaki",
+          "descripcion": "Arroz jazmín, pollo a la parrilla con salsa teriyaki, brócoli, zanahoria y ajonjolí.",
+          "precio": "\$10.99"
+        },
+        {
+          "nombre": "Bowl Mediterráneo",
+          "descripcion": "Quinoa, falafel, hummus, pepino, tomate, aceitunas y aderezo de yogur con limón.",
+          "precio": "\$12.49"
+        },
+        {
+          "nombre": "Bowl de Salmón Poké",
+          "descripcion": "Arroz de sushi, salmón fresco, aguacate, edamame, alga nori y salsa de soya.",
+          "precio": "\$14.99"
+        },
+        {
+          "nombre": "Bowl Vegano de Buda",
+          "descripcion": "Arroz integral, garbanzos asados, espinaca, zanahoria rallada, aguacate y aderezo de tahini.",
+          "precio": "\$9.99"
+        }
+      ]
+
     },
     {
-      'usuario': '@tucalvopizero',
-      'promocion': 'PIZZO',
-      'imagen': 'assets/images/promo2.jpg', // Ruta de la imagen de la promoción
+      'usuario': '@Pepperonis',
+      'promocion': '¡HELADO GRATIS!',
+      'imagen': 'assets/images/promo_pepperonis.webp', // Ruta de la imagen de la promoción
+      'menu': [
+        {
+          "nombre": "Pizza Cuatro Quesos",
+          "descripcion": "Masa artesanal con mozzarella, gorgonzola, parmesano y provolone.",
+          "precio": "\$13.99"
+        },
+        {
+          "nombre": "Pasta Carbonara",
+          "descripcion": "Spaghetti con salsa cremosa de huevo, queso pecorino, panceta y pimienta negra.",
+          "precio": "\$11.99"
+        },
+        {
+          "nombre": "Pasticho Clásico",
+          "descripcion": "Capas de pasta, carne en salsa de tomate, bechamel y queso gratinado.",
+          "precio": "\$14.49"
+        },
+        {
+          "nombre": "Pizza Vegetariana",
+          "descripcion": "Masa fina con tomate, mozzarella, champiñones, pimientos y aceitunas negras.",
+          "precio": "\$12.49"
+        }
+      ]
+
     },
     {
-      'usuario': '@burgerlover',
-      'promocion': 'BURGER MANIA',
-      'imagen': 'assets/images/promo3.jpg', // Ruta de la imagen de la promoción
+      'usuario': '@Molokai',
+      'promocion': 'SUSHI MANIA',
+      'imagen': 'assets/images/promo_molokai.webp', // Ruta de la imagen de la promoción
+      'menu': [
+        {
+          "nombre": "Sushi Roll de Salmón y Aguacate",
+          "descripcion": "Roll relleno de salmón fresco, aguacate y queso crema, cubierto con semillas de sésamo.",
+          "precio": "\$14.99"
+        },
+        {
+          "nombre": "Poké Bowl de Atún",
+          "descripcion": "Arroz de sushi, atún fresco, edamame, pepino, alga nori y salsa ponzu.",
+          "precio": "\$16.49"
+        },
+        {
+          "nombre": "Roll Tempura de Camarón",
+          "descripcion": "Camarón crujiente tempurizado, aguacate y salsa spicy mayo.",
+          "precio": "\$15.99"
+        },
+        {
+          "nombre": "Poké Bowl Vegano",
+          "descripcion": "Quinoa, tofu marinado, mango, pepino, edamame y aderezo de sésamo.",
+          "precio": "\$13.49"
+        }
+      ]
+
     },
     {
-      'usuario': '@sushiking',
-      'promocion': 'SUSHI DELIGHT',
-      'imagen': 'assets/images/promo4.jpg', // Ruta de la imagen de la promoción
+      'usuario': '@GRANIER',
+      'promocion': '2X1 EN CROISSANTS',
+      'imagen': 'assets/images/promo_granier.webp', // Ruta de la imagen de la promoción
+      'menu': [
+        {
+          "nombre": "Café Latte",
+          "descripcion": "Espresso con leche vaporizada y una suave capa de espuma.",
+          "precio": "\$4.50"
+        },
+        {
+          "nombre": "Capuccino Clásico",
+          "descripcion": "Espresso con una perfecta combinación de leche vaporizada y espuma cremosa.",
+          "precio": "\$4.75"
+        },
+        {
+          "nombre": "Tostada con Aguacate",
+          "descripcion": "Pan artesanal con aguacate, tomate cherry y un toque de limón.",
+          "precio": "\$6.99"
+        },
+        {
+          "nombre": "Croissant de Mantequilla",
+          "descripcion": "Crujiente y esponjoso croissant de mantequilla, recién horneado.",
+          "precio": "\$3.99"
+        }
+      ]
+
     },
   ];
 
@@ -52,7 +144,7 @@ class DealsPage extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    _mostrarMenu(context, deal['usuario'] as String); // Mostrar menú al presionar
+                    _mostrarMenu(context, deal['usuario'] as String, deal['menu']); // Mostrar menú al presionar
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colors.surface,
@@ -111,33 +203,9 @@ class DealsPage extends StatelessWidget {
   }
 
   // Función para mostrar el menú en un popup
-  void _mostrarMenu(BuildContext context, String usuario) {
+  void _mostrarMenu(BuildContext context, String usuario, menuItems) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-
-    // Datos del menú inventado
-    final List<Map<String, dynamic>> menuItems = [
-      {
-        'nombre': 'Hamburguesa Clásica',
-        'descripcion': 'Carne de res, queso, lechuga, tomate y salsa especial.',
-        'precio': '\$8.99',
-      },
-      {
-        'nombre': 'Pizza Margarita',
-        'descripcion': 'Mozzarella fresca, tomate y albahaca.',
-        'precio': '\$12.99',
-      },
-      {
-        'nombre': 'Sushi Roll',
-        'descripcion': 'Roll de salmón, aguacate y pepino.',
-        'precio': '\$15.99',
-      },
-      {
-        'nombre': 'Ensalada César',
-        'descripcion': 'Lechuga romana, croutones, parmesano y aderezo César.',
-        'precio': '\$6.99',
-      },
-    ];
 
     showDialog(
       context: context,

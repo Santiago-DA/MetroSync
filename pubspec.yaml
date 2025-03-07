@@ -67,6 +67,13 @@ flutter:
     - assets/images/animacion_horario.jpg
     - assets/images/animacion_horario.png
     - assets/images/logo_solo.png
+    - assets/images/advertisement_hollyshakes.webp
+    - assets/images/anuncio_granier.webp
+    - assets/images/anuncio_pepperonis.webp
+    - assets/images/promo_pepperonis.webp
+    - assets/images/promo_granier.webp
+    - assets/images/promo_hollyshakes.webp
+    - assets/images/promo_molokai.webp
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

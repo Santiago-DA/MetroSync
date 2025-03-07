@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Opacity(
-            opacity: 0, // Ícono semi-transparente
+            opacity: 1, // Ícono semi-transparente
             child: Icon(Icons.home),
           ),
             label: '', // Ícono para inicio

@@ -84,10 +84,11 @@ class HomePage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         children: [
           Divider(thickness: 5, color: theme.colorScheme.secondary),
+          const SizedBox(height: 5),
           // Carrusel de imágenes
           Container(
             width: 306,
-            height: 164,
+            height: 175,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.secondary, // Color del tema
               borderRadius: BorderRadius.circular(10),
@@ -95,10 +96,12 @@ class HomePage extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: PageView(
+                scrollDirection: Axis.horizontal,
+
                 children: [
-                  _buildImageContainer(context, 'assets/images/imagen1.jpg'),
-                  _buildImageContainer(context, 'assets/images/imagen2.jpg'),
-                  _buildImageContainer(context, 'assets/images/imagen3.jpg'),
+                  _buildImageContainer(context, 'assets/images/advertisement_hollyshakes.webp'),
+                  _buildImageContainer(context, 'assets/images/anuncio_granier.webp'),
+                  _buildImageContainer(context, 'assets/images/anuncio_pepperonis.webp'),
                 ],
               ),
             ),

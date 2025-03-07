@@ -153,15 +153,15 @@ class OnBoardingPageState extends State<OnBoardingPage> {
       skipOrBackFlex: 0,
       nextFlex: 0,
       showBackButton: false,
-      back: Icon(Icons.arrow_back, color: colorScheme.primary),
+      back: Icon(Icons.arrow_back, color: colorScheme.tertiary),
       skip: Text(
         'Saltar',
-        style: TextStyle(fontWeight: FontWeight.w600, color: colorScheme.primary),
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colorScheme.tertiary),
       ),
-      next: Icon(Icons.arrow_forward, color: colorScheme.primary),
+      next: Icon(Icons.arrow_forward, color: colorScheme.tertiary),
       done: Text(
         'Listo',
-        style: TextStyle(fontWeight: FontWeight.w600, color: colorScheme.primary),
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colorScheme.tertiary),
       ),
       curve: Curves.fastLinearToSlowEaseIn,
       controlsMargin: const EdgeInsets.all(16),
@@ -170,7 +170,7 @@ class OnBoardingPageState extends State<OnBoardingPage> {
           : const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
       dotsDecorator: DotsDecorator(
         size: Size(10.0, 10.0),
-        color: colorScheme.primary,
+        color: colorScheme.tertiary,
         activeColor: colorScheme.surface,
         activeSize: Size(22.0, 10.0),
         activeShape: RoundedRectangleBorder(

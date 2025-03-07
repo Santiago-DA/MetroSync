@@ -14,10 +14,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   late Schedule _schedule; // Horario del usuario
   late String _username ; // Nombre de usuario actual (debe ser dinámico en una app real)
 
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
     final currentUser = Current().currentUser;
+
     if (currentUser != null) {
       _username = currentUser.getusername(); // Asignar el nombre de usuario logueado
     } else {
@@ -32,6 +35,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Future<void> _loadSchedule() async {
     await _schedule.loadfromBD();
     setState(() {}); // Actualiza la UI
+    _isLoading = false;
   }
 
   // Añadir una materia al horario
@@ -373,7 +377,9 @@ String _formatTime(TimeOfDay time) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body:
+
+      SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 4),
@@ -381,7 +387,8 @@ String _formatTime(TimeOfDay time) {
               context: context,
               height: 140,
               title: 'Mi Horario Hoy',
-              items: _materiasDelDia(),
+              items:
+              _materiasDelDia(),
               builder: _buildTarjetaMateria,
               accion: IconButton(
                 icon: Icon(Icons.add_box),
@@ -482,21 +489,21 @@ String _formatTime(TimeOfDay time) {
           padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                materia.getclassname(),
-                style: theme.textTheme.bodyLarge,
-              ),
+            children: [Text(
+              materia.getclassname(),
+              style: theme.textTheme.labelMedium,
+            ),
               const SizedBox(height: 8),
               Text(
                 '${materia.getstarthour().format(context)} - ${materia.getendhour().format(context)}',
-                style: theme.textTheme.bodyMedium,
+                style: theme.textTheme.labelMedium,
               ),
               const SizedBox(height: 8),
               Text(
                 materia.getLugar(),
-                style: theme.textTheme.bodyMedium,
+                style: theme.textTheme.labelMedium,
               ),
+
             ],
           ),
         ),

@@ -6,6 +6,7 @@ ThemeData darkMode = ThemeData(
     surface: Colors.grey[900]!,
     primary: const Color.fromARGB(230, 254, 131, 1),
     secondary: Colors.grey.shade300,
+    tertiary: const Color.fromARGB(230, 254, 131, 1),
     inversePrimary: Colors.grey.shade300,
   ),
 
