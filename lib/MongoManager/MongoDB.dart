@@ -5,20 +5,29 @@ class MongoDB {
   static var db,userCollection;
 
   MongoDB();
-  static connect() async {
-    db = await Db.create(MONGO_URL);
-    await db.open();
-    userCollection=db.collection(USERS_COLLECTION);
+  static Future<void> connect() async {
+    if (db == null || db.state != State.OPEN) {
+      db = await Db.create(MONGO_URL);
+      await db.open();
+      userCollection = db.collection(USERS_COLLECTION);
+      print('Conexión a MongoDB establecida.');
+    }
   }
+
+  static Future<void> close() async {
+    if (db != null && db.state == State.OPEN) {
+      await db.close();
+      print('Conexión a MongoDB cerrada.');
+    }
+  }
+
 
   DbCollection getCollection(String collectionName) {
     DbCollection collection = db.collection(collectionName);
     return collection;
   }
 
- static Future<void> close() async {
-    await db.close();
-  }
+
 
   Future<void> insertInto(
       String collectionName, Map<String, dynamic> document) async {

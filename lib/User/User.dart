@@ -1,6 +1,3 @@
-
-
-import '../Schedules/Schedule.dart';
 import '../MongoManager/MongoDB.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:bcrypt/bcrypt.dart';
@@ -14,7 +11,7 @@ class User {
   String? _name;
   String? _lastname;  
   String? _descripcion_perfil;
-
+  List<String> _friends = [];
   //Me volvi un 8 okey? no me juzguen
   User();
 
@@ -24,6 +21,75 @@ class User {
   String? getdescription() {
     return _descripcion_perfil;
   }
+  List<String> getFriends() {
+    return _friends;
+  }
+
+  // Añadir un amigo
+  Future<void> addFriend(String friendUsername) async {
+    if (!_friends.contains(friendUsername)) {
+      _friends.add(friendUsername);
+      await _updateFriendsInDB();
+    }
+  }
+
+  // Eliminar un amigo
+  Future<void> removeFriend(String friendUsername) async {
+    _friends.remove(friendUsername);
+    await _updateFriendsInDB();
+  }
+
+  // Actualizar la lista de amigos en la base de datos
+  Future<void> _updateFriendsInDB() async {
+    try {
+      await MongoDB.connect();
+      await _db.updateOneFrom(
+        'Users',
+        where.eq('username', _username),
+        modify.set('friends', _friends),
+      );
+    } catch (e) {
+      print('Error actualizando amigos: $e');
+      throw e;
+    } finally {
+      await MongoDB.close();
+    }
+  }
+
+  // Cargar la lista de amigos desde la base de datos
+Future<void> loadFriends() async {
+  try {
+    // Ensure the database connection is open
+    if (MongoDB.db == null || MongoDB.db.state != State.OPEN) {
+      await MongoDB.connect();
+      print('Conexión a MongoDB establecida.');
+    }
+
+    // Buscar el usuario en la base de datos
+    var userData = await MongoDB.userCollection.findOne(where.eq('username', _username));
+    print('Datos del usuario: $userData');
+
+    if (userData != null) {
+      // Verificar si el campo 'friends' existe y no es nulo
+      if (userData['friends'] != null) {
+        // Convertir la lista de amigos a List<String>
+        _friends = List<String>.from(userData['friends']);
+        print('Amigos cargados: $_friends');
+      } else {
+        // Si 'friends' es nulo, inicializar como lista vacía
+        _friends = [];
+        print('El campo "friends" es nulo. Inicializando como lista vacía.');
+      }
+    } else {
+      // Si no se encuentra el usuario, lanzar una excepción
+      throw Exception('Usuario no encontrado en la base de datos.');
+    }
+  } catch (e) {
+    // Manejar errores
+    print('Error cargando amigos: $e');
+    throw e;
+  }
+}
 
  Future<bool> loginUser(String username, String password) async {
   try {
@@ -145,28 +211,5 @@ Future<void> updateProfile(String newName, String newLastname, String newDescrip
     return(_lastname);
   }
 
-  void _changename(String newname){
-    _name=newname;
-  }
-
-  void _changelastname(String newlastname){
-    _lastname=newlastname;
-  }
-
-  void _changeemail(String newemail){
-    _email=newemail;
-  }
-
-  void _changeusername(String newusername){
-    _username=newusername;
-  }
-
-  void _dbnameupdate(){
-    //Actualiza el nombre
-  }
-
-  void _dbemailupdate(){
-    //Actualiza el email
-  }
 
 }

@@ -8,7 +8,7 @@ import 'package:logging/logging.dart';
 
 
 //Para guardar los documentos en la BD debo serializarlos a json.
-enum Day { lunes, martes, miercoles, jueves, viernes }
+enum Day { lunes, martes, miercoles, jueves, viernes,sabado,domingo }
 class Schedule {
  final String _username;
   Map<Day, List<TimeSlot>> slotsPerDay = {};
@@ -25,14 +25,16 @@ class Schedule {
       case 'miercoles': return Day.miercoles;
       case 'jueves': return Day.jueves;
       case 'viernes': return Day.viernes;
+      case 'sabado':return Day.sabado;
+      case 'domingo':return Day.domingo;
       default: throw ArgumentError('Día no válido: $str');
     }
   }
   //Pasar la hora de inicio y fin como opciones fijas dadas por el sistemas
-  void newslot(String day, TimeSlot newSlot) {
+  void newslot(String day, TimeSlot newSlot) async{
     final dayEnum = strtoenum(day);
     _aggnewSlot(dayEnum, newSlot);
-    saveToDB(); // Guardar cambios en la BD
+    await saveToDB(); // Guardar cambios en la BD
   }
   Future<void> loadfromBD() async {
   try {
@@ -55,6 +57,7 @@ class Schedule {
     await MongoDB.close();
   }
 }
+
 Future<void> saveToDB() async {
   try {
     await MongoDB.connect(); // Abrir la conexión a la base de datos
@@ -109,28 +112,26 @@ Future<void> saveToDB() async {
 
 
   // Eliminar un TimeSlot del horario
-void removeSlot(Day day, String className, TimeOfDay start, TimeOfDay end) async {
-  if (!slotsPerDay.containsKey(day) || slotsPerDay[day]!.isEmpty) {
-    logger.warning("Intento de borrar slot en $day: No existen slots para este día");
-    return;
+void removeSlot(String className, TimeOfDay start, TimeOfDay end) async {
+  bool removed = false;
+
+  slotsPerDay.forEach((day, slots) {
+    slots.removeWhere((slot) =>
+        slot.getclassname() == className &&
+        slot.getstarthour() == start &&
+        slot.getendhour() == end);
+
+    if (slots.isEmpty) {
+      slotsPerDay.remove(day); // Eliminar el día si no quedan slots
+    }
+    removed = true;
+  });
+
+  if (removed) {
+    logger.info("Slots eliminados: $className (${start.hour}:${start.minute} - ${end.hour}:${end.minute})");
+    await saveToDB(); // Guardar cambios en la base de datos
+  } else {
+    logger.warning("No se encontraron slots para eliminar: $className (${start.hour}:${start.minute} - ${end.hour}:${end.minute})");
   }
-
-  final slots = slotsPerDay[day]!;
-  final index = slots.indexWhere((slot) =>
-      slot.getclassname() == className &&
-      slot.getstarthour() == start &&
-      slot.getendhour() == end);
-
-  if (index == -1) {
-    logger.warning("Slot no encontrado en $day: $className (${start.hour}:${start.minute} - ${end.hour}:${end.minute})");
-    return;
-  }
-
-  slots.removeAt(index);
-  logger.info("Slot eliminado en $day: $className (${start.hour}:${start.minute} - ${end.hour}:${end.minute})");
-
-  // Guardar cambios en la base de datos
-  await saveToDB();
-saveToDB(); // Guardar cambios en la BD
 }
 }

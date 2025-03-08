@@ -12,30 +12,56 @@ class ScheduleScreen extends StatefulWidget {
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
   late Schedule _schedule; // Horario del usuario
-  late String _username ; // Nombre de usuario actual (debe ser dinámico en una app real)
+  late String _username ;
+  List<String> _friends = []; // Lista de amigos
+  List<Map<String, dynamic>> _huecosComunes = []; // Huecos en común
+ // Nombre de usuario actual (debe ser dinámico en una app real)
 
   bool _isLoading = true;
 
-  @override
+@override
   void initState() {
     super.initState();
-    final currentUser = Current().currentUser;
-
-    if (currentUser != null) {
-      _username = currentUser.getusername(); // Asignar el nombre de usuario logueado
-    } else {
-      // Si no hay usuario logueado, manejar el caso (por ejemplo, redirigir al login)
-      _username = 'usuario_no_logueado'; // O manejar de otra manera
-    }
-    _schedule = Schedule(_username); // Inicializa el horario
-    _loadSchedule(); // Carga el horario desde la base de datos
+    _initializeUser();
   }
 
+  void _initializeUser() {
+    final currentUser = Current().currentUser;
+    if (currentUser != null) {
+      _username = currentUser.getusername();
+      _loadFriends();
+    } else {
+      _username = 'usuario_no_logueado';
+    }
+    _schedule = Schedule(_username);
+    _loadSchedule();
+  }
+
+ Future<void> _loadFriends() async {
+  final currentUser = Current().currentUser;
+  if (currentUser != null) {
+    try {
+      await currentUser.loadFriends();
+      setState(() {
+        _friends = currentUser.getFriends();
+        print(currentUser.getFriends());
+      });
+    } catch (e) {
+      print('Error cargando amigos: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error cargando amigos: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+}
   // Cargar el horario desde la base de datos
-  Future<void> _loadSchedule() async {
+   Future<void> _loadSchedule() async {
+    setState(() => _isLoading = true); // Activar estado de carga
     await _schedule.loadfromBD();
-    setState(() {}); // Actualiza la UI
-    _isLoading = false;
+    setState(() => _isLoading = false); // Desactivar estado de carga
   }
 
   // Añadir una materia al horario
@@ -48,20 +74,21 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   // Eliminar una materia del horario
   void _eliminarMateria(TimeSlot materia, String dia) async {
-    setState(() {
-      _schedule.removeSlot(
-        _schedule.strtoenum(dia),
-        materia.getclassname(),
-        materia.getstarthour(),
-        materia.getendhour(),
-      );
-    });
-     // Guardar cambios en la base de datos
-  }
+  setState(() {
+    _schedule.removeSlot(
+      materia.getclassname(),
+      materia.getstarthour(),
+      materia.getendhour(),
+    );
+  });
+}
+void _sincronizarConAmigo(){
+  print("yei");
+}
 
   // Obtener las materias del día actual
   List<TimeSlot> _materiasDelDia() {
-    final diaActual = _obtenerDiaActual();
+    final diaActual = "Lunes";
     final dayEnum = _schedule.strtoenum(diaActual);
     return _schedule.slotsPerDay[dayEnum] ?? [];
   }
@@ -76,13 +103,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       case 2:
         return 'Martes';
       case 3:
-        return 'Miércoles';
+        return 'Miercoles';
       case 4:
         return 'Jueves';
       case 5:
         return 'Viernes';
       case 6:
-        return 'Sábado';
+        return 'Sabado';
       case 7:
         return 'Domingo';
       default:
@@ -95,128 +122,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     
   ];
 
-final List<Map<String, dynamic>> amigos = [
-  {
-    'nombre': 'Juan Pérez',
-    'usuario': '@juanperez',
-    'materias': [
-      {
-        'nombre': 'Matemáticas',
-        'horario': '7:00 a.m - 8:30 a.m',
-        'aula': 'Aula 201',
-        'profesor': 'Dr. Pérez',
-        'trimestre': 'Trimestre 3',
-        'dias': ['Lunes', 'Miércoles', 'Viernes'],
-      },
-      {
-        'nombre': 'Física',
-        'horario': '10:30 a.m - 12:00 a.m',
-        'aula': 'Aula 305',
-        'profesor': 'Dra. Gómez',
-        'trimestre': 'Trimestre 3',
-        'dias': ['Martes', 'Jueves'],
-      },
-      {
-        'nombre': 'Química',
-        'horario': '12:15 p.m - 1:45 p.m',
-        'aula': 'Lab Química',
-        'profesor': 'Dra. Martínez',
-        'trimestre': 'Trimestre 3',
-        'dias': ['Lunes', 'Miércoles'],
-      },
-    ],
-  },
-  {
-    'nombre': 'Ana Gómez',
-    'usuario': '@anagomez',
-    'materias': [
-      {
-        'nombre': 'Programación',
-        'horario': '7:00 a.m - 8:30 a.m',
-        'aula': 'Lab 101',
-        'profesor': 'Ing. Rodríguez',
-        'trimestre': 'Trimestre 2',
-        'dias': ['Lunes', 'Viernes'],
-      },
-      {
-        'nombre': 'Base de Datos',
-        'horario': '2:00 p.m - 3:30 p.m',
-        'aula': 'Aula 402',
-        'profesor': 'Mg. Sánchez',
-        'trimestre': 'Trimestre 2',
-        'dias': ['Martes', 'Jueves'],
-      },
-      {
-        'nombre': 'Inglés',
-        'horario': '10:30 a.m - 12:00 a.m',
-        'aula': 'Aula 105',
-        'profesor': 'Lic. Smith',
-        'trimestre': 'Trimestre 2',
-        'dias': ['Miércoles', 'Viernes'],
-      },
-    ],
-  },
-  {
-    'nombre': 'Pedro Ramírez',
-    'usuario': '@pedroramirez',
-    'materias': [
-      {
-        'nombre': 'Química',
-        'horario': '8:45 a.m - 10:15 a.m',
-        'aula': 'Lab Química',
-        'profesor': 'Dra. Martínez',
-        'trimestre': 'Trimestre 1',
-        'dias': ['Miércoles', 'Viernes'],
-      },
-      {
-        'nombre': 'Matemáticas',
-        'horario': '12:15 a.m - 1:30 p.m',
-        'aula': 'Aula 201',
-        'profesor': 'Dr. Pérez',
-        'trimestre': 'Trimestre 1',
-        'dias': ['Lunes', 'Miércoles', 'Viernes'],
-      },
-      {
-        'nombre': 'Física',
-        'horario': '3:45 p.m - 5:15 p.m',
-        'aula': 'Aula 305',
-        'profesor': 'Dra. Gómez',
-        'trimestre': 'Trimestre 1',
-        'dias': ['Martes', 'Jueves'],
-      },
-    ],
-  },
-  {
-    'nombre': 'Laura Fernández',
-    'usuario': '@laurafernandez',
-    'materias': [
-      {
-        'nombre': 'Inglés',
-        'horario': '5:30 a.m - 7:00 p.m',
-        'aula': 'Aula 105',
-        'profesor': 'Lic. Smith',
-        'trimestre': 'Trimestre 4',
-        'dias': ['Lunes', 'Miércoles'],
-      },
-      {
-        'nombre': 'Historia',
-        'horario': '3:45 p.m - 5:15 p.m',
-        'aula': 'Aula 203',
-        'profesor': 'Prof. Johnson',
-        'trimestre': 'Trimestre 4',
-        'dias': ['Martes', 'Jueves'],
-      },
-      {
-        'nombre': 'Programación',
-        'horario': '7:00 a.m - 8:30 a.m',
-        'aula': 'Lab 101',
-        'profesor': 'Ing. Rodríguez',
-        'trimestre': 'Trimestre 4',
-        'dias': ['Lunes', 'Viernes'],
-      },
-    ],
-  },
-];
+
 
 List<TimeOfDay> parseHorario(String horario) {
   List<String> parts = horario.split(' - ');
@@ -268,99 +174,7 @@ List<List<int>> _generateFixedIntervals() {
 }
 
 
-Map<String, List<List<TimeOfDay>>> _calculateCommonFreeTime(
-  List<Map<String, dynamic>> userSubjects,
-  List<Map<String, dynamic>> friendSubjects,
-) {
-  String currentDay = _obtenerDiaActual();
-  List<List<int>> fixedIntervals = _generateFixedIntervals();
 
-  // Obtener horarios ocupados del usuario
-  List<List<int>> userOccupied = [];
-  for (var subject in userSubjects.where((s) => (s['dias'] as List).contains(currentDay))) {
-    List<TimeOfDay> times = parseHorario(subject['horario']);
-    userOccupied.add([_timeToMinutes(times[0]), _timeToMinutes(times[1])]);
-  }
-
-  // Obtener horarios ocupados del amigo
-  List<List<int>> friendOccupied = [];
-  for (var subject in friendSubjects.where((s) => (s['dias'] as List).contains(currentDay))) {
-    List<TimeOfDay> times = parseHorario(subject['horario']);
-    friendOccupied.add([_timeToMinutes(times[0]), _timeToMinutes(times[1])]);
-  }
-
-  // Encontrar bloques libres comunes
- List<List<int>> commonFree = [];
-for (var interval in fixedIntervals) {
-  final fixedStart = interval[0];
-  final fixedEnd = interval[1];
-
-  // Verificar si el usuario está libre
-  bool isUserFree = !userOccupied.any((occupied) {
-    if (occupied != null && occupied.length == 2 && occupied[0] != null && occupied[1] != null) {
-      int start = occupied[0];
-      int end = occupied[1];
-      return (start < fixedEnd) && (end > fixedStart);
-    }
-    return false; // Si la lista no es válida, considera que está ocupado
-  });
-
-  // Verificar si el amigo está libre
-  bool isFriendFree = !friendOccupied.any((occupied) {
-    if (occupied != null && occupied.length == 2 && occupied[0] != null && occupied[1] != null) {
-      int start = occupied[0];
-      int end = occupied[1];
-      return (start < fixedEnd) && (end > fixedStart);
-    }
-    return false; // Si la lista no es válida, considera que está ocupado
-  });
-
-  if (isUserFree && isFriendFree) {
-    commonFree.add(interval);
-  }
-}
-
-  // Formatear resultado
-  Map<String, List<List<TimeOfDay>>> result = {};
-  if (commonFree.isNotEmpty) {
-    result[currentDay] = commonFree.map((interval) {
-      return [
-        _minutesToTime(interval[0]),
-        _minutesToTime(interval[1])
-      ];
-    }).toList();
-  }
-
-  return result;
-}
-// void _sincronizarConAmigo(Map<String, dynamic> amigo) {
-//   Map<String, List<List<TimeOfDay>>> commonFreeTime =
-//       _calculateCommonFreeTime(materias, amigo['materias']);
-
-//   List<Map<String, dynamic>> nuevosHuecos = [];
-//   String currentDay = _obtenerDiaActual();
-
-//   if (commonFreeTime.containsKey(currentDay)) {
-//     for (var interval in commonFreeTime[currentDay]!) {
-//       String horario = '${_formatTime(interval[0])} - ${_formatTime(interval[1])}';
-//       nuevosHuecos.add({
-//         'nombre': amigo['nombre'],
-//         'horario': horario,
-//         'dias': [currentDay],
-//       });
-//     }
-//   }
-
-//   setState(() {
-//     // Eliminar huecos anteriores del mismo amigo y día
-//     huecosComunes.removeWhere((h) => 
-//         h['nombre'] == amigo['nombre'] && 
-//         h['dias'].contains(currentDay));
-
-//     // Agregar nuevos huecos
-//     huecosComunes.addAll(nuevosHuecos);
-//   });
-// }
 
 String _formatTime(TimeOfDay time) {
   String period = time.hour >= 12 ? 'p.m.' : 'a.m.';
@@ -374,30 +188,70 @@ String _formatTime(TimeOfDay time) {
 
   // Obtener las materias del día actual
   
-  @override
-  Widget build(BuildContext context) {
+@override
+Widget build(BuildContext context) {
+  if (_isLoading) {
+    // Muestra una pantalla de carga mientras se cargan los datos
     return Scaffold(
-      body:
+      body: Center(
+        child: CircularProgressIndicator(
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    );
+  }
 
-      SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 4),
-            _buildSeccion(
-              context: context,
-              height: 140,
-              title: 'Mi Horario Hoy',
-              items:
-              _materiasDelDia(),
-              builder: _buildTarjetaMateria,
-              accion: IconButton(
+  // Verificar si no hay materias
+  final bool noHayMaterias = _schedule.slotsPerDay.isEmpty ||
+      _schedule.slotsPerDay.values.every((list) => list.isEmpty);
+
+  // Mostrar un SnackBar si no hay materias
+  if (noHayMaterias) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Para agregar materias, presione el botón "+"',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.surface,
+            ),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          action: SnackBarAction(
+            label: 'Entendido',
+            textColor: Theme.of(context).colorScheme.surface,
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+          duration: Duration(seconds: 7),
+        ),
+      );
+    });
+  }
+
+  // Muestra la interfaz principal cuando los datos están listos
+  return Scaffold(
+    body: SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 4),
+          _buildSeccion(
+            context: context,
+            height: 180,
+            title: 'Mi Horario Hoy',
+            items: _materiasDelDia(),
+            builder: _buildTarjetaMateria,
+            accion: Tooltip(
+              message: 'Presiona aquí para crear tu horario en WeekSchedule',
+              child: IconButton(
                 icon: Icon(Icons.add_box),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => WeekSchedule(
-                        schedule: _schedule, // Pasar el horario completo
+                        schedule: _schedule,
                         onSubjectAdded: _agregarMateria,
                         onSubjectDeleted: _eliminarMateria,
                       ),
@@ -405,111 +259,185 @@ String _formatTime(TimeOfDay time) {
                   );
                 },
               ),
-              ),
-            // _buildSeccion(
-            //   context: context,
-            //   height: 130,
-            //   title: 'Huecos en Común',
-            //   items: huecosComunes,
-            //   builder: _buildTarjetaHueco,
-            // ),
-            // _buildSeccion(
-            //   context: context,
-            //   height: 180,
-            //   title: 'Amigos',
-            //   items: amigos,
-            //   builder: _buildTarjetaAmigo,
-            // ),
+            ),
+          ),
+          // Mostrar mensaje si no hay materias, justo debajo de "Mi Horario Hoy"
+          // if (noHayMaterias)
+          //   Padding(
+          //     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          //     child: Center(
+          //       child: Text(
+          //         'No hay materias agregadas',
+          //         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          //               color: Theme.of(context).colorScheme.inversePrimary,
+          //             ),
+          //       ),
+          //     ),
+          //   ),
+          // Sección de Huecos en Común
+          _buildSeccion1(
+            context: context,
+            height: 130,
+            title: 'Huecos en Común',
+            items: _huecosComunes,
+            builder: _buildTarjetaHueco,
+          ),
+          // Sección de Amigos
+          _buildSeccion1(
+            context: context,
+            height: 180,
+            title: 'Amigos',
+            items: _friends.map((friend) => {'nombre': friend}).toList(),
+            builder: _buildTarjetaAmigo,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+ 
+    
+  Widget _buildSeccion1({
+  required BuildContext context,
+  required double height,
+  required String title,
+  required List<Map<String, dynamic>> items, // Cambiar a List<Map<String, dynamic>>
+  required Widget Function(BuildContext, Map<String, dynamic>) builder, // Cambiar el tipo del builder
+  Widget? accion,
+}) {
+  final theme = Theme.of(context);
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Padding(
+        padding: const EdgeInsets.all(26.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: theme.textTheme.titleMedium,
+            ),
+            if (accion != null) accion,
           ],
         ),
       ),
-    );
-  }
+      SizedBox(
+        height: height,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: items.length,
+          itemBuilder: (context, index) => builder(context, items[index]),
+        ),
+      ),
+      Divider(thickness: 10, color: theme.colorScheme.surface),
+    ],
+  );
+}
 
-  Widget _buildSeccion({
-    required BuildContext context,
-    required double height,
-    required String title,
-    required List<TimeSlot> items,
-    required Widget Function(BuildContext, TimeSlot) builder,
-    Widget? accion,
-  }) {
-    final theme = Theme.of(context);
+ Widget _buildSeccion({
+  required BuildContext context,
+  required double height,
+  required String title,
+  required List<TimeSlot> items,
+  required Widget Function(BuildContext, TimeSlot) builder,
+  Widget? accion,
+}) {
+  final theme = Theme.of(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(26.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: theme.textTheme.titleMedium,
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Padding(
+        padding: const EdgeInsets.all(26.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: theme.textTheme.titleMedium,
+            ),
+            if (accion != null) accion,
+          ],
+        ),
+      ),
+      SizedBox(
+        height: height,
+        child: items.isEmpty
+            ? Center(
+                child: Text(
+                  'No hay materias agregadas',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.inversePrimary,
+                  ),
+                ),
+              )
+            : ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: items.length,
+                itemBuilder: (context, index) => builder(context, items[index]),
               ),
-              if (accion != null) accion,
-            ],
-          ),
-        ),
-        SizedBox(
-          height: height,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: items.length,
-            itemBuilder: (context, index) => builder(context, items[index]),
-          ),
-        ),
-        Divider(thickness: 10, color: theme.colorScheme.surface),
-      ],
-    );
-  }
-
+      ),
+      Divider(thickness: 10, color: theme.colorScheme.surface),
+    ],
+  );
+}
   Widget _buildTarjetaMateria(BuildContext context, TimeSlot materia) {
-    final theme = Theme.of(context);
+  final theme = Theme.of(context);
 
-    return GestureDetector(
-      onTap: () => _mostrarPopupMateria(context, materia),
-      onLongPress: () => _mostrarDialogoEliminar(context, materia),
-      child: Container(
-        width: 200,
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.primary,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
-              offset: const Offset(2, 2),
+  return GestureDetector(
+    onTap: () => _mostrarPopupMateria(context, materia),
+    onLongPress: () => _mostrarDialogoEliminar(context, materia),
+    child: Container(
+      width: 200,
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 6,
+            offset: const Offset(2, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              materia.getclassname(),
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: theme.colorScheme.onPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${materia.getstarthour().format(context)} - ${materia.getendhour().format(context)}',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.onPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Center( // Centrar el texto del lugar
+              child: Text(
+                materia.getLugar(),
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: theme.colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [Text(
-              materia.getclassname(),
-              style: theme.textTheme.labelMedium,
-            ),
-              const SizedBox(height: 8),
-              Text(
-                '${materia.getstarthour().format(context)} - ${materia.getendhour().format(context)}',
-                style: theme.textTheme.labelMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                materia.getLugar(),
-                style: theme.textTheme.labelMedium,
-              ),
-
-            ],
-          ),
-        ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   void _mostrarDialogoEliminar(BuildContext context, TimeSlot materia) {
     showDialog(
@@ -586,111 +514,111 @@ String _formatTime(TimeOfDay time) {
   }
 
 
-  Widget _buildTarjetaHueco(BuildContext context, Map<String, dynamic> hueco) {
-    final theme = Theme.of(context);
+ Widget _buildTarjetaHueco(BuildContext context, Map<String, dynamic> hueco) {
+  final theme = Theme.of(context);
 
-    return Container(
-      width: 200,
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.primary, // Usar el color primario del tema
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 6,
-            offset: const Offset(2, 2),
-          )
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.group, size: 32, color: theme.colorScheme.inversePrimary),
-            const SizedBox(height: 8),
-            Text(
-              hueco['nombre'],
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              hueco['horario'],
-              style: theme.textTheme.bodySmall,
-            ),
-            const SizedBox(height: 4),
-          ],
+  return Container(
+    width: 200,
+    margin: const EdgeInsets.symmetric(horizontal: 8),
+    decoration: BoxDecoration(
+      color: theme.colorScheme.primary, // Usar el color primario del tema
+      borderRadius: BorderRadius.circular(15),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 6,
+          offset: const Offset(2, 2),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTarjetaAmigo(BuildContext context, Map<String, dynamic> amigo) {
-    final theme = Theme.of(context);
-
-    return Container(
-      width: 200,
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.primary, // Usar el color primario del tema
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 6,
-            offset: const Offset(2, 2),
-          )
+      ],
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.group, size: 32, color: theme.colorScheme.inversePrimary),
+          const SizedBox(height: 8),
+          Text(
+            hueco['nombre'] ?? 'Hueco común', // Valor por defecto si no hay nombre
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            hueco['horario'] ?? 'Horario no disponible', // Valor por defecto si no hay horario
+            style: theme.textTheme.bodySmall,
+          ),
+          const SizedBox(height: 4),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Ícono de account_circle
-            Icon(
-              Icons.account_circle,
-              size: 48,
-              color: theme.colorScheme.inversePrimary,
+    ),
+  );
+}
+
+Widget _buildTarjetaAmigo(BuildContext context, Map<String, dynamic> amigo) {
+  final theme = Theme.of(context);
+
+  return Container(
+    width: 200,
+    margin: const EdgeInsets.symmetric(horizontal: 8),
+    decoration: BoxDecoration(
+      color: theme.colorScheme.primary, // Usar el color primario del tema
+      borderRadius: BorderRadius.circular(15),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 6,
+          offset: const Offset(2, 2),
+        ),
+      ],
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Ícono de account_circle
+          Icon(
+            Icons.account_circle,
+            size: 48,
+            color: theme.colorScheme.surface,
+          ),
+          const SizedBox(height: 8),
+          // Nombre y apellido
+          Text(
+            amigo['nombre'] ?? 'Amigo', // Valor por defecto si no hay nombre
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelMedium?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 8),
-            // Nombre y apellido
-            Text(
-              amigo['nombre'],
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+          ),
+          const SizedBox(height: 4),
+          // Username
+          // Text(
+          //   amigo['username'] ?? '@usuario', // Valor por defecto si no hay usuario
+          //   style: theme.textTheme.bodySmall,
+          // ),
+          // const SizedBox(height: 8),
+             
+            ElevatedButton(
+              
+               onPressed: () => _sincronizarConAmigo(),
+              
+               style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.inversePrimary,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                 shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                 ),
+               ),
+               child: Text(
+                 'Sincronizar',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.surface,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            // Username
-            Text(
-              amigo['usuario'],
-              style: theme.textTheme.bodySmall,
-            ),
-            const SizedBox(height: 8),
-            // Botón para sincronizar
-            // ElevatedButton(
-              
-            //   onPressed: () => _sincronizarConAmigo(amigo),
-              
-            //   style: ElevatedButton.styleFrom(
-            //     backgroundColor: theme.colorScheme.inversePrimary,
-            //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(20),
-            //     ),
-            //   ),
-            //   child: Text(
-            //     'Sincronizar',
-            //     style: theme.textTheme.bodySmall?.copyWith(
-            //       color: theme.colorScheme.surface,
-            //     ),
-            //   ),
-            // ),
+             ),
           ],
         ),
       ),

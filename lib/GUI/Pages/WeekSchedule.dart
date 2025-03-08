@@ -21,7 +21,7 @@ class WeekSchedule extends StatefulWidget {
 
 class _WeekScheduleState extends State<WeekSchedule> {
   // Lista de días de la semana en orden
-  final List<String> diasOrdenados = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
+  final List<String> diasOrdenados = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +102,8 @@ class _WeekScheduleState extends State<WeekSchedule> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Text(
-            dia,
+            dia[0].toUpperCase()+dia.substring(1).toLowerCase()
+            ,
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
@@ -123,51 +124,61 @@ class _WeekScheduleState extends State<WeekSchedule> {
     );
   }
 
-  Widget _buildTarjetaMateria(TimeSlot materia, String dia, BuildContext context) {
-    final theme = Theme.of(context);
+ Widget _buildTarjetaMateria(TimeSlot materia, String dia, BuildContext context) {
+  final theme = Theme.of(context);
 
-    return GestureDetector(
-      onTap: () => _mostrarPopupMateria(context, materia),
-      onLongPress: () => _mostrarDialogoEliminar(context, materia, dia),
-      child: Container(
-        width: 200,
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.primary,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
-              offset: const Offset(2, 2),
+  return GestureDetector(
+    onTap: () => _mostrarPopupMateria(context, materia),
+    onLongPress: () => _mostrarDialogoEliminar(context, materia, dia),
+    child: Container(
+      width: 200,
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 6,
+            offset: const Offset(2, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              materia.getclassname(),
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: theme.colorScheme.onPrimary, // Color del texto
+                fontWeight: FontWeight.bold, // Texto en negrita
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              '${materia.getstarthour().format(context)} - ${materia.getendhour().format(context)}',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.onPrimary, // Color del texto
+              ),
+            ),
+            const SizedBox(height: 8),
+            Center( // Centrar el texto del lugar
+              child: Text(
+                materia.getLugar(),
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: theme.colorScheme.onPrimary, // Color del texto
+                  fontWeight: FontWeight.bold, // Texto en negrita
+                ),
+              ),
             ),
           ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                materia.getclassname(),
-                style: theme.textTheme.labelMedium,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                '${materia.getstarthour().format(context)} - ${materia.getendhour().format(context)}',
-                style: theme.textTheme.labelMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                materia.getLugar(),
-                style: theme.textTheme.labelMedium,
-              ),
-            ],
-          ),
-        ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   void _mostrarDialogoEliminar(BuildContext context, TimeSlot materia, String dia) {
     showDialog(
