@@ -90,6 +90,18 @@ Future<void> saveToDB() async {
 }
 
 
+    Future<Map<String, dynamic>?> findScheduleByUsername(String username) async {
+    try {
+      await MongoDB.connect(); 
+      var scheduleData = await db.findOneFrom('Schedules', where.eq('username', username));
+      return scheduleData;
+    } catch (e) {
+      logger.severe('Error buscando horario: $e');
+      return null;
+    } finally {
+      await MongoDB.close();
+    }
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -112,26 +124,42 @@ Future<void> saveToDB() async {
 
 
   // Eliminar un TimeSlot del horario
-void removeSlot(String className, TimeOfDay start, TimeOfDay end) async {
+void removeSlot(String className) async {
   bool removed = false;
 
-  slotsPerDay.forEach((day, slots) {
-    slots.removeWhere((slot) =>
-        slot.getclassname() == className &&
-        slot.getstarthour() == start &&
-        slot.getendhour() == end);
+  // Crear una lista para almacenar los slots que se eliminarán
+  List<MapEntry<Day, TimeSlot>> slotsToRemove = [];
 
-    if (slots.isEmpty) {
-      slotsPerDay.remove(day); // Eliminar el día si no quedan slots
+  // Iterar sobre todos los días y slots para encontrar coincidencias
+  slotsPerDay.forEach((day, slots) {
+    slots.forEach((slot) {
+      if (slot.getclassname() == className) {
+        // Agregar a la lista de slots a eliminar
+        slotsToRemove.add(MapEntry(day, slot));
+      }
+    });
+  });
+
+  // Eliminar los slots recolectados
+  slotsToRemove.forEach((entry) {
+    final day = entry.key;
+    final slot = entry.value;
+
+    slotsPerDay[day]?.remove(slot); // Eliminar el slot específico
+
+    // Si no quedan slots en el día, eliminar el día del mapa
+    if (slotsPerDay[day]?.isEmpty ?? true) {
+      slotsPerDay.remove(day);
     }
+
     removed = true;
   });
 
   if (removed) {
-    logger.info("Slots eliminados: $className (${start.hour}:${start.minute} - ${end.hour}:${end.minute})");
+    logger.info("Todas las materias con nombre '$className' han sido eliminadas.");
     await saveToDB(); // Guardar cambios en la base de datos
   } else {
-    logger.warning("No se encontraron slots para eliminar: $className (${start.hour}:${start.minute} - ${end.hour}:${end.minute})");
+    logger.warning("No se encontraron materias con el nombre '$className'.");
   }
 }
 }

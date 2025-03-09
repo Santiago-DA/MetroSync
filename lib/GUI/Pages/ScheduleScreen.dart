@@ -90,14 +90,10 @@ Future<void> _loadFriends() async {
   setState(() {
     _schedule.removeSlot(
       materia.getclassname(),
-      materia.getstarthour(),
-      materia.getendhour(),
     );
   });
 }
-void _sincronizarConAmigo(){
-  print("yei");
-}
+
 
   // Obtener las materias del día actual
   List<TimeSlot> _materiasDelDia() {
@@ -130,10 +126,6 @@ void _sincronizarConAmigo(){
     }
   }
 
- 
-  final List<Map<String, dynamic>> huecosComunes = [
-    
-  ];
 
 
 
@@ -160,6 +152,121 @@ TimeOfDay _parseTimePart(String part) {
 
   return TimeOfDay(hour: hour, minute: minute);
 }
+
+List<Map<String, dynamic>> findCommonGaps(Schedule mySchedule, Schedule friendSchedule, String day) {
+  final mySlots = mySchedule.slotsPerDay[mySchedule.strtoenum(day)] ?? [];
+  final friendSlots = friendSchedule.slotsPerDay[friendSchedule.strtoenum(day)] ?? [];
+
+  // Definir el rango de tiempo (7:00 AM a 7:00 PM)
+  final TimeOfDay startTime = TimeOfDay(hour: 7, minute: 0);
+  final TimeOfDay endTime = TimeOfDay(hour: 19, minute: 0);
+
+  // Combinar y ordenar todos los slots por hora de inicio
+  final allSlots = [...mySlots, ...friendSlots];
+  allSlots.sort((a, b) => a.getstarthour().hour.compareTo(b.getstarthour().hour));
+
+  // Lista para almacenar los huecos comunes
+  List<Map<String, dynamic>> commonGaps = [];
+
+  // Iniciar desde el inicio del rango
+  TimeOfDay currentStart = startTime;
+
+  // Iterar sobre todos los slots para encontrar huecos libres
+  for (var slot in allSlots) {
+    final slotStart = slot.getstarthour();
+    final slotEnd = slot.getendhour();
+
+    // Si el slot está dentro del rango de 7:00 AM a 7:00 PM
+    if ((slotStart.hour > endTime.hour || (slotStart.hour == endTime.hour && slotStart.minute >= endTime.minute)) ||
+        (slotEnd.hour < startTime.hour || (slotEnd.hour == startTime.hour && slotEnd.minute <= startTime.minute))) {
+      continue; // Ignorar slots fuera del rango
+    }
+
+    // Si hay un hueco entre el inicio del rango y el inicio del slot
+    if (slotStart.hour > currentStart.hour || 
+        (slotStart.hour == currentStart.hour && slotStart.minute > currentStart.minute)) {
+      commonGaps.add({
+        'start': currentStart,
+        'end': slotStart,
+      });
+    }
+
+    // Actualizar el inicio del próximo hueco
+    currentStart = TimeOfDay(
+      hour: slotEnd.hour,
+      minute: slotEnd.minute,
+    );
+  }
+
+  // Si hay un hueco entre el último slot y el final del rango
+  if (currentStart.hour < endTime.hour || 
+      (currentStart.hour == endTime.hour && currentStart.minute < endTime.minute)) {
+    commonGaps.add({
+      'start': currentStart,
+      'end': endTime,
+    });
+  }
+
+  return commonGaps;
+}
+
+void _sincronizarConAmigo(String friendUsername) async {
+  try {
+    // Obtener el horario del amigo usando el método de la clase Schedule
+    var friendScheduleData = await _schedule.findScheduleByUsername(friendUsername);
+    if (friendScheduleData == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No se encontró el horario de $friendUsername.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Convertir el horario del amigo a un objeto Schedule
+    final friendSchedule = Schedule(friendUsername);
+    friendSchedule.slotsPerDay = (friendScheduleData['slots'] as Map<String, dynamic>).map((key, value) {
+      final day = friendSchedule.strtoenum(key.split('.').last);
+      final slots = (value as List).map((slot) => TimeSlot.fromJson(slot)).toList();
+      return MapEntry(day, slots);
+    });
+
+    // Obtener el día actual
+    final diaActual = "Lunes";
+
+    // Encontrar huecos comunes
+    final huecosComunes = findCommonGaps(_schedule, friendSchedule, diaActual);
+    print(huecosComunes);
+    // Actualizar el estado con los huecos comunes
+    setState(() {
+      _huecosComunes = huecosComunes.map((gap) {
+        return {
+          'nombre': 'Hueco común con $friendUsername',
+          'horario': '${gap['start'].format(context)} - ${gap['end'].format(context)}',
+        };
+      }).toList();
+    });
+
+    // Mostrar un mensaje de éxito
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Huecos comunes encontrados con $friendUsername.'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  } catch (e) {
+    print('Error sincronizando con amigo: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error sincronizando con amigo: $e'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
+
   
 @override
 Widget build(BuildContext context) {
@@ -237,7 +344,7 @@ if (noHayMaterias) {
           // Sección de Huecos en Común
           _buildSeccion1(
             context: context,
-            height: 130,
+            height: 180,
             title: 'Huecos en Común',
             items: _huecosComunes,
             builder: _buildTarjetaHueco,
@@ -498,16 +605,20 @@ if (noHayMaterias) {
         children: [
           Icon(Icons.group, size: 32, color: theme.colorScheme.inversePrimary),
           const SizedBox(height: 8),
-          Text(
-            hueco['nombre'] ?? 'Hueco común', // Valor por defecto si no hay nombre
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+          // Texto centrado con estilo labelMedium
+          Center(
+            child: Text(
+              hueco['nombre'] ?? 'Hueco común', // Valor por defecto si no hay nombre
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center, // Centrar el texto
             ),
           ),
           const SizedBox(height: 4),
           Text(
             hueco['horario'] ?? 'Horario no disponible', // Valor por defecto si no hay horario
-            style: theme.textTheme.bodySmall,
+            style: theme.textTheme.titleLarge,
           ),
           const SizedBox(height: 4),
         ],
@@ -515,7 +626,6 @@ if (noHayMaterias) {
     ),
   );
 }
-
 Widget _buildTarjetaAmigo(BuildContext context, Map<String, dynamic> amigo) {
   final theme = Theme.of(context);
 
@@ -562,7 +672,7 @@ Widget _buildTarjetaAmigo(BuildContext context, Map<String, dynamic> amigo) {
           ),
           const SizedBox(height: 8),
           ElevatedButton(
-            onPressed: () => _sincronizarConAmigo(),
+            onPressed: () => _sincronizarConAmigo(amigo['username']),
             style: ElevatedButton.styleFrom(
               backgroundColor: theme.colorScheme.inversePrimary,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

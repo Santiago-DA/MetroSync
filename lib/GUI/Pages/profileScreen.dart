@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:metrosync/GUI/Pages/SettingsScreen.dart';
 import 'package:metrosync/User/Current.dart';
-import 'package:metrosync/User/User.dart';
 import "EditProfilePage.dart";
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:metrosync/MongoManager/MongoDB.dart';
@@ -17,7 +16,6 @@ class _ProfilePageState extends State<ProfilePage> {
   late String _apellido;
   late String _usuario;
   late String _descripcion;
-  bool _isLoadingFriends = false; 
   bool _isExpanded = false;
   List<Map<String, String>> _usuarios=[];
   @override
@@ -26,10 +24,9 @@ class _ProfilePageState extends State<ProfilePage> {
     _initializeUser();
   }
  void _initializeUser() async {
-  setState(() => _isLoadingFriends = true); 
      _cargarDatosUsuario();
     await _loadFriends(); 
-    setState(() => _isLoadingFriends = false);// Esperar a que los amigos se carguen
+   // Esperar a que los amigos se carguen
    // Esperar a que el horario se cargue
 }
 
@@ -88,11 +85,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final user = Current().currentUser;
-    setState(() {
-     List<Map<String, String>> usuarios=user?.getFriends() ?? []; 
-    });
-    List<Map<String, String>> usuarios=user?.getFriends() ?? [];
+    
+    
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -186,7 +180,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 
                                 final user = Current().currentUser;
                                 if (user != null) {
-                                  _mostrarPopupAmigos(context,_usuarios);
+                                  _mostrarPopupAmigos(context);
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -353,7 +347,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _editarPerfil() async {
-    final result = await Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EditProfilePage(
@@ -373,7 +367,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-void _mostrarPopupAmigos(BuildContext context, List<Map<String, String>> amigos) {
+void _mostrarPopupAmigos(BuildContext context) {
   final colors = Theme.of(context).colorScheme;
 
   showDialog(
@@ -381,47 +375,65 @@ void _mostrarPopupAmigos(BuildContext context, List<Map<String, String>> amigos)
     builder: (context) {
       return AlertDialog(
         title: Text('Amigos', style: Theme.of(context).textTheme.displayMedium),
-        content: SizedBox(
-          width: double.maxFinite,
-          
-          child: _isLoadingFriends
-              ? Center(
-                  child: CircularProgressIndicator(
-                    color: colors.inversePrimary,
-                  ),
-                )
-              : amigos.isEmpty
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.people_outline,
-                          size: 48,
-                          color: colors.inversePrimary.withOpacity(0.5),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No hay amigos, pero descuida, ya los encontrarás.',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                color: colors.inversePrimary.withOpacity(0.7),
+        content: FutureBuilder<void>(
+          future: _loadFriends(), // Cargar amigos
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // Muestra un indicador de carga mientras se cargan los amigos
+              return Center(
+                child: CircularProgressIndicator(
+                  color: colors.inversePrimary,
+                ),
+              );
+            } else if (snapshot.hasError) {
+              // Muestra un mensaje de error si la carga falla
+              return Center(
+                child: Text(
+                  'Error cargando amigos: ${snapshot.error}',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: colors.inversePrimary.withOpacity(0.7),
+                      ),
+                ),
+              );
+            } else {
+              // Muestra la lista de amigos una vez que se han cargado
+              return SizedBox(
+                width: double.maxFinite,
+                child: _usuarios.isEmpty
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.people_outline,
+                            size: 48,
+                            color: colors.inversePrimary.withOpacity(0.5),
                           ),
-                        ),
-                      ],
-                    )
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: amigos.length,
-                      itemBuilder: (context, index) {
-                        final amigo = amigos[index];
-                        return ListTile(
-                          leading: Icon(Icons.account_circle,
-                              color: colors.inversePrimary),
-                          title: Text(amigo['username'] ?? 'Usuario desconocido'),
-                          subtitle: Text(amigo['name'] ?? 'Nombre no disponible'),
-                        );
-                      },
-                    ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No hay amigos, pero descuida, ya los encontrarás.',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                  color: colors.inversePrimary.withOpacity(0.7),
+                                ),
+                          ),
+                        ],
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _usuarios.length,
+                        itemBuilder: (context, index) {
+                          final amigo = _usuarios[index];
+                          return ListTile(
+                            leading: Icon(Icons.account_circle,
+                                color: colors.inversePrimary),
+                            title: Text(amigo['username'] ?? 'Usuario desconocido'),
+                            subtitle: Text(amigo['name'] ?? 'Nombre no disponible'),
+                          );
+                        },
+                      ),
+              );
+            }
+          },
         ),
         actions: [
           TextButton(
@@ -437,5 +449,4 @@ void _mostrarPopupAmigos(BuildContext context, List<Map<String, String>> amigos)
       );
     },
   );
-}
-}
+}}

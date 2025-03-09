@@ -17,7 +17,7 @@ ThemeData lightMode = ThemeData(
       fontSize: 16.0,
       fontWeight: FontWeight.normal,
       ),
-
+    
     bodyMedium: TextStyle(
       color: Colors.grey[800]!,
       fontSize: 14.0,
@@ -28,7 +28,7 @@ ThemeData lightMode = ThemeData(
         fontSize: 25,
         fontWeight: FontWeight.bold,
       ),
-
+      
       labelMedium: TextStyle(
         color: Colors.white,
         fontSize: 14.0,
@@ -49,7 +49,7 @@ ThemeData lightMode = ThemeData(
 
     displayMedium: TextStyle(
       color: Colors.black,
-      fontSize: 20.0,
+      fontSize: 24.0,
       fontWeight: FontWeight.bold,
     ),
 
@@ -60,8 +60,8 @@ ThemeData lightMode = ThemeData(
     ),
 
     titleLarge: TextStyle(
-      color: Colors.black,
-      fontSize: 96.0,
+      color: Colors.white,
+      fontSize: 19.0,
       fontWeight: FontWeight.bold,
     ),
 
