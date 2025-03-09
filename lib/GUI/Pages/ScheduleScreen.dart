@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'WeekSchedule.dart';
-import 'package:flutter/foundation.dart';
 import 'package:metrosync/Schedules/Schedule.dart'; // Importar la clase Schedule
 import 'package:metrosync/Schedules/TimeSlot.dart'; 
 import 'package:metrosync/User/Current.dart'; 
@@ -161,46 +160,6 @@ TimeOfDay _parseTimePart(String part) {
 
   return TimeOfDay(hour: hour, minute: minute);
 }
-
-int _timeToMinutes(TimeOfDay time) => time.hour * 60 + time.minute;
-
-TimeOfDay _minutesToTime(int minutes) {
-  int hour = minutes ~/ 60;
-  int minute = minutes % 60;
-  return TimeOfDay(hour: hour, minute: minute);
-}
-
-
-List<List<int>> _generateFixedIntervals() {
-  List<List<int>> intervals = [];
-  int startMinutes = 7 * 60; // 7:00 AM en minutos
-  const int classDuration = 90; // 1h30 en minutos
-  const int breakDuration = 15; // 15 min de descanso
-
-  // Generar intervalos hasta las 7:00 PM (19:00)
-  while (startMinutes + classDuration <= 19 * 60) {
-    int endMinutes = startMinutes + classDuration;
-    intervals.add([startMinutes, endMinutes]);
-    startMinutes = endMinutes + breakDuration;
-  }
-
-  return intervals;
-}
-
-
-
-
-String _formatTime(TimeOfDay time) {
-  String period = time.hour >= 12 ? 'p.m.' : 'a.m.';
-  int hour = time.hour % 12;
-  if (hour == 0) hour = 12;
-  String minute = time.minute.toString().padLeft(2, '0');
-  return '$hour:$minute $period';
-}
-   // Añadir una materia al horario
-
-
-  // Obtener las materias del día actual
   
 @override
 Widget build(BuildContext context) {
@@ -390,6 +349,7 @@ if (noHayMaterias) {
     onTap: () => _mostrarPopupMateria(context, materia),
     onLongPress: () => _mostrarDialogoEliminar(context, materia),
     child: Container(
+      height:180,
       width: 200,
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(

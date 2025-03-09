@@ -108,7 +108,7 @@ class _WeekScheduleState extends State<WeekSchedule> {
           ),
         ),
         SizedBox(
-          height: 150,
+          height: 180,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: materias.length,
@@ -131,6 +131,7 @@ class _WeekScheduleState extends State<WeekSchedule> {
     onTap: () => _mostrarPopupMateria(context, materia),
     onLongPress: () => _mostrarDialogoEliminar(context, materia, dia),
     child: Container(
+      
       width: 200,
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
