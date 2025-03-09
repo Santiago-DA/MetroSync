@@ -122,8 +122,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: _descriptionController,
-                    decoration: InputDecoration(labelText: 'Descripción'),
-                    maxLines: 3,
+                    decoration: InputDecoration(
+                      labelText: 'Descripción',
+                      helperText: 'Máximo 50 caracteres',
+                      helperStyle: TextStyle(color: Colors.grey),
+                    ),
+                    maxLength: 50, // Limitar a 50 caracteres
+                    maxLines: 3, // Permitir múltiples líneas
+                    buildCounter: (BuildContext context, {
+                      required int currentLength,
+                      required int? maxLength,
+                      required bool isFocused,
+                    }) => Text(
+                      '$currentLength/$maxLength',
+                      style: TextStyle(
+                        color: currentLength > 50 ? Colors.red : Colors.grey,
+                      ),
+                    ),
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(50), // Limitar a 50 caracteres
+                      FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9á-úÁ-Ú ,.!?¿¡-]')), // Permitir caracteres válidos
+                    ],
                   ),
                 ],
               ),

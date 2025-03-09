@@ -3,7 +3,8 @@ import 'package:metrosync/GUI/Pages/SettingsScreen.dart';
 import 'package:metrosync/User/Current.dart';
 import 'package:metrosync/User/User.dart';
 import "EditProfilePage.dart";
-
+import 'package:mongo_dart/mongo_dart.dart' as mongo;
+import 'package:metrosync/MongoManager/MongoDB.dart';
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -16,12 +17,55 @@ class _ProfilePageState extends State<ProfilePage> {
   late String _apellido;
   late String _usuario;
   late String _descripcion;
-
+  bool _isLoadingFriends = false; 
+  bool _isExpanded = false;
+  List<Map<String, String>> _usuarios=[];
   @override
   void initState() {
     super.initState();
-    _cargarDatosUsuario();
+    _initializeUser();
   }
+ void _initializeUser() async {
+  setState(() => _isLoadingFriends = true); 
+     _cargarDatosUsuario();
+    await _loadFriends(); 
+    setState(() => _isLoadingFriends = false);// Esperar a que los amigos se carguen
+   // Esperar a que el horario se cargue
+}
+
+    Future<void> _loadFriends() async {
+  final currentUser = Current().currentUser;
+  if (currentUser != null) {
+    
+    try {
+      // Conectar a la base de datos
+      await MongoDB.connect();
+  
+      // Cargar amigos desde la base de datos
+      await currentUser.loadFriends();
+
+      // Actualizar el estado con los amigos cargados
+      setState(() {
+        _usuarios = currentUser.getFriends();
+        print('Amigos cargados: $_usuarios');
+      });
+    } catch (e) {
+      print('Error cargando amigos: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error cargando amigos: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      // Cerrar la conexión a la base de datos
+      await MongoDB.close();
+      ;
+    }
+  } else {
+    print('Usuario no logueado, no se pueden cargar amigos.');
+  }
+}
 
   void _cargarDatosUsuario() {
     final user = Current().currentUser;
@@ -30,29 +74,25 @@ class _ProfilePageState extends State<ProfilePage> {
       _apellido = user?.getlastname() ?? '';
       _usuario = user?.getusername() ?? '';
       _descripcion = user?.getdescription() ?? '';
+      
     });
   }
+
+ 
+
+ 
+
+
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-
-    // Lista de amigos inventada
-    final List<String> amigos = [
-      'Amigo 1',
-      'Amigo 2',
-      'Amigo 3',
-      'Amigo 4',
-    ];
-
-    // Lista de sincronizados inventada
-    final List<String> sincronizados = [
-      'Sincronizado 1',
-      'Sincronizado 2',
-      'Sincronizado 3',
-    ];
-
+    final user = Current().currentUser;
+    setState(() {
+     List<Map<String, String>> usuarios=user?.getFriends() ?? []; 
+    });
+    List<Map<String, String>> usuarios=user?.getFriends() ?? [];
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -61,12 +101,10 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: colors.primary,
         foregroundColor: colors.inversePrimary,
         actions: [
-          // Botón de editar perfil
           IconButton(
             icon: Icon(Icons.edit, color: colors.inversePrimary),
             onPressed: _editarPerfil,
           ),
-          // Botón de configuración
           IconButton(
             icon: Icon(Icons.settings, color: colors.inversePrimary),
             onPressed: () {
@@ -81,91 +119,111 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Mover el ícono account_circle más arriba
             Container(
-              margin: const EdgeInsets.only(
-                  top: 20), // Margen superior para subir el ícono
+              margin: const EdgeInsets.only(top: 20),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment
-                    .center, // Alinear ícono y texto al centro
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Ícono de cuenta
                   Icon(
                     Icons.account_circle,
-                    size: 60, // Tamaño grande
+                    size: 60,
                     color: colors.inversePrimary,
                   ),
-                  const SizedBox(
-                      width: 16), // Espacio entre el ícono y el texto
-                  // Nombre y usuario
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "$_nombre $_apellido",
-                        style: theme.textTheme.displayLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "$_nombre $_apellido",
+                          style: theme.textTheme.displayLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _usuario,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: colors.inversePrimary.withOpacity(0.7),
+                        const SizedBox(height: 4),
+                        Text(
+                          _usuario,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: colors.inversePrimary.withOpacity(0.7),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        _descripcion,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: colors.inversePrimary.withOpacity(0.7),
+                        const SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isExpanded = !_isExpanded; // Alternar estado
+                            });
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _descripcion,
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  color: colors.inversePrimary.withOpacity(0.7),
+                                ),
+                                maxLines: _isExpanded ? null : 1, // Mostrar 3 líneas si no está expandido
+                                overflow: _isExpanded
+                                    ? TextOverflow.visible
+                                    : TextOverflow.ellipsis, // Mostrar "..." si no está expandido
+                              ),
+                              if (_descripcion.length > 100) // Mostrar botón solo si el texto es largo
+                                Text(
+                                  _isExpanded ? 'Ver menos' : 'Ver más',
+                                  style: TextStyle(
+                                    color: colors.secondary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      // Botones de "Amigos" y "Sincronizados"
-                      Row(
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              // Mostrar popup de amigos
-                              _mostrarPopupAmigos(context, amigos);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: colors.secondary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                
+                                final user = Current().currentUser;
+                                if (user != null) {
+                                  _mostrarPopupAmigos(context,_usuarios);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('No se pudo cargar la lista de amigos.'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colors.secondary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: Text(
+                                'Amigos',
+                                style: theme.textTheme.labelSmall?.copyWith(),
                               ),
                             ),
-                            child: Text(
-                              'Amigos',
-                              style: theme.textTheme.labelSmall?.copyWith(),
-                            ),
-                          ),
-                          const SizedBox(
-                              width: 10), // Espacio entre los botones
-                          ElevatedButton(
-                            onPressed: () {
-                              // Mostrar popup de sincronizados
-                              _mostrarPopupSincronizados(
-                                  context, sincronizados);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: colors.secondary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                            child: Text('Sincronizados',
-                                style: theme.textTheme.labelSmall),
-                          ),
-                        ],
-                      ),
-                    ],
+                            const SizedBox(width: 10),
+                            
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
+      
+        
+      
+    
+  
+
 
             // Pestañas de "Publicaciones", "Respuestas" y "Objetos"
             //     DefaultTabController(
@@ -315,10 +373,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-}
-
-// Función para mostrar el popup de amigos
-void _mostrarPopupAmigos(BuildContext context, List<String> amigos) {
+void _mostrarPopupAmigos(BuildContext context, List<Map<String, String>> amigos) {
   final colors = Theme.of(context).colorScheme;
 
   showDialog(
@@ -328,15 +383,45 @@ void _mostrarPopupAmigos(BuildContext context, List<String> amigos) {
         title: Text('Amigos', style: Theme.of(context).textTheme.displayMedium),
         content: SizedBox(
           width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: amigos.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(amigos[index]),
-              );
-            },
-          ),
+          
+          child: _isLoadingFriends
+              ? Center(
+                  child: CircularProgressIndicator(
+                    color: colors.inversePrimary,
+                  ),
+                )
+              : amigos.isEmpty
+                  ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.people_outline,
+                          size: 48,
+                          color: colors.inversePrimary.withOpacity(0.5),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No hay amigos, pero descuida, ya los encontrarás.',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                color: colors.inversePrimary.withOpacity(0.7),
+                          ),
+                        ),
+                      ],
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: amigos.length,
+                      itemBuilder: (context, index) {
+                        final amigo = amigos[index];
+                        return ListTile(
+                          leading: Icon(Icons.account_circle,
+                              color: colors.inversePrimary),
+                          title: Text(amigo['username'] ?? 'Usuario desconocido'),
+                          subtitle: Text(amigo['name'] ?? 'Nombre no disponible'),
+                        );
+                      },
+                    ),
         ),
         actions: [
           TextButton(
@@ -353,42 +438,4 @@ void _mostrarPopupAmigos(BuildContext context, List<String> amigos) {
     },
   );
 }
-
-// Función para mostrar el popup de sincronizados
-void _mostrarPopupSincronizados(
-    BuildContext context, List<String> sincronizados) {
-  final colors = Theme.of(context).colorScheme;
-
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text('Sincronizados',
-            style: Theme.of(context).textTheme.displayMedium),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: sincronizados.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(sincronizados[index]),
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: colors.secondary, // Color del texto
-            ),
-            child: Text('Cerrar'),
-          ),
-        ],
-      );
-    },
-  );
 }

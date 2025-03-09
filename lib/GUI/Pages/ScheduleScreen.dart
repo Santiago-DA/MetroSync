@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:metrosync/Schedules/Schedule.dart'; // Importar la clase Schedule
 import 'package:metrosync/Schedules/TimeSlot.dart'; 
 import 'package:metrosync/User/Current.dart'; 
+import 'package:mongo_dart/mongo_dart.dart' as mongo;
+import 'package:metrosync/MongoManager/MongoDB.dart';
 class ScheduleScreen extends StatefulWidget {
   ScheduleScreen({super.key});
   @override
@@ -13,7 +15,7 @@ class ScheduleScreen extends StatefulWidget {
 class _ScheduleScreenState extends State<ScheduleScreen> {
   late Schedule _schedule; // Horario del usuario
   late String _username ;
-  List<String> _friends = []; // Lista de amigos
+  List<Map<String,String>> _friends = []; // Lista de amigos
   List<Map<String, dynamic>> _huecosComunes = []; // Huecos en común
  // Nombre de usuario actual (debe ser dinámico en una app real)
 
@@ -25,26 +27,32 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     _initializeUser();
   }
 
-  void _initializeUser() {
-    final currentUser = Current().currentUser;
-    if (currentUser != null) {
-      _username = currentUser.getusername();
-      _loadFriends();
-    } else {
-      _username = 'usuario_no_logueado';
-    }
-    _schedule = Schedule(_username);
-    _loadSchedule();
+  void _initializeUser() async {
+  final currentUser = Current().currentUser;
+  if (currentUser != null) {
+    _username = currentUser.getusername();
+    await _loadFriends(); // Esperar a que los amigos se carguen
+  } else {
+    _username = 'usuario_no_logueado';
   }
+  _schedule = Schedule(_username);
+  await _loadSchedule(); // Esperar a que el horario se cargue
+}
 
- Future<void> _loadFriends() async {
+Future<void> _loadFriends() async {
   final currentUser = Current().currentUser;
   if (currentUser != null) {
     try {
+      // Conectar a la base de datos
+      await MongoDB.connect();
+
+      // Cargar amigos desde la base de datos
       await currentUser.loadFriends();
+
+      // Actualizar el estado con los amigos cargados
       setState(() {
         _friends = currentUser.getFriends();
-        print(currentUser.getFriends());
+        print('Amigos cargados: $_friends');
       });
     } catch (e) {
       print('Error cargando amigos: $e');
@@ -54,9 +62,15 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           backgroundColor: Colors.red,
         ),
       );
+    } finally {
+      // Cerrar la conexión a la base de datos
+      await MongoDB.close();
     }
+  } else {
+    print('Usuario no logueado, no se pueden cargar amigos.');
   }
 }
+
   // Cargar el horario desde la base de datos
    Future<void> _loadSchedule() async {
     setState(() => _isLoading = true); // Activar estado de carga
@@ -206,7 +220,7 @@ Widget build(BuildContext context) {
       _schedule.slotsPerDay.values.every((list) => list.isEmpty);
 
   // Mostrar un SnackBar si no hay materias
-  if (noHayMaterias) {
+if (noHayMaterias) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -261,19 +275,6 @@ Widget build(BuildContext context) {
               ),
             ),
           ),
-          // Mostrar mensaje si no hay materias, justo debajo de "Mi Horario Hoy"
-          // if (noHayMaterias)
-          //   Padding(
-          //     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          //     child: Center(
-          //       child: Text(
-          //         'No hay materias agregadas',
-          //         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-          //               color: Theme.of(context).colorScheme.inversePrimary,
-          //             ),
-          //       ),
-          //     ),
-          //   ),
           // Sección de Huecos en Común
           _buildSeccion1(
             context: context,
@@ -287,15 +288,14 @@ Widget build(BuildContext context) {
             context: context,
             height: 180,
             title: 'Amigos',
-            items: _friends.map((friend) => {'nombre': friend}).toList(),
+            items: _friends, // Pasar la lista de amigos directamente
             builder: _buildTarjetaAmigo,
           ),
         ],
       ),
     ),
   );
-}
- 
+} 
     
   Widget _buildSeccion1({
   required BuildContext context,
@@ -585,43 +585,40 @@ Widget _buildTarjetaAmigo(BuildContext context, Map<String, dynamic> amigo) {
             color: theme.colorScheme.surface,
           ),
           const SizedBox(height: 8),
-          // Nombre y apellido
+          // Nombre de usuario
           Text(
-            amigo['nombre'] ?? 'Amigo', // Valor por defecto si no hay nombre
+            amigo['username'] ?? 'Usuario', // Valor por defecto si no hay username
             textAlign: TextAlign.center,
             style: theme.textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 4),
-          // Username
-          // Text(
-          //   amigo['username'] ?? '@usuario', // Valor por defecto si no hay usuario
-          //   style: theme.textTheme.bodySmall,
-          // ),
-          // const SizedBox(height: 8),
-             
-            ElevatedButton(
-              
-               onPressed: () => _sincronizarConAmigo(),
-              
-               style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.inversePrimary,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                 ),
-               ),
-               child: Text(
-                 'Sincronizar',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.surface,
-                ),
+          // Nombre completo
+          Text(
+            amigo['name'] ?? 'Nombre no disponible', // Valor por defecto si no hay name
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelMedium,
+          ),
+          const SizedBox(height: 8),
+          ElevatedButton(
+            onPressed: () => _sincronizarConAmigo(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: theme.colorScheme.inversePrimary,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-             ),
-          ],
-        ),
+            ),
+            child: Text(
+              'Sincronizar',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.surface,
+              ),
+            ),
+          ),
+        ],
       ),
-    );
-  }
-}
+    ),
+  );
+}}

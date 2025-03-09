@@ -2,44 +2,53 @@ import '../MongoManager/MongoDB.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:bcrypt/bcrypt.dart';
 import "Current.dart";
+import 'package:flutter/material.dart';
 class User {
-  //Agregar descripcion de perfil
   final MongoDB _db = MongoDB();
-  // late Schedule _myschedule;
   late String _username;
   String? _email;
   String? _name;
-  String? _lastname;  
+  String? _lastname;
   String? _descripcion_perfil;
-  List<String> _friends = [];
-  //Me volvi un 8 okey? no me juzguen
+  List<Map<String, String>> _friends = [];
+
   User();
 
-  // Schedule getmyschedule(){
-  //   return(_myschedule);
-  // }
   String? getdescription() {
     return _descripcion_perfil;
   }
-  List<String> getFriends() {
-    return _friends;
-  }
 
-  // Añadir un amigo
-  Future<void> addFriend(String friendUsername) async {
-    if (!_friends.contains(friendUsername)) {
-      _friends.add(friendUsername);
+  Future<void> addFriend(String friendUsername, String friendName) async {
+    if (!_friends.any((friend) => friend['username'] == friendUsername)) {
+      _friends.add({'username': friendUsername, 'name': friendName});
       await _updateFriendsInDB();
     }
   }
 
-  // Eliminar un amigo
-  Future<void> removeFriend(String friendUsername) async {
-    _friends.remove(friendUsername);
-    await _updateFriendsInDB();
-  }
+ Future<void> loadFriends() async {
+  try {
+    await MongoDB.connect(); // Conectar a la base de datos
+    var userData = await _db.findOneFrom('Users', where.eq('username', _username));
 
-  // Actualizar la lista de amigos en la base de datos
+    if (userData != null && userData['friends'] != null) {
+      // Convertir los datos a List<Map<String, String>>
+      _friends = (userData['friends'] as List).map((friend) {
+        return {
+          'username': friend['username']?.toString() ?? '', // Convertir a String
+          'name': friend['name']?.toString() ?? '', // Convertir a String
+        };
+      }).toList();
+    } else {
+      _friends = []; // Si no hay amigos, inicializar la lista vacía
+    }
+  } catch (e) {
+    print('Error cargando amigos: $e');
+    // Mostrar un mensaje de error al usuario
+    
+  } finally {
+    await MongoDB.close(); // Cerrar la conexión a la base de datos
+  }
+}
   Future<void> _updateFriendsInDB() async {
     try {
       await MongoDB.connect();
@@ -56,40 +65,9 @@ class User {
     }
   }
 
-  // Cargar la lista de amigos desde la base de datos
-Future<void> loadFriends() async {
-  try {
-    // Ensure the database connection is open
-    if (MongoDB.db == null || MongoDB.db.state != State.OPEN) {
-      await MongoDB.connect();
-      print('Conexión a MongoDB establecida.');
-    }
-
-    // Buscar el usuario en la base de datos
-    var userData = await MongoDB.userCollection.findOne(where.eq('username', _username));
-    print('Datos del usuario: $userData');
-
-    if (userData != null) {
-      // Verificar si el campo 'friends' existe y no es nulo
-      if (userData['friends'] != null) {
-        // Convertir la lista de amigos a List<String>
-        _friends = List<String>.from(userData['friends']);
-        print('Amigos cargados: $_friends');
-      } else {
-        // Si 'friends' es nulo, inicializar como lista vacía
-        _friends = [];
-        print('El campo "friends" es nulo. Inicializando como lista vacía.');
-      }
-    } else {
-      // Si no se encuentra el usuario, lanzar una excepción
-      throw Exception('Usuario no encontrado en la base de datos.');
-    }
-  } catch (e) {
-    // Manejar errores
-    print('Error cargando amigos: $e');
-    throw e;
+  List<Map<String, String>> getFriends() {
+    return _friends;
   }
-}
 
  Future<bool> loginUser(String username, String password) async {
   try {

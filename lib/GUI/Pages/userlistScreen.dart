@@ -12,8 +12,8 @@ class Userlist extends StatefulWidget {
 
 class _UserlistState extends State<Userlist> {
   final TextEditingController _searchController = TextEditingController();
-  List<String> _allUsers = []; // Todos los usuarios de la base de datos
-  List<String> _filteredUsers = []; // Usuarios filtrados
+  List<Map<String, String>> _allUsers = []; // Todos los usuarios de la base de datos
+  List<Map<String, String>> _filteredUsers = []; // Usuarios filtrados
   final MongoDB _db = MongoDB();
   bool _isLoading = true; // Estado de carga
   bool _hasError = false; // Estado de error
@@ -21,6 +21,9 @@ class _UserlistState extends State<Userlist> {
   // Variables para la paginación
   int _currentPage = 0; // Página actual
   final int _usersPerPage = 10; // Usuarios por página
+
+  // Set para rastrear usuarios seguidos
+  final Set<String> _followedUsers = {};
 
   @override
   void initState() {
@@ -44,8 +47,12 @@ class _UserlistState extends State<Userlist> {
 
       setState(() {
         _allUsers = users
-            .map((user) => user['username'] as String)
-            .where((username) => username != currentUser?.getusername()) // Excluir al usuario actual
+            .map((user) => {
+                  'username': user['username'] as String,
+                  'name': user['name'] as String,
+                })
+            .where((user) =>
+                user['username'] != currentUser?.getusername()) // Excluir al usuario actual
             .toList();
         _filteredUsers = _allUsers.take(_usersPerPage).toList(); // Mostrar solo los primeros 10
         _isLoading = false; // Finalizar la carga
@@ -66,7 +73,7 @@ class _UserlistState extends State<Userlist> {
     final query = _searchController.text.toLowerCase();
     setState(() {
       _filteredUsers = _allUsers
-          .where((user) => user.toLowerCase().contains(query))
+          .where((user) => user['username']!.toLowerCase().contains(query))
           .take(_usersPerPage) // Limitar a 10 usuarios en la búsqueda
           .toList();
     });
@@ -83,10 +90,13 @@ class _UserlistState extends State<Userlist> {
   }
 
   // Añadir un amigo
-  Future<void> _addFriend(String friendUsername) async {
+  Future<void> _addFriend(String friendUsername, String friendName) async {
     final currentUser = Current().currentUser;
     if (currentUser != null) {
-      await currentUser.addFriend(friendUsername);
+      await currentUser.addFriend(friendUsername, friendName);
+      setState(() {
+        _followedUsers.add(friendUsername); // Agregar al conjunto de usuarios seguidos
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Ahora sigues a $friendUsername'),
@@ -136,11 +146,14 @@ class _UserlistState extends State<Userlist> {
                                 ),
                             itemBuilder: (context, index) {
                                 if (index < _filteredUsers.length) {
-                                  final userName = _filteredUsers[index];
+                                  final user = _filteredUsers[index];
+                                  final userName = user['username']!;
+                                  final userFullName = user['name']!;
                                   return UserListItem(
                                     userName: userName,
                                     userImageUrl: 'https://via.placeholder.com/150',
-                                    onFollow: () => _addFriend(userName), // Acción al seguir
+                                    isFollowed: _followedUsers.contains(userName), // Verificar si ya está seguido
+                                    onFollow: () => _addFriend(userName, userFullName), // Acción al seguir
                                   );
                                 } else {
                                   return Padding(
@@ -167,12 +180,14 @@ class _UserlistState extends State<Userlist> {
 class UserListItem extends StatelessWidget {
   final String userName;
   final String userImageUrl;
+  final bool isFollowed; // Indica si el usuario ya está seguido
   final VoidCallback onFollow;
 
   const UserListItem({
     super.key,
     required this.userName,
     required this.userImageUrl,
+    required this.isFollowed,
     required this.onFollow,
   });
 
@@ -185,18 +200,25 @@ class UserListItem extends StatelessWidget {
         backgroundImage: NetworkImage(userImageUrl),
       ),
       title: Text(userName),
-      trailing: ElevatedButton(
-        onPressed: onFollow, // Acción al presionar el botón de seguir
-        child: Text(
-          'Seguir',
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: theme.colorScheme.surface,
-          ),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: theme.colorScheme.secondary,
-        ),
-      ),
+      trailing: isFollowed
+          ? Text(
+              'Seguido',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.secondary,
+              ),
+            )
+          : ElevatedButton(
+              onPressed: onFollow, // Acción al presionar el botón de seguir
+              child: Text(
+                'Seguir',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.surface,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.secondary,
+              ),
+            ),
     );
   }
 }
