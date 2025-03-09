@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:metrosync/User/Current.dart';
+import 'package:metrosync/User/User.dart';
+
+import '../../MainFeed/Post.dart';
 
 List<String> _labels = ["Critica", "Ayuda", "Sugerencia", "Idea"];
 
@@ -70,9 +74,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
               },
             ),
             SizedBox(height: 20), // Spacing
-            ElevatedButton(
+            TextButton(
                 onPressed: () {
-                  print("hey");
+                  User? currentUser = Current().currentUser;
                 },
                 child: Text("Crear"))
           ],
