@@ -48,9 +48,12 @@ class _UserlistState extends State<Userlist> {
 
           // Cargar solicitudes de amistad
           var pendingRequests = await currentUser.getPendingFriendRequests();
+          print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+          print(pendingRequests);
           for (var request in pendingRequests) {
             if (request['to'] == currentUser.getusername()) {
-              _receivedRequests.add(request['from'] as String); // Solicitudes recibidas
+              _receivedRequests.add(request['from'] as String); 
+              // Solicitudes recibidas
             } else if (request['from'] == currentUser.getusername()) {
               _sentRequests.add(request['to'] as String); // Solicitudes enviadas
             }
@@ -234,7 +237,7 @@ class UserListItem extends StatelessWidget {
                 color: theme.colorScheme.secondary,
               ),
             )
-              : isReceivedRequest
+          : isReceivedRequest
               ? Text(
                   'Solicitud recibida',
                   style: theme.textTheme.labelMedium?.copyWith(
@@ -260,7 +263,6 @@ class UserListItem extends StatelessWidget {
                         backgroundColor: theme.colorScheme.secondary,
                       ),
                     ),
-              
     );
   }
 }

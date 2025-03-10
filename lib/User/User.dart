@@ -204,6 +204,7 @@ class User {
         modify.push('friendRequests', {
           'from': _username,
           'status': 'pending',
+           "to":toUsername
         }),
       );
     } catch (e) {
