@@ -38,7 +38,7 @@ class HomePage extends StatelessWidget {
       'label': 'Ayuda', // Etiqueta
     },
   ];
-
+  
   HomePage({
     super.key,
     required this.onMailPressed,

@@ -21,7 +21,7 @@ class WeekSchedule extends StatefulWidget {
 
 class _WeekScheduleState extends State<WeekSchedule> {
   // Lista de días de la semana en orden
-  final List<String> diasOrdenados = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+  final List<String> diasOrdenados = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes'];
 
   @override
   Widget build(BuildContext context) {
@@ -127,11 +127,16 @@ class _WeekScheduleState extends State<WeekSchedule> {
  Widget _buildTarjetaMateria(TimeSlot materia, String dia, BuildContext context) {
   final theme = Theme.of(context);
 
+  // Limitar el nombre de la materia a 19 caracteres
+  String nombreMateria = materia.getclassname();
+  if (nombreMateria.length > 18) {
+    nombreMateria = nombreMateria.substring(0, 17) + '...'; // Truncar y agregar "..."
+  }
+
   return GestureDetector(
     onTap: () => _mostrarPopupMateria(context, materia),
     onLongPress: () => _mostrarDialogoEliminar(context, materia, dia),
     child: Container(
-      
       width: 200,
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
@@ -151,7 +156,7 @@ class _WeekScheduleState extends State<WeekSchedule> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              materia.getclassname(),
+              nombreMateria, // Usar el nombre truncado
               style: theme.textTheme.labelLarge?.copyWith(
                 color: theme.colorScheme.onPrimary, // Color del texto
                 fontWeight: FontWeight.bold, // Texto en negrita
@@ -165,7 +170,7 @@ class _WeekScheduleState extends State<WeekSchedule> {
               ),
             ),
             const SizedBox(height: 8),
-            Center( // Centrar el texto del lugar
+            Center(
               child: Text(
                 materia.getLugar(),
                 style: theme.textTheme.labelLarge?.copyWith(

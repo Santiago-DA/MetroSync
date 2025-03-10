@@ -12,23 +12,21 @@ class Userlist extends StatefulWidget {
 
 class _UserlistState extends State<Userlist> {
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, String>> _allUsers = []; // Todos los usuarios de la base de datos
-  List<Map<String, String>> _filteredUsers = []; // Usuarios filtrados
+  List<Map<String, String>> _allUsers = [];
+  List<Map<String, String>> _filteredUsers = [];
   final MongoDB _db = MongoDB();
-  bool _isLoading = true; // Estado de carga
-  bool _hasError = false; // Estado de error
-
-  // Variables para la paginación
-  int _currentPage = 0; // Página actual
-  final int _usersPerPage = 10; // Usuarios por página
-
-  // Set para rastrear usuarios seguidos
+  bool _isLoading = true;
+  bool _hasError = false;
+  int _currentPage = 0;
+  final int _usersPerPage = 10;
   final Set<String> _followedUsers = {};
+  final Set<String> _sentRequests = {}; // Solicitudes enviadas
+  final Set<String> _receivedRequests = {}; // Solicitudes recibidas
 
   @override
   void initState() {
     super.initState();
-    _loadAllUsers(); // Cargar todos los usuarios al iniciar
+    _loadAllUsers();
     _searchController.addListener(_filterUsers);
   }
 
@@ -38,36 +36,50 @@ class _UserlistState extends State<Userlist> {
     super.dispose();
   }
 
-  // Cargar todos los usuarios de la base de datos
-  Future<void> _loadAllUsers() async {
-    try {
-      await MongoDB.connect();
-      var users = await _db.findManyFrom('Users', null);
-      final currentUser = Current().currentUser;
+    Future<void> _loadAllUsers() async {
+      try {
+        await MongoDB.connect();
+        var users = await _db.findManyFrom('Users', null);
+        final currentUser = Current().currentUser;
 
-      setState(() {
-        _allUsers = users
-            .map((user) => {
-                  'username': user['username'] as String,
-                  'name': user['name'] as String,
-                })
-            .where((user) =>
-                user['username'] != currentUser?.getusername()) // Excluir al usuario actual
-            .toList();
-        _filteredUsers = _allUsers.take(_usersPerPage).toList(); // Mostrar solo los primeros 10
-        _isLoading = false; // Finalizar la carga
-      });
-    } catch (e) {
-      print('Error cargando usuarios: $e');
-      setState(() {
-        _hasError = true; // Indicar que ocurrió un error
-        _isLoading = false; // Finalizar la carga
-      });
-    } finally {
-      await MongoDB.close();
+        if (currentUser != null) {
+          await currentUser.loadFriends();
+          _followedUsers.addAll(currentUser.getFriends().map((friend) => friend['username']!));
+
+          // Cargar solicitudes de amistad
+          var pendingRequests = await currentUser.getPendingFriendRequests();
+          for (var request in pendingRequests) {
+            if (request['to'] == currentUser.getusername()) {
+              _receivedRequests.add(request['from'] as String); // Solicitudes recibidas
+            } else if (request['from'] == currentUser.getusername()) {
+              _sentRequests.add(request['to'] as String); // Solicitudes enviadas
+            }
+          }
+        }
+
+        setState(() {
+          _allUsers = users
+              .map((user) => {
+                    'username': user['username'] as String,
+                    'name': user['name'] as String,
+                    "lastname": user["lastname"] as String,
+                  })
+              .where((user) =>
+                  user['username'] != currentUser?.getusername()) // Excluir al usuario actual
+              .toList();
+          _filteredUsers = _allUsers.take(_usersPerPage).toList();
+          _isLoading = false;
+        });
+      } catch (e) {
+        print('Error cargando usuarios: $e');
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
+      } finally {
+        await MongoDB.close();
+      }
     }
-  }
-
   // Filtrar usuarios según la búsqueda
   void _filterUsers() {
     final query = _searchController.text.toLowerCase();
@@ -89,21 +101,21 @@ class _UserlistState extends State<Userlist> {
     });
   }
 
-  // Añadir un amigo
-  Future<void> _addFriend(String friendUsername, String friendName) async {
-    final currentUser = Current().currentUser;
-    if (currentUser != null) {
-      await currentUser.addFriend(friendUsername, friendName);
-      setState(() {
-        _followedUsers.add(friendUsername); // Agregar al conjunto de usuarios seguidos
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Ahora sigues a $friendUsername'),
-        ),
-      );
-    }
+  // Enviar una solicitud de amistad
+  Future<void> _sendFriendRequest(String friendUsername) async {
+  final currentUser = Current().currentUser;
+  if (currentUser != null) {
+    await currentUser.sendFriendRequest(friendUsername);
+    setState(() {
+      _sentRequests.add(friendUsername); // Agregar a la lista de solicitudes enviadas
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Solicitud de amistad enviada a $friendUsername'),
+      ),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -141,34 +153,42 @@ class _UserlistState extends State<Userlist> {
                         : ListView.separated(
                             itemCount: _filteredUsers.length + 1, // +1 para el botón "Cargar más"
                             separatorBuilder: (context, index) => Divider(
-                                  height: 4,
-                                  color: Theme.of(context).colorScheme.surface,
-                                ),
+                              height: 4,
+                              color: Theme.of(context).colorScheme.surface,
+                            ),
                             itemBuilder: (context, index) {
-                                if (index < _filteredUsers.length) {
-                                  final user = _filteredUsers[index];
-                                  final userName = user['username']!;
-                                  final userFullName = user['name']!;
-                                  return UserListItem(
-                                    userName: userName,
-                                    userImageUrl: 'https://via.placeholder.com/150',
-                                    isFollowed: _followedUsers.contains(userName), // Verificar si ya está seguido
-                                    onFollow: () => _addFriend(userName, userFullName), // Acción al seguir
-                                  );
-                                } else {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Center(
-                                      child: ElevatedButton(
-                                        onPressed: _loadMoreUsers, // Cargar más usuarios
-                                        child: Text('Cargar más',
+                              if (index < _filteredUsers.length) {
+                                final user = _filteredUsers[index];
+                                final userName = user['username']!;
+                                final userFullName = '${user['name'] ?? ''} ${user['lastname'] ?? ''}'.trim();
+                                final isFriend = _followedUsers.contains(userName);
+                                final isSentRequest = _sentRequests.contains(userName); // Solicitud enviada
+                                final isReceivedRequest = _receivedRequests.contains(userName); // Solicitud recibida
+
+                                return UserListItem(
+                                  userName: userName,
+                                  userFullName: userFullName,
+                                  userImageUrl: 'https://via.placeholder.com/150',
+                                  isFollowed: isFriend,
+                                  isSentRequest: isSentRequest,
+                                  isReceivedRequest: isReceivedRequest,
+                                  onFollow: () => _sendFriendRequest(userName),
+                                );
+                              } else {
+                                return Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Center(
+                                    child: ElevatedButton(
+                                      onPressed: _loadMoreUsers,
+                                      child: Text(
+                                        'Cargar más',
                                         style: Theme.of(context).textTheme.labelMedium,
-                                        ),
                                       ),
                                     ),
-                                  );
-                                }
-                              },
+                                  ),
+                                );
+                              }
+                            }
                           ),
           ),
         ],
@@ -179,15 +199,21 @@ class _UserlistState extends State<Userlist> {
 
 class UserListItem extends StatelessWidget {
   final String userName;
+  final String userFullName;
   final String userImageUrl;
-  final bool isFollowed; // Indica si el usuario ya está seguido
+  final bool isFollowed;
+  final bool isSentRequest; // Solicitud enviada
+  final bool isReceivedRequest; // Solicitud recibida
   final VoidCallback onFollow;
 
   const UserListItem({
     super.key,
     required this.userName,
+    required this.userFullName,
     required this.userImageUrl,
     required this.isFollowed,
+    required this.isSentRequest,
+    required this.isReceivedRequest,
     required this.onFollow,
   });
 
@@ -200,6 +226,7 @@ class UserListItem extends StatelessWidget {
         backgroundImage: NetworkImage(userImageUrl),
       ),
       title: Text(userName),
+      subtitle: Text(userFullName),
       trailing: isFollowed
           ? Text(
               'Seguido',
@@ -207,18 +234,33 @@ class UserListItem extends StatelessWidget {
                 color: theme.colorScheme.secondary,
               ),
             )
-          : ElevatedButton(
-              onPressed: onFollow, // Acción al presionar el botón de seguir
-              child: Text(
-                'Seguir',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: theme.colorScheme.surface,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.secondary,
-              ),
-            ),
+              : isReceivedRequest
+              ? Text(
+                  'Solicitud recibida',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: theme.colorScheme.secondary,
+                  ),
+                )
+              : isSentRequest
+                  ? Text(
+                      'Solicitud enviada',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.secondary,
+                      ),
+                    )
+                  : ElevatedButton(
+                      onPressed: onFollow,
+                      child: Text(
+                        'Enviar solicitud',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.surface,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.secondary,
+                      ),
+                    ),
+              
     );
   }
 }

@@ -7,6 +7,7 @@ import 'lostitemsScreen.dart';
 import 'profileScreen.dart'; // Asegúrate de importar ProfilePage
 import 'homepageScreen.dart';
 import "userlistScreen.dart";
+import "FriendRequestsPage.dart";
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ScheduleScreen(key: UniqueKey()), // Pantalla de horarios
       HomePage(
         key: UniqueKey(),
-        onMailPressed: _navigateToLostItemsPage,
+        onMailPressed: _navigateToFriendRequestsPage,
         onhandpressed: _navigateToUP,
       ), // Pantalla de inicio
       ProfilePage(key: UniqueKey()), // Pantalla de perfil
@@ -44,6 +45,14 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+  void _navigateToFriendRequestsPage() {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => FriendRequestsPage(key: UniqueKey()),
+    ),
+  );
+}
 
   void _navigateToUP() {
     Navigator.push(

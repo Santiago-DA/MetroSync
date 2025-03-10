@@ -22,7 +22,7 @@ class Schedule {
     switch (str.toLowerCase()) {
       case 'lunes': return Day.lunes;
       case 'martes': return Day.martes;
-      case 'miércoles': return Day.miercoles;
+      case 'miercoles': return Day.miercoles;
       case 'jueves': return Day.jueves;
       case 'viernes': return Day.viernes;
       case 'sabado':return Day.sabado;

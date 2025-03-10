@@ -207,9 +207,15 @@ List<Map<String, dynamic>> findCommonGaps(Schedule mySchedule, Schedule friendSc
     });
   }
 
+  // Filtrar los huecos comunes para mostrar solo los que están después de la hora actual
+  // final now = TimeOfDay.now();
+  // commonGaps = commonGaps.where((gap) {
+  //   final gapEnd = gap['end'] as TimeOfDay;
+  //   return gapEnd.hour > now.hour || (gapEnd.hour == now.hour && gapEnd.minute > now.minute);
+  // }).toList();
+
   return commonGaps;
 }
-
 void _sincronizarConAmigo(String friendUsername) async {
   try {
     // Obtener el horario del amigo usando el método de la clase Schedule
@@ -452,11 +458,17 @@ if (noHayMaterias) {
   Widget _buildTarjetaMateria(BuildContext context, TimeSlot materia) {
   final theme = Theme.of(context);
 
+  // Limitar el nombre de la materia a 19 caracteres
+  String nombreMateria = materia.getclassname();
+  if (nombreMateria.length > 18) {
+    nombreMateria = nombreMateria.substring(0, 17) + '...'; // Truncar y agregar "..."
+  }
+
   return GestureDetector(
     onTap: () => _mostrarPopupMateria(context, materia),
     onLongPress: () => _mostrarDialogoEliminar(context, materia),
     child: Container(
-      height:180,
+      height: 180,
       width: 200,
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
@@ -476,7 +488,7 @@ if (noHayMaterias) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              materia.getclassname(),
+              nombreMateria, // Usar el nombre truncado
               style: theme.textTheme.labelLarge?.copyWith(
                 color: theme.colorScheme.onPrimary,
                 fontWeight: FontWeight.bold,
@@ -490,7 +502,7 @@ if (noHayMaterias) {
               ),
             ),
             const SizedBox(height: 8),
-            Center( // Centrar el texto del lugar
+            Center(
               child: Text(
                 materia.getLugar(),
                 style: theme.textTheme.labelLarge?.copyWith(

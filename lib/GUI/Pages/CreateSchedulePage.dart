@@ -27,7 +27,7 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
   String? trimestre;
 
 
-  final List<String> dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+  final List<String> dias = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes'];
   final List<String> horasGrupo1 = _generarHoras(
     start: const TimeOfDay(hour: 7, minute: 0),
     end: const TimeOfDay(hour: 17, minute: 30),
