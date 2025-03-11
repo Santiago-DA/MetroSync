@@ -126,7 +126,7 @@ class _UserlistState extends State<Userlist> {
       appBar: AppBar(
         title: Text(
           'Usuarios',
-          style: Theme.of(context).textTheme.titleMedium,
+          style: Theme.of(context).textTheme.titleSmall,
         ),
       ),
       body: Column(
@@ -182,6 +182,7 @@ class _UserlistState extends State<Userlist> {
                                   padding: const EdgeInsets.all(16.0),
                                   child: Center(
                                     child: ElevatedButton(
+                                      style: Theme.of(context).elevatedButtonTheme.style,
                                       onPressed: _loadMoreUsers,
                                       child: Text(
                                         'Cargar más',

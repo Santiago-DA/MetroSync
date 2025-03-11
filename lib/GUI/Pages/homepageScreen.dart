@@ -52,7 +52,7 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60.0),
+        preferredSize: Size.fromHeight(70.0),
         child: AppBar(
           automaticallyImplyLeading: false,
           title: Row(

@@ -85,9 +85,9 @@ ThemeData lightMode = ThemeData(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.grey.shade900,
+      backgroundColor: Colors.grey.shade800,
       textStyle: TextStyle(
-        color: Colors.orange,
+        color: Colors.white,
       ),
     )
   )

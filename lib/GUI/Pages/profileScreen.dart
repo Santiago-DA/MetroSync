@@ -90,17 +90,17 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Perfil', style: theme.textTheme.displayLarge),
+        title: Text('Perfil', style: theme.textTheme.labelLarge),
         centerTitle: true,
         backgroundColor: colors.primary,
         foregroundColor: colors.inversePrimary,
         actions: [
           IconButton(
-            icon: Icon(Icons.edit, color: colors.inversePrimary),
+            icon: Icon(Icons.edit, color: Colors.white),
             onPressed: _editarPerfil,
           ),
           IconButton(
-            icon: Icon(Icons.settings, color: colors.inversePrimary),
+            icon: Icon(Icons.settings, color: Colors.white),
             onPressed: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => SettingsScreen()));

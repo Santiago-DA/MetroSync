@@ -153,15 +153,15 @@ class OnBoardingPageState extends State<OnBoardingPage> {
       skipOrBackFlex: 0,
       nextFlex: 0,
       showBackButton: false,
-      back: Icon(Icons.arrow_back, color: colorScheme.tertiary),
+      back: Icon(Icons.arrow_back, color: colorScheme.primary),
       skip: Text(
         'Saltar',
-        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colorScheme.tertiary),
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colorScheme.primary),
       ),
-      next: Icon(Icons.arrow_forward, color: colorScheme.tertiary),
+      next: Icon(Icons.arrow_forward, color: colorScheme.primary),
       done: Text(
         'Listo',
-        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colorScheme.tertiary),
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colorScheme.primary),
       ),
       curve: Curves.fastLinearToSlowEaseIn,
       controlsMargin: const EdgeInsets.all(16),
@@ -170,15 +170,15 @@ class OnBoardingPageState extends State<OnBoardingPage> {
           : const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
       dotsDecorator: DotsDecorator(
         size: Size(10.0, 10.0),
-        color: colorScheme.tertiary,
-        activeColor: colorScheme.surface,
+        color: colorScheme.primary,
+        activeColor: colorScheme.primary,
         activeSize: Size(22.0, 10.0),
         activeShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(25.0)),
         ),
       ),
       dotsContainerDecorator: ShapeDecoration(
-        color: colorScheme.inversePrimary,
+        color: colorScheme.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(8.0)),
         ),

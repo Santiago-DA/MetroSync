@@ -92,9 +92,10 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           'Solicitudes de amistad',
-          style: theme.textTheme.titleMedium,
+          style: theme.textTheme.titleSmall,
         ),
       ),
       body: _isLoading
