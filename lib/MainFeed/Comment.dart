@@ -1,9 +1,12 @@
 class Comment {
-  String? _username;
-  String? _tittle;
-  String? _description;
+  String username;
+  String tittle;
+  String description;
   late final String date;
-  Comment() {
+  Comment(
+      {required this.description,
+      required this.tittle,
+      required this.username}) {
     date = DateTime.now().toString();
   }
 }

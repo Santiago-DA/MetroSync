@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:metrosync/MainFeed/Comment.dart';
 import 'package:metrosync/User/Current.dart';
 import 'package:metrosync/User/User.dart';
 
@@ -75,8 +76,21 @@ class _CreatePostPageState extends State<CreatePostPage> {
             ),
             SizedBox(height: 20), // Spacing
             TextButton(
-                onPressed: () {
+                onPressed: () async {
                   User? currentUser = Current().currentUser;
+                  Post post = Post(
+                      currentUser?.getusername(),
+                      _titleController.text,
+                      _descriptionController.text,
+                      _selectedLabel ?? '');
+                  await post.insertPostInDB();
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Post creado con exito"),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
                 },
                 child: Text("Crear"))
           ],
