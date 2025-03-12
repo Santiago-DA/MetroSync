@@ -33,7 +33,7 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vm = Provider.of<VM>(context, listen: false);
+    
 
 
     return Scaffold(

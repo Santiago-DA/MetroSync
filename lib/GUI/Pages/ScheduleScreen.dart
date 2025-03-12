@@ -3,7 +3,6 @@ import 'WeekSchedule.dart';
 import 'package:metrosync/Schedules/Schedule.dart'; // Importar la clase Schedule
 import 'package:metrosync/Schedules/TimeSlot.dart'; 
 import 'package:metrosync/User/Current.dart'; 
-import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:metrosync/MongoManager/MongoDB.dart';
 class ScheduleScreen extends StatefulWidget {
   ScheduleScreen({super.key});

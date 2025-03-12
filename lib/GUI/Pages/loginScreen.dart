@@ -32,7 +32,7 @@ class LogInPageState extends State<LogInPage> {
 
   @override
   Widget build(BuildContext context) {
-    final vm = Provider.of<VM>(context, listen: false);
+    
 
     return Scaffold(
       body: SafeArea(

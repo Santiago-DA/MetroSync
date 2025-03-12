@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:metrosync/GUI/Pages/SettingsScreen.dart';
 import 'package:metrosync/User/Current.dart';
 import "EditProfilePage.dart";
-import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:metrosync/MongoManager/MongoDB.dart';
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

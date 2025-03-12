@@ -20,16 +20,22 @@ class WeekSchedule extends StatefulWidget {
 }
 
 class _WeekScheduleState extends State<WeekSchedule> {
-  // Lista de días de la semana en orden
-  final List<String> diasOrdenados = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes'];
+  // Mapa de índices para cada día de la semana
+  final Map<Day, int> dayIndices = {
+    Day.lunes: 0,
+    Day.martes: 1,
+    Day.miercoles: 2,
+    Day.jueves: 3,
+    Day.viernes: 4,
+  };
 
   @override
   Widget build(BuildContext context) {
-    // Convertir las entradas del mapa en una lista y ordenarla
+    // Convertir las entradas del mapa en una lista y ordenarla según los índices
     final entries = widget.schedule.slotsPerDay.entries.toList();
     entries.sort((a, b) {
-      final indexA = diasOrdenados.indexOf(a.key.toString().split('.').last);
-      final indexB = diasOrdenados.indexOf(b.key.toString().split('.').last);
+      final indexA = dayIndices[a.key] ?? 5; // Si no está en el mapa, se coloca al final
+      final indexB = dayIndices[b.key] ?? 5;
       return indexA.compareTo(indexB);
     });
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:metrosync/MongoManager/MongoDb.dart';
-import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:metrosync/User/Current.dart';
 
 class Userlist extends StatefulWidget {
@@ -48,7 +47,6 @@ class _UserlistState extends State<Userlist> {
 
           // Cargar solicitudes de amistad
           var pendingRequests = await currentUser.getPendingFriendRequests();
-          print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
           print(pendingRequests);
           for (var request in pendingRequests) {
             if (request['to'] == currentUser.getusername()) {
@@ -105,18 +103,32 @@ class _UserlistState extends State<Userlist> {
   }
 
   // Enviar una solicitud de amistad
-  Future<void> _sendFriendRequest(String friendUsername) async {
+Future<void> _sendFriendRequest(String friendUsername) async {
   final currentUser = Current().currentUser;
   if (currentUser != null) {
-    await currentUser.sendFriendRequest(friendUsername);
-    setState(() {
-      _sentRequests.add(friendUsername); // Agregar a la lista de solicitudes enviadas
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Solicitud de amistad enviada a $friendUsername'),
-      ),
-    );
+    
+
+    try {
+      await currentUser.sendFriendRequest(friendUsername,currentUser.getusername());
+      setState(() {
+        _sentRequests.add(friendUsername); // Actualizar el estado de las solicitudes enviadas
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Solicitud de amistad enviada a $friendUsername'),
+        ),
+      );
+
+      // Recargar los datos de los usuarios
+      
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al enviar la solicitud: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } 
   }
 }
 
@@ -126,7 +138,7 @@ class _UserlistState extends State<Userlist> {
       appBar: AppBar(
         title: Text(
           'Usuarios',
-          style: Theme.of(context).textTheme.titleSmall,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
       body: Column(
@@ -182,7 +194,6 @@ class _UserlistState extends State<Userlist> {
                                   padding: const EdgeInsets.all(16.0),
                                   child: Center(
                                     child: ElevatedButton(
-                                      style: Theme.of(context).elevatedButtonTheme.style,
                                       onPressed: _loadMoreUsers,
                                       child: Text(
                                         'Cargar más',

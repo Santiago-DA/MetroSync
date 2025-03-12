@@ -1,13 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:metrosync/MongoManager/MongoDb.dart';
-import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:metrosync/User/Current.dart';
-import 'package:metrosync/User/User.dart';
+
+
 
 class FriendRequestsPage extends StatefulWidget {
   const FriendRequestsPage({super.key});
-
+  
   @override
   _FriendRequestsPageState createState() => _FriendRequestsPageState();
 }
@@ -16,6 +15,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
   List<Map<String, dynamic>> _pendingRequests = [];
   bool _isLoading = true;
   bool _isProcessing = false; // Estado para evitar múltiples clics
+  
 
   @override
   void initState() {
@@ -32,12 +32,19 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
     }
   }
 
+  Future<void> _ensureDatabaseConnection() async {
+    if (!MongoDB.isConnected) {
+      await MongoDB.connect(); // Abrir la conexión si está cerrada
+    }
+  }
+
   Future<void> _acceptFriendRequest(String fromUsername) async {
     final currentUser = Current().currentUser;
     if (currentUser != null && !_isProcessing) {
       setState(() => _isProcessing = true); // Deshabilitar el botón
 
       try {
+        await _ensureDatabaseConnection(); // Asegurar que la conexión esté abierta
         await currentUser.acceptFriendRequest(fromUsername);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -65,6 +72,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
       setState(() => _isProcessing = true); // Deshabilitar el botón
 
       try {
+        await _ensureDatabaseConnection(); // Asegurar que la conexión esté abierta
         await currentUser.rejectFriendRequest(fromUsername);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -92,10 +100,9 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: Text(
           'Solicitudes de amistad',
-          style: theme.textTheme.titleSmall,
+          style: theme.textTheme.displayMedium,
         ),
       ),
       body: _isLoading

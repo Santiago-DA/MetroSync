@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:metrosync/MainFeed/Comment.dart';
 import 'package:metrosync/User/Current.dart';
 import 'package:metrosync/User/User.dart';
 

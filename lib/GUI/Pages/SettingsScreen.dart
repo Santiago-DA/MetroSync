@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:metrosync/User/Current.dart';
-
-import '../../User/User.dart' show User;
 import 'loginScreen.dart';
 
 class SettingsScreen extends StatelessWidget {

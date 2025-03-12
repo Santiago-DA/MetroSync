@@ -2,16 +2,9 @@ import '../MongoManager/MongoDB.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:bcrypt/bcrypt.dart';
 import "Current.dart";
-import 'package:flutter/material.dart';
-import 'package:mongo_dart/mongo_dart.dart';
-import 'package:bcrypt/bcrypt.dart';
-import 'package:metrosync/MongoManager/MongoDB.dart';
-import 'package:metrosync/User/Current.dart';
 
-import 'package:mongo_dart/mongo_dart.dart';
-import 'package:bcrypt/bcrypt.dart';
-import 'package:metrosync/MongoManager/MongoDB.dart';
-import 'package:metrosync/User/Current.dart';
+
+
 
 class User {
   final MongoDB _db = MongoDB();
@@ -195,12 +188,21 @@ class User {
   }
 
   // Métodos para manejar solicitudes de amistad
-  Future<void> sendFriendRequest(String toUsername) async {
+  Future<void> sendFriendRequest(String toUsername, String User) async {
     try {
       await MongoDB.connect();
       await _db.updateOneFrom(
         'Users',
         where.eq('username', toUsername),
+        modify.push('friendRequests', {
+          'from': _username,
+          'status': 'pending',
+           "to":toUsername
+        }),
+      );
+      await _db.updateOneFrom(
+        'Users',
+        where.eq('username', User),
         modify.push('friendRequests', {
           'from': _username,
           'status': 'pending',

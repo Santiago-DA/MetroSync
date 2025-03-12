@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:metrosync/Schedules/Schedule.dart'; // Importar la clase Schedule
+// Importar la clase Schedule
 import 'package:metrosync/Schedules/TimeSlot.dart'; // Importar la clase TimeSlot
 
 

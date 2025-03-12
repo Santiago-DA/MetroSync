@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:metrosync/GUI/Pages/ScheduleScreen.dart';
 
 // Otras páginas
-import 'lostitemsScreen.dart';
+
 import 'profileScreen.dart'; // Asegúrate de importar ProfilePage
 import 'homepageScreen.dart';
 import "userlistScreen.dart";
@@ -37,14 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Navegar a la página de objetos perdidos
-  void _navigateToLostItemsPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LostItemsPage(key: UniqueKey()),
-      ),
-    );
-  }
+  
   void _navigateToFriendRequestsPage() {
   Navigator.push(
     context,
