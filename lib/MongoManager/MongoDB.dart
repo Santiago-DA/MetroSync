@@ -1,7 +1,6 @@
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:metrosync/MongoManager/Constant.dart';
 
-
 class MongoDB {
   static var db, userCollection;
 
@@ -85,13 +84,15 @@ class MongoDB {
     await collection.replaceOne(selector, newDocument);
   }
 
-  Future<void> deleteOneFrom(String collectionName, SelectorBuilder selector) async {
+  Future<void> deleteOneFrom(
+      String collectionName, SelectorBuilder selector) async {
     await _ensureConnected(); // Asegurar conexión
     var collection = getCollection(collectionName);
     await collection.deleteOne(selector);
   }
 
-  Future<void> deleteManyFrom(String collectionName, SelectorBuilder selector) async {
+  Future<void> deleteManyFrom(
+      String collectionName, SelectorBuilder selector) async {
     await _ensureConnected(); // Asegurar conexión
     var collection = getCollection(collectionName);
     await collection.deleteMany(selector);

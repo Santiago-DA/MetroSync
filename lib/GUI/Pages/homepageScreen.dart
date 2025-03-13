@@ -1,44 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:metrosync/GUI/Pages/CreatePost.dart';
+import 'package:metrosync/GUI/Pages/PostCard.dart';
 import 'DealsPage.dart';
 
 class HomePage extends StatelessWidget {
   final VoidCallback onMailPressed;
   final VoidCallback onhandpressed;
-  final List<Map<String, dynamic>> comments = [
-    {
-      'title': 'Título del Comentario 1',
-      'text': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      'label': 'Crítica', // Etiqueta
-    },
-    {
-      'title': 'Título del Comentario 2',
-      'text':
-          'Fusce ut auctor urna. Mauris eu risus vel tortor vehicula ornare.',
-      'label': 'Ayuda', // Etiqueta
-    },
-    {
-      'title': 'Título del Comentario 3',
-      'text': 'Vivamus lacinia odio vitae vestibulum vestibulum.',
-      'label': 'Sugerencia', // Etiqueta
-    },
-    {
-      'title': 'Título del Comentario 4',
-      'text': 'Cras ultricies ligula sed magna dictum porta.',
-      'label': 'Elogio', // Etiqueta
-    },
-    {
-      'title': 'Título del Comentario 5',
-      'text': 'Pellentesque in ipsum id orci porta dapibus.',
-      'label': 'Crítica', // Etiqueta
-    },
-    {
-      'title': 'Título del Comentario 6',
-      'text': 'Nulla quis lorem ut libero malesuada feugiat.',
-      'label': 'Ayuda', // Etiqueta
-    },
-  ];
-  
+
   HomePage({
     super.key,
     required this.onMailPressed,
@@ -167,70 +135,21 @@ class HomePage extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
-          // Comentarios
-          ...comments
-              .map((comment) => Column(
-                    children: [
-                      // Caja de comentarios
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 8), // Márgenes invisibles
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: colors.surface,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Stack(
-                          children: [
-                            // Contenido del comentario
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    // Ícono de persona a la izquierda del título
-                                    Icon(Icons.account_circle,
-                                        size: 24, color: colors.inversePrimary),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      comment['title'] as String,
-                                      style: theme.textTheme.displayMedium,
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  comment['text'] as String,
-                                  style: theme.textTheme.bodyMedium,
-                                ),
-                              ],
-                            ),
-                            // Etiqueta en la esquina superior derecha
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: colors.secondary,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  comment['label'] as String,
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: colors.surface,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Divider(height: 24),
-                    ],
-                  ))
-              .toList(),
+          // Posts
+          PostWidget(
+              userName: "Test user",
+              title: "test Tittle",
+              description: "test decripcion",
+              contentLabel: "test label",
+              likes: 20,
+              comments: 20),
+          PostWidget(
+              userName: "Test user2",
+              title: "test Tittle2",
+              description: "test decripcion2",
+              contentLabel: "test label2",
+              likes: 350,
+              comments: 10),
         ],
       ),
       floatingActionButton: FloatingActionButton(
