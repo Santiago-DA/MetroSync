@@ -290,4 +290,24 @@ Future<List<Map<String, dynamic>>> getPendingFriendRequests() async {
     await MongoDB.close();
   }
 }
+  Future<List<Map<String, dynamic>>> getPendingFriendRequests1() async {
+    try {
+      await MongoDB.connect();
+      var userData = await _db.findOneFrom('Users', where.eq('username', _username));
+      if (userData != null && userData['friendRequests'] != null) {
+        // Convertir la lista a List<Map<String, dynamic>>
+        List<Map<String, dynamic>> friendRequests = (userData['friendRequests'] as List)
+            .cast<Map<String, dynamic>>() // Convertir a List<Map<String, dynamic>>
+            .where((request) => request['status'] == 'pending' && request['to'] == _username) // Filtrar solicitudes pendientes recibidas
+            .toList();
+        return friendRequests;
+      }
+      return [];
+    } catch (e) {
+      print('Error obteniendo solicitudes de amistad: $e');
+      throw e;
+    } finally {
+      await MongoDB.close();
+    }
+  }
 }

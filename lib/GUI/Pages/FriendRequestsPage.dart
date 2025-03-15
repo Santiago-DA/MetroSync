@@ -27,7 +27,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
     final currentUser = Current().currentUser;
     if (currentUser != null) {
       setState(() => _isLoading = true);
-      _pendingRequests = await currentUser.getPendingFriendRequests();
+      _pendingRequests = await currentUser.getPendingFriendRequests1();
       setState(() => _isLoading = false);
     }
   }
