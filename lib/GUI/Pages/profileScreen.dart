@@ -358,7 +358,7 @@ class _ProfilePageState extends State<ProfilePage> {
             final user = Current().currentUser;
             if (user != null) {
               await user.updateProfile(
-                  nuevoNombre, nuevoApellido, nuevaDescripcion);
+                  nuevoNombre, nuevoApellido, nuevaDescripcion,'a');
               _cargarDatosUsuario();
             }
           },

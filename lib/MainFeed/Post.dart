@@ -7,7 +7,8 @@ class Post {
   String? _username;
   String? _tittle;
   String? _description;
-  String? _label;
+  String? _label;  
+  int? _likes;
   List<Map<String, String>> _comments = [];
   late final String date;
   final MongoDB _db = MongoDB();
@@ -26,7 +27,8 @@ class Post {
         "description": _description,
         "label": _label,
         "date": date,
-        "comments": _comments
+        "comments": _comments,
+        "likes":_likes,
       };
       await _db.insertInto("Posts", postDocumment);
       return;

@@ -8,7 +8,7 @@ class RegisterScreen extends StatelessWidget {
   final _registerFormKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _lastNameController = TextEditingController();
-  final _usernameController = TextEditingController();
+  //final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -102,26 +102,38 @@ class RegisterScreen extends StatelessWidget {
                             ? 'Por favor ingresa tu apellido'
                             : null,
                       ),
-                      const SizedBox(height: 16),
-                      _buildTextFormField(
-                        controller: _usernameController,
-                        label: 'Nombre de usuario',
-                        context: context,
-                        validator: (value) =>
-                        value?.isEmpty ?? true
-                            ? 'Por favor ingresa tu username'
-                            : null,
-                      ),
+                      // const SizedBox(height: 16),
+                      // _buildTextFormField(
+                      //   controller: _usernameController,
+                      //   label: 'Nombre de usuario',
+                      //   context: context,
+                      //   validator: (value) =>
+                      //   value?.isEmpty ?? true
+                      //       ? 'Por favor ingresa tu username'
+                      //       : null,
+                      // ),
                       const SizedBox(height: 16),
                       _buildTextFormField(
                         controller: _emailController,
                         label: 'Correo electrónico',
                         context: context,
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) =>
-                        value?.isEmpty ?? true
-                            ? 'Por favor ingresa tu correo electrónico'
-                            : null,
+                        validator: (value) {
+                          if (value?.isEmpty ?? true) {
+                            return 'Por favor ingresa tu correo electrónico';
+                          } 
+                          // Validar si es un correo válido con el dominio @correo.unimet.edu.ve
+                          final emailPattern = r'^[a-zA-Z0-9._%+-]+@correo\.unimet\.edu\.ve$';
+                          final regex = RegExp(emailPattern);
+                          if (!regex.hasMatch(value!)) {
+                            return 'Por favor ingresa un correo válido de la UNIMET (@correo.unimet.edu.ve)';
+                          }
+                          return null; // Si pasa todas las validaciones
+                        },
+                        // validator: (value) =>
+                        // value?.isEmpty ?? true
+                        //     ? 'Por favor ingresa tu correo electrónico'
+                        //     : null,
                       ),
                       const SizedBox(height: 16),
                       _buildTextFormField(
@@ -283,7 +295,7 @@ class RegisterScreen extends StatelessWidget {
   void _submitForm(BuildContext context, VM vm) async {
     if (_registerFormKey.currentState!.validate()) {
       final success = await vm.register(
-        _usernameController.text,
+        //_usernameController.text,
         _passwordController.text,
         _emailController.text,
         _nameController.text,
@@ -297,7 +309,7 @@ class RegisterScreen extends StatelessWidget {
         );
       } else {
         _showError(context);
-        _usernameController.clear();
+        //_usernameController.clear();
         _passwordController.clear();
         _confirmPasswordController.clear();
         _emailController.clear();

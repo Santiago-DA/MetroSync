@@ -34,14 +34,14 @@ class VM extends ChangeNotifier {
   }
 }
 
-  Future<bool> register(String username, String password,String email,String name, String lastname) async {
+  Future<bool> register(String password,String email,String name, String lastname) async {
     _isLoading = true;
     notifyListeners();
     _errorMessage = null;
 
 
     try {
-      final success = await _currentUser.registerUser(username, password,email,name,lastname);
+      final success = await _currentUser.registerUser(password,email,name,lastname);
 
       if (success) {
         _errorMessage = null;

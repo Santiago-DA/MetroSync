@@ -15,8 +15,31 @@ class User {
   String? _descripcion_perfil;
   List<Map<String, String>> _friends = [];
   List<Map<String, dynamic>> _friendRequests = []; // Declaración de friendRequests
+  String? _profilepicture;
 
   User();
+
+  String createUsername() {
+  // Tomando en cuenta que solo se puede usar el correo de la unimet
+  try {
+    if (_email != null) {
+      List<String> emailParts = _email!.split('@');
+      if (emailParts.length > 1 && emailParts[1] == 'correo.unimet.edu.ve') {
+        //_username = emailParts[0];
+        return(emailParts[0]);
+      } else {
+        print('El correo no pertenece a la UNIMET.');
+        return('null');
+      }
+    } else {
+      print('El correo no puede ser nulo.');
+      return('null');
+    }
+  } catch (e) {
+    print('Ocurrió un error: $e');
+    return('null');
+  }
+}
 
   // Métodos existentes
   String? getdescription() {
@@ -89,6 +112,7 @@ class User {
         _email = usuarioExistente['email'] as String;
         _descripcion_perfil = usuarioExistente['description'] as String? ?? '';
         _friendRequests = (usuarioExistente['friendRequests'] as List?)?.cast<Map<String, dynamic>>() ?? []; // Cargar friendRequests
+        _profilepicture= usuarioExistente['picture'];
         Current().setUser(this);
       }
 
@@ -101,10 +125,17 @@ class User {
     }
   }
 
-  Future<bool> registerUser(String username, String password, String email, String name, String lastname) async {
+  Future<bool> registerUser(String password, String email, String name, String lastname) async {
     try {
+
+      _descripcion_perfil = '';
+      String hash = BCrypt.hashpw(password, BCrypt.gensalt());
+      _email = email;
+      _name = name;
+      _lastname = lastname;
+      _username=createUsername();
       await MongoDB.connect();
-      var usuarioExistente = await _db.findOneFrom('Users', where.eq('username', username));
+      var usuarioExistente = await _db.findOneFrom('Users', where.eq('username', _username));
       var correoExistente = await _db.findOneFrom('Users', where.eq('email', email));
 
       if (usuarioExistente != null) {
@@ -116,15 +147,8 @@ class User {
         return false;
       }
 
-      _descripcion_perfil = '';
-      String hash = BCrypt.hashpw(password, BCrypt.gensalt());
-      _email = email;
-      _name = name;
-      _lastname = lastname;
-      _username = username;
-
       var nuevoUsuario = {
-        '_id': username,
+        '_id': _username,
         'username': _username,
         'password': hash,
         'name': _name,
@@ -133,6 +157,7 @@ class User {
         'description': _descripcion_perfil,
         'friends': [],
         'friendRequests': [], // Inicializar lista de solicitudes de amistad
+        'picture':_profilepicture,
       };
 
       await _db.insertInto('Users', nuevoUsuario);
@@ -146,7 +171,7 @@ class User {
     }
   }
 
-  Future<void> updateProfile(String newName, String newLastname, String newDescription) async {
+  Future<void> updateProfile(String newName, String newLastname, String newDescription,String newpicture) async {
     try {
       await MongoDB.connect();
       await _db.updateOneFrom(
@@ -155,7 +180,8 @@ class User {
         modify
           .set('name', newName)
           .set('lastname', newLastname)
-          .set('description', newDescription),
+          .set('description', newDescription)
+          .set('picture',newpicture),
       );
 
       _name = newName;
@@ -185,6 +211,10 @@ class User {
 
   String? getlastname() {
     return _lastname;
+  }
+
+  String? getpicture(){
+    return _profilepicture;
   }
 
   // Métodos para manejar solicitudes de amistad
