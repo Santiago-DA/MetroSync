@@ -44,12 +44,11 @@ class _HomePageState extends State<HomePage> {
     try {
       await MongoDB.connect();
       var posts = await _db.findManyFrom('Posts', null);
-      
+
       setState(() {
         _allPosts = posts;
-        _filteredPosts = _allPosts
-          .take((_currentPage + 1) * _postsPerPage)
-          .toList();
+        _filteredPosts =
+            _allPosts.take((_currentPage + 1) * _postsPerPage).toList();
         _isLoading = false;
       });
     } catch (e) {
@@ -67,7 +66,8 @@ class _HomePageState extends State<HomePage> {
     final query = _searchController.text.toLowerCase();
     setState(() {
       _filteredPosts = _allPosts
-          .where((post) => post['tittle'].toString().toLowerCase().contains(query))
+          .where(
+              (post) => post['tittle'].toString().toLowerCase().contains(query))
           .take((_currentPage + 1) * _postsPerPage)
           .toList();
     });
@@ -76,9 +76,8 @@ class _HomePageState extends State<HomePage> {
   void _loadMorePosts() {
     setState(() {
       _currentPage++;
-      _filteredPosts = _allPosts
-          .take((_currentPage + 1) * _postsPerPage)
-          .toList();
+      _filteredPosts =
+          _allPosts.take((_currentPage + 1) * _postsPerPage).toList();
     });
   }
 
@@ -144,7 +143,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 20),
-
           TextField(
             controller: _searchController,
             cursorColor: colors.inversePrimary,
@@ -159,7 +157,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 20),
-
           Row(
             children: [
               Icon(Icons.filter_list, color: colors.inversePrimary),
@@ -190,7 +187,6 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           const SizedBox(height: 20),
-
           _isLoading
               ? Center(child: CircularProgressIndicator())
               : _hasError
@@ -199,15 +195,19 @@ class _HomePageState extends State<HomePage> {
                       ? Center(child: Text('No hay posts disponibles'))
                       : Column(
                           children: [
-                            ..._filteredPosts.map((post) => PostWidget(
-                                  userName: post['username'] ?? 'Anónimo',
-                                  title: post['tittle'] ?? 'Sin título',
-                                  description: post['description'] ?? '',
-                                  contentLabel: post['label'] ?? 'General',
-                                  likes: (post['likes'] ?? 0).toInt(),
-                                  comments: (post['comments']?.length ?? 0).toInt(),
-                                  onTap: () => _showPostDetails(context, post),
-                                )).toList(),
+                            ..._filteredPosts
+                                .map((post) => PostWidget(
+                                      userName: post['username'] ?? 'Anónimo',
+                                      title: post['tittle'] ?? 'Sin título',
+                                      description: post['description'] ?? '',
+                                      contentLabel: post['label'] ?? 'General',
+                                      likes: (post['likes'] ?? 0).toInt(),
+                                      comments: (post['comments']?.length ?? 0)
+                                          .toInt(),
+                                      onTap: () =>
+                                          _showPostDetails(context, post),
+                                    ))
+                                .toList(),
                             if (_allPosts.length > _filteredPosts.length)
                               Padding(
                                 padding: const EdgeInsets.all(16.0),
@@ -236,7 +236,8 @@ class _HomePageState extends State<HomePage> {
   void _sortByRecent() {
     setState(() {
       _allPosts.sort((a, b) => b['date'].compareTo(a['date']));
-      _filteredPosts = _allPosts.take((_currentPage + 1) * _postsPerPage).toList();
+      _filteredPosts =
+          _allPosts.take((_currentPage + 1) * _postsPerPage).toList();
     });
   }
 
@@ -460,10 +461,12 @@ class PostDetailsDialog extends StatelessWidget {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: comments.length,
-                            separatorBuilder: (context, index) => const Divider(),
+                            separatorBuilder: (context, index) =>
+                                const Divider(),
                             itemBuilder: (context, index) {
                               return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 child: ListTile(
                                   contentPadding: EdgeInsets.zero,
                                   leading: const CircleAvatar(
@@ -471,7 +474,8 @@ class PostDetailsDialog extends StatelessWidget {
                                     child: Icon(Icons.person, size: 18),
                                   ),
                                   title: Text(
-                                    comments[index]['user']?.toString() ?? 'Usuario',
+                                    comments[index]['user']?.toString() ??
+                                        'Usuario',
                                     style: theme.textTheme.bodyMedium,
                                   ),
                                   subtitle: Text(
