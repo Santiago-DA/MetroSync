@@ -20,13 +20,13 @@ class PostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context); // Get the current theme
+    final theme = Theme.of(context);
 
     return Card(
       margin: const EdgeInsets.all(8.0),
-      elevation: 2, // Add a subtle shadow
+      elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12), // Rounded corners
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -38,7 +38,7 @@ class PostWidget extends StatelessWidget {
               children: [
                 CircleAvatar(
                   backgroundImage: AssetImage(
-                      'assets/user_avatar.png'), // Replace with actual user avatar
+                      'assets/user_avatar.png'),
                   radius: 20,
                 ),
                 const SizedBox(width: 8),

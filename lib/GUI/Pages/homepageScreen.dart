@@ -274,6 +274,8 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (context) => PostDetailsDialog(post: post),
+
+
     );
   }
 }
@@ -398,7 +400,7 @@ class PostDetailsDialog extends StatelessWidget {
       ),
       child: Container(
         width: screenWidth * 0.95,
-        height: screenHeight * 0.9,
+        height: screenHeight * 0.5,
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -412,7 +414,7 @@ class PostDetailsDialog extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   post['username'] ?? 'Anónimo',
-                  style: theme.textTheme.titleMedium,
+                  style: theme.textTheme.titleSmall,
                 ),
                 const Spacer(),
                 IconButton(
