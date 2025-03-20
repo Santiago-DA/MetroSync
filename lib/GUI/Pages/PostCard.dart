@@ -20,8 +20,14 @@ class PostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context); // Get the current theme
+
     return Card(
       margin: const EdgeInsets.all(8.0),
+      elevation: 2, // Add a subtle shadow
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12), // Rounded corners
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -30,7 +36,7 @@ class PostWidget extends StatelessWidget {
             // User who posted it
             Row(
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   backgroundImage: AssetImage(
                       'assets/user_avatar.png'), // Replace with actual user avatar
                   radius: 20,
@@ -38,9 +44,8 @@ class PostWidget extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   userName,
-                  style: const TextStyle(
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
                   ),
                 ),
               ],
@@ -50,8 +55,7 @@ class PostWidget extends StatelessWidget {
             // Title
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 18,
+              style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -60,9 +64,8 @@ class PostWidget extends StatelessWidget {
             // Description
             Text(
               description,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.secondary,
               ),
             ),
             const SizedBox(height: 8),
@@ -71,14 +74,13 @@ class PostWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.2),
+                color: theme.colorScheme.primary.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
                 contentLabel,
-                style: const TextStyle(
-                  color: Colors.blue,
-                  fontSize: 12,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ),
@@ -88,20 +90,26 @@ class PostWidget extends StatelessWidget {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.thumb_up, size: 20),
+                  icon: Icon(Icons.thumb_up, size: 20, color: theme.colorScheme.primary),
                   onPressed: () {
                     // Handle like action
                   },
                 ),
-                Text('$likes Likes'),
+                Text(
+                  '$likes Likes',
+                  style: theme.textTheme.bodyMedium,
+                ),
                 const SizedBox(width: 16),
                 IconButton(
-                  icon: const Icon(Icons.comment, size: 20),
+                  icon: Icon(Icons.comment, size: 20, color: theme.colorScheme.primary),
                   onPressed: () {
                     // Handle comment action
                   },
                 ),
-                Text('$comments Comments'),
+                Text(
+                  '$comments Comments',
+                  style: theme.textTheme.bodyMedium,
+                ),
               ],
             ),
           ],

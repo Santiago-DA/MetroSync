@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:metrosync/User/Current.dart';
 import 'package:metrosync/User/User.dart';
-
 import '../../MainFeed/Post.dart';
 
 List<String> _labels = ["Critica", "Ayuda", "Sugerencia", "Idea"];
@@ -15,13 +14,21 @@ class _CreatePostPageState extends State<CreatePostPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   String? _selectedLabel;
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = Theme.of(context); // Get the current theme
     final colors = theme.colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Crear Publicación', style: theme.textTheme.displayLarge),
+        title: Text(
+          'Crear Publicación',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.white
+          ),
+        ),
         centerTitle: true,
         backgroundColor: colors.primary,
         foregroundColor: colors.inversePrimary,
@@ -29,32 +36,61 @@ class _CreatePostPageState extends State<CreatePostPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            //tiitle
+            // Title Field
             TextField(
               controller: _titleController,
               decoration: InputDecoration(
-                labelText: "Titulo",
-                border: OutlineInputBorder(),
+                labelText: "Título",
+                labelStyle: theme.textTheme.bodyMedium,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: colors.secondary),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: colors.primary),
+                ),
               ),
+              style: theme.textTheme.bodyLarge,
             ),
-            SizedBox(height: 20),
-            //description
+            const SizedBox(height: 20),
+
+            // Description Field
             TextField(
               controller: _descriptionController,
               decoration: InputDecoration(
                 labelText: "Descripción",
-                border: OutlineInputBorder(),
+                labelStyle: theme.textTheme.bodyMedium,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: colors.secondary),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: colors.primary),
+                ),
               ),
+              style: theme.textTheme.bodyLarge,
               maxLines: 5, // Allow multiple lines
             ),
-            SizedBox(height: 20), // Spacing
-            //labels
+            const SizedBox(height: 20),
+
+            // Label Dropdown
             DropdownButtonFormField<String>(
               value: _selectedLabel,
               decoration: InputDecoration(
                 labelText: "Label",
-                border: OutlineInputBorder(),
+                labelStyle: theme.textTheme.bodyMedium,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: colors.secondary),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: colors.primary),
+                ),
               ),
               items: _labels.map((String label) {
                 return DropdownMenuItem<String>(
@@ -66,32 +102,70 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 );
               }).toList(),
               onChanged: (String? newValue) {
-                setState(
-                  () {
-                    _selectedLabel = newValue; // Update the selected label
-                  },
-                );
+                setState(() {
+                  _selectedLabel = newValue; // Update the selected label
+                });
               },
             ),
-            SizedBox(height: 20), // Spacing
-            TextButton(
-                onPressed: () async {
-                  User? currentUser = Current().currentUser;
-                  Post post = Post(
-                      currentUser?.getusername(),
-                      _titleController.text,
-                      _descriptionController.text,
-                      _selectedLabel ?? '');
-                  await post.insertPostInDB();
-                  Navigator.of(context).pop();
+            const SizedBox(height: 20),
+
+            // Create Button
+            ElevatedButton(
+              onPressed: () async {
+                User? currentUser = Current().currentUser;
+                if (_titleController.text.isEmpty ||
+                    _descriptionController.text.isEmpty ||
+                    _selectedLabel == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text("Post creado con exito"),
-                      duration: Duration(seconds: 2),
+                      content: Text(
+                        "Por favor, completa todos los campos",
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colors.inversePrimary,
+                        ),
+                      ),
+                      backgroundColor: colors.error,
+                      duration: const Duration(seconds: 2),
                     ),
                   );
-                },
-                child: Text("Crear"))
+                  return;
+                }
+
+                Post post = Post(
+                  currentUser?.getusername(),
+                  _titleController.text,
+                  _descriptionController.text,
+                  _selectedLabel ?? '',
+                );
+                await post.insertPostInDB();
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      "Post creado con éxito",
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.inversePrimary,
+                      ),
+                    ),
+                    backgroundColor: colors.primary,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colors.primary,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                "Crear",
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: Colors.white,
+                ),
+              ),
+            ),
           ],
         ),
       ),
