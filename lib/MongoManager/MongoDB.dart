@@ -63,6 +63,12 @@ class MongoDB {
     return await collection.find().toList();
   }
 
+  Future<List<Map<String,dynamic>>> findNFrom(String collectionName,int n) async{
+    var collection=getCollection(collectionName);
+    var documentos = await collection.find().take(n).toList();
+    return documentos;
+  }
+
   Future<void> updateOneFrom(String collectionName, SelectorBuilder selector,
       ModifierBuilder modifier) async {
     await _ensureConnected(); // Asegurar conexión

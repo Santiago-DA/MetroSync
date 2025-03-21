@@ -3,6 +3,7 @@ const MONGO_URL =
 const USERS_COLLECTION = "Users";
 const SCHEDULES_COLLECTION = "Schedules";
 const Deals ="Deals";
+const LostItems ='LostObjects';
 //TO-DO añadir una constante por collection
 // eqMytePmlASemOsg
 // mongodb+srv://santda:<db_password>@metrosync.5k1v8.mongodb.net/?retryWrites=true&w=majority&appName=MetroSync

@@ -4,24 +4,23 @@ import 'package:mongo_dart/mongo_dart.dart'
     show Db, DbCollection, where, modify;
 import 'MongoManager/MongoDB.dart';
 import 'GUI/GUI.dart';
-
-
+import 'ViewModel/ViewModel.dart';
+import 'lost_item/lost_item.dart';
+int n=0;
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  //WidgetsFlutterBinding.ensureInitialized();
   await MongoDB.connect();
-  // User Sant=User();
-  // await Sant.registerUser('fer','Hp123456789**','santi@gmail.com','Santiago','Fernandez');
-  //###########################Gabriel##############################
-  /*Tiene que funcionar:
-    ~Crear bloques de hora
-    ~Mostrar informacion de los bloques de hora
-    ~Eliminar bloques de hora
-  */
-  /*
-  User currentuser= User('betatester', 'AAAA', '@betatester', 'Beta App', 'Tester');
-  //Days=>lunes, martes, miercoles, jueves, viernes.
-  currentuser.getmyschedule().newslot('lunes', 'randomclass', TimeOfDay(hour: 8, minute: 45), TimeOfDay(hour: 10, minute: 15));
-  print(currentuser.getmyschedule().slotsPerDay[Day.lunes]);*/
-  //###########################Gabriel##############################
-  runApp(MyApp());
+  VM vm=VM();
+  // vm.crearItem('title', 'tag', 'imageURL');
+  // vm.crearItem('title2', 'tag', 'imageURL');
+  // vm.crearItem('title3', 'tag', 'imageURL');
+  // vm.crearItem('title4', 'tag', 'imageURL');
+  // vm.crearItem('title5', 'tag', 'imageURL');
+  n=n+1;
+  print('Main ejecutado $n veces');
+  await vm.loaditemfromBD();
+  await vm.eliminarItem(vm.itemxnombre('title2').id);
+  await vm.reclamarItem(vm.itemxnombre('title3').id);
+  print(vm.getlostitems());
+  //runApp(MyApp());
 }
