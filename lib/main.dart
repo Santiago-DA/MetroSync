@@ -17,7 +17,7 @@ Future<void> main() async {
   // vm.crearItem('title4', 'tag', 'imageURL');
   // vm.crearItem('title5', 'tag', 'imageURL');
   n=n+1;
-  print('Main ejecutado $n veces');
+  print('Main ejecutado $n veces'); 
   await vm.loaditemfromBD();
   await vm.eliminarItem(vm.itemxnombre('title2').id);
   await vm.reclamarItem(vm.itemxnombre('title3').id);
