@@ -4,10 +4,11 @@ import 'package:metrosync/GUI/Pages/ScheduleScreen.dart';
 
 // Otras páginas
 
-import 'profileScreen.dart'; // Asegúrate de importar ProfilePage
+import 'profileScreen.dart';
 import 'homepageScreen.dart';
 import "userlistScreen.dart";
 import "FriendRequestsPage.dart";
+import 'lostitemsScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -31,13 +32,14 @@ class _HomeScreenState extends State<HomeScreen> {
         key: UniqueKey(),
         onMailPressed: _navigateToFriendRequestsPage,
         onhandpressed: _navigateToUP,
-      ), // Pantalla de inicio
+      ),
+      LostItemsPage(key: UniqueKey()),// Pantalla de inicio
       ProfilePage(key: UniqueKey()), // Pantalla de perfil
     ];
   }
 
   // Navegar a la página de objetos perdidos
-  
+
   void _navigateToFriendRequestsPage() {
   Navigator.push(
     context,
@@ -85,15 +87,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Opacity(
-            opacity: 1, // Ícono semi-transparente
+            opacity: 1,
             child: Icon(Icons.home),
           ),
             label: '', // Ícono para inicio
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.assignment_turned_in),
+            label: '', // Ícono para perfil
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: '', // Ícono para perfil
           ),
+
         ],
       ),
     );

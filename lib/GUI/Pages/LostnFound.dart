@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../lost_item/lost_item.dart';
 
-import 'package:flutter/material.dart';
 
 class LostnFound extends StatefulWidget {
   @override

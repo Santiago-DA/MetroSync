@@ -63,8 +63,9 @@ class MongoDB {
     return await collection.find().toList();
   }
 
-  Future<List<Map<String,dynamic>>> findNFrom(String collectionName,int n) async{
-    var collection=getCollection(collectionName);
+  Future<List<Map<String, dynamic>>> findNFrom(
+      String collectionName, int n) async {
+    var collection = await getCollection(collectionName);
     var documentos = await collection.find().take(n).toList();
     return documentos;
   }
