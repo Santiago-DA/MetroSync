@@ -89,7 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Perfil', style: theme.textTheme.labelLarge),
+        title: Text('Perfil', style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white)),
         centerTitle: true,
         backgroundColor: colors.primary,
         foregroundColor: colors.inversePrimary,
@@ -380,6 +380,7 @@ void _mostrarPopupAmigos(BuildContext context) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               // Muestra un indicador de carga mientras se cargan los amigos
               return Center(
+                heightFactor: 4,
                 child: CircularProgressIndicator(
                   color: colors.inversePrimary,
                 ),
@@ -387,6 +388,7 @@ void _mostrarPopupAmigos(BuildContext context) {
             } else if (snapshot.hasError) {
               // Muestra un mensaje de error si la carga falla
               return Center(
+                heightFactor: 6,
                 child: Text(
                   'Error cargando amigos: ${snapshot.error}',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(

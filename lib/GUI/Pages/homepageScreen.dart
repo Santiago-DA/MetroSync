@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:metrosync/GUI/Pages/CreatePost.dart';
 import 'package:metrosync/MongoManager/MongoDb.dart';
 import 'DealsPage.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class HomePage extends StatefulWidget {
   final VoidCallback onMailPressed;
@@ -92,6 +93,8 @@ class _HomePageState extends State<HomePage> {
         preferredSize: const Size.fromHeight(70.0),
         child: AppBar(
           automaticallyImplyLeading: false,
+          shadowColor: colors.surface,
+
           title: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -192,7 +195,20 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 20),
 
           _isLoading
-              ? Center(child: CircularProgressIndicator())
+              ? SizedBox(
+            width: 48, // Set equal width and height
+            height: 250,
+            child: Center(
+              child: SpinKitFadingFour(
+                color: Theme.of(context).colorScheme.primary, // Use the theme color
+                size: 48, // Adjust the size of the indicator
+              ),
+            ),
+          )
+
+
+
+
               : _hasError
                   ? Center(child: Text('Error cargando posts'))
                   : _filteredPosts.isEmpty

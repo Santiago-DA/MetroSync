@@ -21,7 +21,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
     final colors = theme.colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Crear Publicación', style: theme.textTheme.displayLarge),
+        title: Text('Crear Publicación', style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white)),
         centerTitle: true,
         backgroundColor: colors.primary,
         foregroundColor: colors.inversePrimary,
@@ -30,31 +30,111 @@ class _CreatePostPageState extends State<CreatePostPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            //tiitle
+            SizedBox(height: 30),
+
             TextField(
               controller: _titleController,
               decoration: InputDecoration(
-                labelText: "Titulo",
-                border: OutlineInputBorder(),
+                labelText: "Título",
+                hintText: "Ingrese el título",
+                filled: true,
+                fillColor: Colors.grey.shade200,
+                contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 2,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Colors.grey[300]!,
+                    width: 1,
+                  ),
+                ),
+                suffixIcon: Icon(
+                  Icons.edit,
+                  color: Colors.grey[600],
+                ),
               ),
             ),
-            SizedBox(height: 20),
+
+            SizedBox(height: 30),
+
+
             //description
             TextField(
               controller: _descriptionController,
               decoration: InputDecoration(
-                labelText: "Descripción",
-                border: OutlineInputBorder(),
+                labelText: "Descripcion",
+                hintText: "Ingrese la descripcion",
+                filled: true,
+                fillColor: Colors.grey[100],
+                contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 2,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Colors.grey[300]!,
+                    width: 1,
+                  ),
+                ),
+                suffixIcon: Icon(
+                  Icons.edit, // Add an edit icon
+                  color: Colors.grey[600],
+                ),
               ),
-              maxLines: 5, // Allow multiple lines
+              maxLines: 5,
             ),
-            SizedBox(height: 20), // Spacing
+
+
+
+            SizedBox(height: 30),
             //labels
             DropdownButtonFormField<String>(
               value: _selectedLabel,
               decoration: InputDecoration(
+
                 labelText: "Label",
-                border: OutlineInputBorder(),
+
+                filled: true,
+                fillColor: Colors.grey[100],
+                contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 2,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Colors.grey[300]!,
+                    width: 1,
+                  ),
+                ),
+
               ),
               items: _labels.map((String label) {
                 return DropdownMenuItem<String>(
@@ -91,7 +171,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     ),
                   );
                 },
-                child: Text("Crear"))
+                child: Text("Crear")
+            ),
           ],
         ),
       ),

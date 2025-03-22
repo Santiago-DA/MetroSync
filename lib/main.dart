@@ -20,8 +20,8 @@ Future<void> main() async {
   n = n + 1;
   print('Main ejecutado $n veces');
   await vm.loaditemfromBD();
-  //await vm.eliminarItem(vm.itemxnombre('title2').id);
-  bool b = await vm.reclamarItem(vm.itemxnombre('title3').id);
+  // await vm.eliminarItem(vm.itemxnombre('title2').id);
+  // bool b = await vm.reclamarItem(vm.itemxnombre('title3').id);
   print(vm.getlostitems());
-  //runApp(MyApp());
+  runApp(MyApp());
 }

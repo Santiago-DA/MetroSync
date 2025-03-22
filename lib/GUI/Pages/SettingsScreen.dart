@@ -42,7 +42,7 @@ class SettingsScreen extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Configuraciones', style: theme.textTheme.displayMedium),
+          title: Text('Configuraciones', style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white)),
           centerTitle: true,
           backgroundColor: colors.primary,
           foregroundColor: colors.inversePrimary,

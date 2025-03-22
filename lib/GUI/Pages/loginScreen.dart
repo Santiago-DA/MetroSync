@@ -3,6 +3,7 @@ import 'RegisterPage.dart';
 import 'homeScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:metrosync/ViewModel/ViewModel.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -100,13 +101,21 @@ class LogInPageState extends State<LogInPage> {
                   //   ),
 
                   // Login Button
-                  if (vm.isLoading)
-                    Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: CircularProgressIndicator(
-                        color: Theme.of(context).colorScheme.primary,
+
+
+                if (vm.isLoading)
+                  SizedBox(
+                    width: 48, // Set equal width and height
+                    height: 48,
+                    child: Center(
+                      child: SpinKitFadingFour(
+                      color: Theme.of(context).colorScheme.primary, // Use the theme color
+                      size: 48, // Adjust the size of the indicator
                       ),
-                    )
+                    ),
+                  )
+
+
                   else
                     ElevatedButton(
                       onPressed: () => _handleLogin(context, vm),

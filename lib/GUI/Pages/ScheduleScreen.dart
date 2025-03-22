@@ -4,6 +4,9 @@ import 'package:metrosync/Schedules/Schedule.dart'; // Importar la clase Schedul
 import 'package:metrosync/Schedules/TimeSlot.dart'; 
 import 'package:metrosync/User/Current.dart'; 
 import 'package:metrosync/MongoManager/MongoDB.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+
 class ScheduleScreen extends StatefulWidget {
   ScheduleScreen({super.key});
   @override
@@ -279,8 +282,9 @@ Widget build(BuildContext context) {
     // Muestra una pantalla de carga mientras se cargan los datos
     return Scaffold(
       body: Center(
-        child: CircularProgressIndicator(
-          color: Theme.of(context).colorScheme.primary,
+        child: SpinKitFadingFour(
+          color: Theme.of(context).colorScheme.primary, // Use the theme color
+          size: 48, // Adjust the size of the indicator
         ),
       ),
     );
@@ -344,8 +348,11 @@ if (noHayMaterias) {
                   );
                 },
               ),
+
             ),
+
           ),
+
           // Sección de Huecos en Común
           _buildSeccion1(
             context: context,

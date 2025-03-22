@@ -11,9 +11,13 @@ class LostItemsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        title: const SizedBox.shrink(),
+        title: Text(
+          "Objetos perdidos",
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white),
+
+        ),
+        centerTitle: true,
         backgroundColor: colors.primary,
-        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
