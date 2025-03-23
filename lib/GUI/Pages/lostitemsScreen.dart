@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:metrosync/ViewModel/ViewModel.dart';
 class LostItemsPage extends StatelessWidget {
   const LostItemsPage({super.key});
 
@@ -8,7 +8,7 @@ class LostItemsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    
+    final vm = Provider.of<VM>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -105,7 +105,21 @@ class LostItemsPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-           Expanded(
+            Expanded(
+            child: ListView(
+              children: vm.getlostitems().map((item) {
+                return _buildPublicationCard(
+                  context: context,
+                  objectName: item.title,
+                  username: item.tag,
+                  date:"si",
+                  location:"a",
+                  imageUrl: item.imageUrl,
+                );
+              }).toList(),
+            ),
+          ),
+            Expanded(
               child: ListView(
                 children: [
                   _buildPublicationCard(
