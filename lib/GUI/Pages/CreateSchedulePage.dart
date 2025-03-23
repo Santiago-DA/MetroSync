@@ -44,7 +44,11 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
 
   final List<String> trimestres = List.generate(12, (index) => '${index + 1}');
 
-
+  bool _isEndTimeAfterStartTime(TimeOfDay startTime, TimeOfDay endTime) {
+  final start = startTime.hour * 60 + startTime.minute;
+  final end = endTime.hour * 60 + endTime.minute;
+  return end > start;
+}
   // Convertir String a TimeOfDay
   TimeOfDay _parseTime(String timeStr) {
     final format = DateFormat('h:mm a');
@@ -355,7 +359,12 @@ const SizedBox(height: 20),
                     // Convertir las horas de String a TimeOfDay
                     final startTime = _parseTime(horaInicio!);
                     final endTime = _parseTime(horaFinal!);
-
+                    if (!_isEndTimeAfterStartTime(startTime, endTime)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('La hora final debe ser posterior a la hora de inicio')),
+        );
+        return;
+      }
                     // Crear un TimeSlot para cada día seleccionado
                     for (final dia in selectedDias) {
                       final newSlot = TimeSlot(

@@ -8,7 +8,7 @@ class LostItemsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final vm = Provider.of(context, listen: true);
+    
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -105,50 +105,36 @@ class LostItemsPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-            Expanded(
-            child: ListView(
-              children: vm.getlostitems().map((item) {
-                return _buildPublicationCard(
-                  context: context,
-                  objectName: item.title,
-                  username: item.tag,
-                  date: item.date,
-                  location: item.location,
-                  imageUrl: item.imageUrl,
-                );
-              }).toList(),
+           Expanded(
+              child: ListView(
+                children: [
+                  _buildPublicationCard(
+                    context: context,
+                    objectName: 'Cargador negro',
+                    username: '@gabgaru',
+                    date: '20/01/2025',
+                    location: 'Edificio A - Sala 205',
+                    imageUrl: 'https://picsum.photos/200',
+                  ),
+                  _buildPublicationCard(
+                    context: context,
+                    objectName: 'Billetera marrón',
+                    username: '@usuario24',
+                    date: '21/01/2025',
+                    location: 'Cafetería principal',
+                    imageUrl: 'https://picsum.photos/201',
+                  ),
+                  _buildPublicationCard(
+                    context: context,
+                    objectName: 'Laptop plateada',
+                    username: '@tecno_user',
+                    date: '22/01/2025',
+                    location: 'Sala de conferencias',
+                    imageUrl: 'https://picsum.photos/202',
+                  ),
+                ],
+              ),
             ),
-          ),
-            // Expanded(
-            //   child: ListView(
-            //     children: [
-            //       _buildPublicationCard(
-            //         context: context,
-            //         objectName: 'Cargador negro',
-            //         username: '@gabgaru',
-            //         date: '20/01/2025',
-            //         location: 'Edificio A - Sala 205',
-            //         imageUrl: 'https://picsum.photos/200',
-            //       ),
-            //       _buildPublicationCard(
-            //         context: context,
-            //         objectName: 'Billetera marrón',
-            //         username: '@usuario24',
-            //         date: '21/01/2025',
-            //         location: 'Cafetería principal',
-            //         imageUrl: 'https://picsum.photos/201',
-            //       ),
-            //       _buildPublicationCard(
-            //         context: context,
-            //         objectName: 'Laptop plateada',
-            //         username: '@tecno_user',
-            //         date: '22/01/2025',
-            //         location: 'Sala de conferencias',
-            //         imageUrl: 'https://picsum.photos/202',
-            //       ),
-            //     ],
-            //   ),
-            // ),
           ],
         ),
       ),
