@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:metrosync/GUI/Pages/DealsPage.dart';
+import 'package:metrosync/GUI/Pages/lostitemsScreen.dart';
 import 'RegisterPage.dart';
 import 'homeScreen.dart';
 import 'package:provider/provider.dart';
@@ -215,12 +217,23 @@ class LogInPageState extends State<LogInPage> {
         _usernameController.text,
         _passwordController.text,
       );
-
       if (success) {
-        Navigator.pushReplacement(
+        if(vm.adminnegocios.contains(vm.currentUser.getusername())){
+            Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const DealsPage()),
+        );
+        }else if(vm.adminobjetos.contains(vm.currentUser.getusername())){
+          Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LostItemsPage()),
+        );
+        }else{
+          Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
+        }
       } else {
         _showError(context);
         _usernameController.clear();

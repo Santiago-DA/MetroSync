@@ -100,4 +100,22 @@ class LostItem {
       return d;
     }
   }
+
+  //Cargar n desde BD con condición
+  Future<List<LostItem>> cargarntagsBD(int n,String tag) async {
+    try {
+      //Crear lista vacia
+      List<LostItem> list = [];
+      //Conectar a la BD
+      await MongoDB.connect();
+      //Agregar 10 elementos
+      var DBlist = await db.findNFromif(LostItems, n,where.eq('tag',tag));
+      list.addAll(DBlist.map((doc) => LostItem.fromMap(doc)));
+      return list;
+    } catch (e) {
+      print('Error al cargar objetos de la BD $e');
+      List<LostItem> d = [];
+      return d;
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:metrosync/GUI/Pages/lostitemsScreen.dart';
 import 'Pages/onboardingScreen.dart';
 import 'theme/light_mode.dart';
 import 'theme/dark_mode.dart';
@@ -24,7 +25,8 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Bottom Navigation Bar',
         theme: lightMode,
         darkTheme: darkMode,
-        home: OnBoardingPage(),
+        home: LostItemsPage(),
+        //OnBoardingPage(),
       ),
     );
   }

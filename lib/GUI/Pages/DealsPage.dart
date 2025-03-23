@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:metrosync/Deals/Deal.dart';
 class DealsPage extends StatefulWidget {
+  const DealsPage({super.key});
   @override
   _DealsPageState createState() => _DealsPageState();
 }

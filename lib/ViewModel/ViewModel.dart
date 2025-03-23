@@ -10,6 +10,8 @@ class VM extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   List<LostItem> lostitem = [];
+  List<String> adminnegocios = ['holyshakes','mipuntgrill','TEEB','elcalvopizza'];
+  List<String> adminobjetos = ['objetosperdidos'];
 
   VM() : _currentUser = User();
 
@@ -167,6 +169,16 @@ class VM extends ChangeNotifier {
       print('Items en sistema: ${getlostitems()}');
     } catch (e) {
       print('Error en la carga local de items $e');
+    }
+  }
+
+  Future<void> loaditemwithtags(String tag) async{
+    LostItem commandblock = LostItem(id: 'id', title: 'title', tag: 'tag', tagColor: 'tagColor', imageUrl: 'imageUrl');
+    //Cambios locales
+    lostitem = lostitem.where((obj) => obj.tag == tag).toList();
+    //Si son pocos agarar desde la BD
+    if (lostitem.length<10){
+      lostitem.addAll(await commandblock.cargarntagsBD((10-lostitem.length), tag));
     }
   }
 }

@@ -127,7 +127,7 @@ class RegisterScreen extends StatelessWidget {
                           final emailPattern = r'^[a-zA-Z0-9._%+-]+@correo\.unimet\.edu\.ve$';
                           final regex = RegExp(emailPattern);
                           if (!regex.hasMatch(value!)) {
-                            return 'Por favor ingresa un correo válido de la UNIMET (@correo.unimet.edu.ve)';
+                            return 'Por favor ingresa un correo válido de la UNIMET';
                           }
                           return null; // Si pasa todas las validaciones
                         },

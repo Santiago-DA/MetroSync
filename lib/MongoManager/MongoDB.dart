@@ -70,6 +70,16 @@ class MongoDB {
     return documentos;
   }
 
+  Future<List<Map<String, dynamic>>> findNFromif(
+    String collectionName, 
+    int n, 
+    SelectorBuilder selector) async {
+  var collection = await getCollection(collectionName);
+  var documentos = await collection.find(selector).take(n).toList();
+  return documentos;
+}
+
+
   Future<void> updateOneFrom(String collectionName, SelectorBuilder selector,
       ModifierBuilder modifier) async {
     await _ensureConnected(); // Asegurar conexión
