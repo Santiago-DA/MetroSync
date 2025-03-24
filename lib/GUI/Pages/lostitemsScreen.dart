@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:metrosync/ViewModel/ViewModel.dart';
+import 'CreateLostItem.dart';
+
 class LostItemsPage extends StatelessWidget {
   const LostItemsPage({super.key});
 
@@ -9,72 +11,71 @@ class LostItemsPage extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final vm = Provider.of<VM>(context, listen: true);
+    final lostitems = vm.getlostitems();
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
         title: Text(
           "Objetos perdidos",
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white),
-
+          style: theme.textTheme.titleSmall?.copyWith(color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: colors.primary,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CreateLostItem()),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: colors.inversePrimary),
-                backgroundColor: colors.surface,
-                foregroundColor: colors.secondary,
-                shape: RoundedRectangleBorder(
+            const SizedBox(height: 10),
+
+            // Search Bar
+            TextField(
+              cursorColor: colors.inversePrimary,
+              decoration: InputDecoration(
+                hintText: 'Buscar',
+                hintStyle: theme.textTheme.bodyMedium,
+                prefixIcon: Icon(Icons.search, color: colors.inversePrimary),
+                border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: colors.secondary),
                 ),
               ),
-              child: Text(
-                'Enviar solicitud',
-                style: theme.textTheme.bodyLarge,
-              ),
             ),
+
             const SizedBox(height: 20),
-             TextField(
-            cursorColor: colors.inversePrimary,
-            decoration: InputDecoration(
-              hintText: 'Buscar',
-              hintStyle: theme.textTheme.bodyMedium,
-              prefixIcon: Icon(Icons.search, color: colors.inversePrimary),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: colors.secondary),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
+
+            // Filter Buttons
             Row(
               children: [
                 Expanded(
                   child: Row(
                     children: [
-                      Icon(Icons.filter_alt, 
-                          color: colors.secondary, 
-                          size: 24),
+                      Icon(Icons.filter_alt, color: colors.secondary, size: 24),
                       const SizedBox(width: 8),
                       OutlinedButton(
                         onPressed: () {},
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.black),
+                          side: BorderSide(color: colors.secondary),
                           foregroundColor: colors.inversePrimary,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: Text('Etiquetas',
-                            style: theme.textTheme.bodyMedium),
+                        child: Text('Etiquetas', style: theme.textTheme.bodyMedium),
                       ),
                     ],
                   ),
@@ -82,62 +83,32 @@ class LostItemsPage extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      Icon(Icons.access_time,
-                          color: colors.secondary,
-                          size: 24),
+                      Icon(Icons.access_time, color: colors.secondary, size: 24),
                       const SizedBox(width: 8),
                       OutlinedButton(
                         onPressed: () {},
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.black),
+                          side: BorderSide(color: colors.secondary),
                           foregroundColor: colors.inversePrimary,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: Text('Recientes',
-                            style: theme.textTheme.bodyMedium),
+                        child: Text('Recientes', style: theme.textTheme.bodyMedium),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            Expanded(
-            child: ListView(
-              children: vm.getlostitems().map((item) {
-                return _buildPublicationCard(
-                  context: context,
-                  objectName: item.title,
-                  username: item.tag,
-                  date:"si",
-                  location:"a",
-                  imageUrl: item.imageUrl,
-                );
-              }).toList(),
-            ),
-          ),
+
+            const SizedBox(height: 5),
+
+            // List of Lost Items
             Expanded(
               child: ListView(
                 children: [
-                  _buildPublicationCard(
-                    context: context,
-                    objectName: 'Cargador negro',
-                    username: '@gabgaru',
-                    date: '20/01/2025',
-                    location: 'Edificio A - Sala 205',
-                    imageUrl: 'https://picsum.photos/200',
-                  ),
-                  _buildPublicationCard(
-                    context: context,
-                    objectName: 'Billetera marrón',
-                    username: '@usuario24',
-                    date: '21/01/2025',
-                    location: 'Cafetería principal',
-                    imageUrl: 'https://picsum.photos/201',
-                  ),
                   _buildPublicationCard(
                     context: context,
                     objectName: 'Laptop plateada',
@@ -187,10 +158,10 @@ class LostItemsPage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: colors.inversePrimary)),
-                    child: Icon(Icons.question_mark,
-                        size: 18, color: colors.inversePrimary),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: colors.inversePrimary),
+                    ),
+                    child: Icon(Icons.question_mark, size: 18, color: colors.inversePrimary),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -198,13 +169,16 @@ class LostItemsPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(
-                          child: Text(objectName,
-                              style: theme.textTheme.displaySmall,
-                              overflow: TextOverflow.ellipsis),
+                          child: Text(
+                            objectName,
+                            style: theme.textTheme.displaySmall,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                        Text(username,
-                            style: theme.textTheme.bodyMedium
-                                ?.copyWith(fontStyle: FontStyle.italic)),
+                        Text(
+                          username,
+                          style: theme.textTheme.bodyMedium?.copyWith(fontStyle: FontStyle.italic),
+                        ),
                       ],
                     ),
                   ),
@@ -221,23 +195,25 @@ class LostItemsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 6, horizontal: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                           decoration: BoxDecoration(
-                              border: Border.all(color: colors.inversePrimary),
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Text(location,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colors.inversePrimary,
-                                  fontWeight: FontWeight.w500)),
+                            border: Border.all(color: colors.inversePrimary),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            location,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colors.inversePrimary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 12),
                         Container(
                           width: 160,
                           height: 30,
                           decoration: BoxDecoration(
-                            border:
-                                Border.all(color: colors.inversePrimary, width: 2),
+                            border: Border.all(color: colors.inversePrimary, width: 2),
                             borderRadius: BorderRadius.zero,
                           ),
                           child: TextButton(
@@ -248,10 +224,13 @@ class LostItemsPage extends StatelessWidget {
                               ),
                             ),
                             onPressed: () {},
-                            child: Text('Contacto',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colors.inversePrimary,
-                                    fontWeight: FontWeight.bold)),
+                            child: Text(
+                              'Contacto',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colors.inversePrimary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -278,7 +257,7 @@ class LostItemsPage extends StatelessWidget {
                     ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),

@@ -25,8 +25,7 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Bottom Navigation Bar',
         theme: lightMode,
         darkTheme: darkMode,
-        home: LostItemsPage(),
-        //OnBoardingPage(),
+        home: OnBoardingPage(),
       ),
     );
   }

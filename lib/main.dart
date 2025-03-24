@@ -22,6 +22,6 @@ Future<void> main() async {
   await vm.loaditemfromBD();
   // await vm.eliminarItem(vm.itemxnombre('title2').id);
   // bool b = await vm.reclamarItem(vm.itemxnombre('title3').id);
-  print(vm.getlostitems());
+  vm.loaditemfromBD();
   runApp(MyApp());
 }
