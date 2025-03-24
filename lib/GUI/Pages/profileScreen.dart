@@ -3,6 +3,8 @@ import 'package:metrosync/GUI/Pages/SettingsScreen.dart';
 import 'package:metrosync/User/Current.dart';
 import "EditProfilePage.dart";
 import 'package:metrosync/MongoManager/MongoDB.dart';
+import 'package:image_picker/image_picker.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -16,52 +18,58 @@ class _ProfilePageState extends State<ProfilePage> {
   late String _usuario;
   late String _descripcion;
   bool _isExpanded = false;
-  List<Map<String, String>> _usuarios=[];
+
+  String? profileImagePath = null;
+  List<Map<String, String>> _usuarios = [];
   @override
   void initState() {
     super.initState();
     _initializeUser();
   }
- void _initializeUser() async {
-     _cargarDatosUsuario();
-    await _loadFriends(); 
-   // Esperar a que los amigos se carguen
-   // Esperar a que el horario se cargue
-}
 
-    Future<void> _loadFriends() async {
-  final currentUser = Current().currentUser;
-  if (currentUser != null) {
-    
-    try {
-      // Conectar a la base de datos
-      await MongoDB.connect();
-  
-      // Cargar amigos desde la base de datos
-      await currentUser.loadFriends();
-
-      // Actualizar el estado con los amigos cargados
-      setState(() {
-        _usuarios = currentUser.getFriends();
-        print('Amigos cargados: $_usuarios');
-      });
-    } catch (e) {
-      print('Error cargando amigos: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error cargando amigos: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      // Cerrar la conexión a la base de datos
-      await MongoDB.close();
-      ;
-    }
-  } else {
-    print('Usuario no logueado, no se pueden cargar amigos.');
+  void _initializeUser() async {
+    _cargarDatosUsuario();
+    await _loadFriends();
+    // Esperar a que los amigos se carguen
+    // Esperar a que el horario se cargue
   }
-}
+
+  Future _pickImage() async {
+    await ImagePicker().pickImage(source: ImageSource.gallery);
+  }
+
+  Future<void> _loadFriends() async {
+    final currentUser = Current().currentUser;
+    if (currentUser != null) {
+      try {
+        // Conectar a la base de datos
+        await MongoDB.connect();
+
+        // Cargar amigos desde la base de datos
+        await currentUser.loadFriends();
+
+        // Actualizar el estado con los amigos cargados
+        setState(() {
+          _usuarios = currentUser.getFriends();
+          print('Amigos cargados: $_usuarios');
+        });
+      } catch (e) {
+        print('Error cargando amigos: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error cargando amigos: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        // Cerrar la conexión a la base de datos
+        await MongoDB.close();
+        ;
+      }
+    } else {
+      print('Usuario no logueado, no se pueden cargar amigos.');
+    }
+  }
 
   void _cargarDatosUsuario() {
     final user = Current().currentUser;
@@ -70,26 +78,22 @@ class _ProfilePageState extends State<ProfilePage> {
       _apellido = user?.getlastname() ?? '';
       _usuario = user?.getusername() ?? '';
       _descripcion = user?.getdescription() ?? '';
-      
     });
   }
-
- 
-
- 
-
-
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    
-    
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Perfil', style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white)),
+        title: Text('Perfil',
+            style: Theme.of(context)
+                .textTheme
+                .titleSmall
+                ?.copyWith(color: Colors.white)),
         centerTitle: true,
         backgroundColor: colors.primary,
         foregroundColor: colors.inversePrimary,
@@ -117,10 +121,14 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.account_circle,
-                    size: 60,
-                    color: colors.inversePrimary,
+                  GestureDetector(
+                    onTap: () {},
+                    child: CircleAvatar(
+                      backgroundImage:
+                          AssetImage("assets/profileImages/defaultProfile.png"),
+                      radius: 50,
+                      backgroundColor: Colors.white,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -155,12 +163,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                 style: theme.textTheme.bodyLarge?.copyWith(
                                   color: colors.inversePrimary.withOpacity(0.7),
                                 ),
-                                maxLines: _isExpanded ? null : 1, // Mostrar 3 líneas si no está expandido
+                                maxLines: _isExpanded
+                                    ? null
+                                    : 1, // Mostrar 3 líneas si no está expandido
                                 overflow: _isExpanded
                                     ? TextOverflow.visible
-                                    : TextOverflow.ellipsis, // Mostrar "..." si no está expandido
+                                    : TextOverflow
+                                        .ellipsis, // Mostrar "..." si no está expandido
                               ),
-                              if (_descripcion.length > 100) // Mostrar botón solo si el texto es largo
+                              if (_descripcion.length >
+                                  100) // Mostrar botón solo si el texto es largo
                                 Text(
                                   _isExpanded ? 'Ver menos' : 'Ver más',
                                   style: TextStyle(
@@ -176,14 +188,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                
                                 final user = Current().currentUser;
                                 if (user != null) {
                                   _mostrarPopupAmigos(context);
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('No se pudo cargar la lista de amigos.'),
+                                      content: Text(
+                                          'No se pudo cargar la lista de amigos.'),
                                       backgroundColor: Colors.red,
                                     ),
                                   );
@@ -201,7 +213,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             const SizedBox(width: 10),
-                            
                           ],
                         ),
                       ],
@@ -211,12 +222,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             const SizedBox(height: 20),
-      
-        
-      
-    
-  
-
 
             // Pestañas de "Publicaciones", "Respuestas" y "Objetos"
             //     DefaultTabController(
@@ -358,7 +363,7 @@ class _ProfilePageState extends State<ProfilePage> {
             final user = Current().currentUser;
             if (user != null) {
               await user.updateProfile(
-                  nuevoNombre, nuevoApellido, nuevaDescripcion,'a');
+                  nuevoNombre, nuevoApellido, nuevaDescripcion, 'a');
               _cargarDatosUsuario();
             }
           },
@@ -366,88 +371,97 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-void _mostrarPopupAmigos(BuildContext context) {
-  final colors = Theme.of(context).colorScheme;
 
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text('Amigos', style: Theme.of(context).textTheme.displayMedium),
-        content: FutureBuilder<void>(
-          future: _loadFriends(), // Cargar amigos
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              // Muestra un indicador de carga mientras se cargan los amigos
-              return Center(
-                heightFactor: 4,
-                child: CircularProgressIndicator(
-                  color: colors.inversePrimary,
-                ),
-              );
-            } else if (snapshot.hasError) {
-              // Muestra un mensaje de error si la carga falla
-              return Center(
-                heightFactor: 6,
-                child: Text(
-                  'Error cargando amigos: ${snapshot.error}',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: colors.inversePrimary.withOpacity(0.7),
-                      ),
-                ),
-              );
-            } else {
-              // Muestra la lista de amigos una vez que se han cargado
-              return SizedBox(
-                width: double.maxFinite,
-                child: _usuarios.isEmpty
-                    ? Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.people_outline,
-                            size: 48,
-                            color: colors.inversePrimary.withOpacity(0.5),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No hay amigos, pero descuida, ya los encontrarás.',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  color: colors.inversePrimary.withOpacity(0.7),
-                                ),
-                          ),
-                        ],
-                      )
-                    : ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: _usuarios.length,
-                        itemBuilder: (context, index) {
-                          final amigo = _usuarios[index];
-                          return ListTile(
-                            leading: Icon(Icons.account_circle,
-                                color: colors.inversePrimary),
-                            title: Text(amigo['username'] ?? 'Usuario desconocido'),
-                            subtitle: Text(amigo['name'] ?? 'Nombre no disponible'),
-                          );
-                        },
-                      ),
-              );
-            }
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
+  void _mostrarPopupAmigos(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title:
+              Text('Amigos', style: Theme.of(context).textTheme.displayMedium),
+          content: FutureBuilder<void>(
+            future: _loadFriends(), // Cargar amigos
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                // Muestra un indicador de carga mientras se cargan los amigos
+                return Center(
+                  heightFactor: 4,
+                  child: CircularProgressIndicator(
+                    color: colors.inversePrimary,
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                // Muestra un mensaje de error si la carga falla
+                return Center(
+                  heightFactor: 6,
+                  child: Text(
+                    'Error cargando amigos: ${snapshot.error}',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: colors.inversePrimary.withOpacity(0.7),
+                        ),
+                  ),
+                );
+              } else {
+                // Muestra la lista de amigos una vez que se han cargado
+                return SizedBox(
+                  width: double.maxFinite,
+                  child: _usuarios.isEmpty
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.people_outline,
+                              size: 48,
+                              color: colors.inversePrimary.withOpacity(0.5),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No hay amigos, pero descuida, ya los encontrarás.',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    color:
+                                        colors.inversePrimary.withOpacity(0.7),
+                                  ),
+                            ),
+                          ],
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: _usuarios.length,
+                          itemBuilder: (context, index) {
+                            final amigo = _usuarios[index];
+                            return ListTile(
+                              leading: Icon(Icons.account_circle,
+                                  color: colors.inversePrimary),
+                              title: Text(
+                                  amigo['username'] ?? 'Usuario desconocido'),
+                              subtitle:
+                                  Text(amigo['name'] ?? 'Nombre no disponible'),
+                            );
+                          },
+                        ),
+                );
+              }
             },
-            style: TextButton.styleFrom(
-              foregroundColor: colors.secondary, // Color del texto
-            ),
-            child: Text('Cerrar'),
           ),
-        ],
-      );
-    },
-  );
-}}
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: colors.secondary, // Color del texto
+              ),
+              child: Text('Cerrar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
