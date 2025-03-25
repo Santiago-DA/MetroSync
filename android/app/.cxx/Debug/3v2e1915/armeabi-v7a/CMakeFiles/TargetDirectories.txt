@@ -1,0 +1,2 @@
+C:/Users/gabga/Desktop/QuemenAndroid/MetroSync/android/app/.cxx/Debug/3v2e1915/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/gabga/Desktop/QuemenAndroid/MetroSync/android/app/.cxx/Debug/3v2e1915/armeabi-v7a/CMakeFiles/rebuild_cache.dir

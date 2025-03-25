@@ -1,0 +1,2 @@
+C:/Users/Robert Torres/Documents/Proyecto'santiago/MetroSync/android/app/.cxx/Debug/1e1w6c71/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/Robert Torres/Documents/Proyecto'santiago/MetroSync/android/app/.cxx/Debug/1e1w6c71/armeabi-v7a/CMakeFiles/rebuild_cache.dir

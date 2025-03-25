@@ -1,23 +1,117 @@
-import 'dart:developer';
-
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:flutter_prueba/MongoManager/Constant.dart';
+import 'package:metrosync/MongoManager/Constant.dart';
 
 class MongoDB {
-  late Db _db;
+  static var db, userCollection;
 
   MongoDB();
-  Future<dynamic> connect() async {
-    _db = await Db.create(MONGO_URL);
-    await _db.open();
+
+  // Getter para verificar si la conexión está abierta
+  static bool get isConnected => db != null && db.state == State.OPEN;
+
+  static Future<void> connect() async {
+    if (!isConnected) {
+      db = await Db.create(MONGO_URL);
+      await db.open();
+      userCollection = db.collection(USERS_COLLECTION);
+      print('Conexión a MongoDB establecida.');
+    }
+  }
+
+  static Future<void> close() async {
+    if (isConnected) {
+      await db.close();
+      print('Conexión a MongoDB cerrada.');
+    }
+  }
+
+  // Método para asegurar que la conexión esté abierta
+  static Future<void> _ensureConnected() async {
+    if (!isConnected) {
+      await connect();
+    }
   }
 
   DbCollection getCollection(String collectionName) {
-    DbCollection collection = _db.collection(collectionName);
-    return collection;
+    return db.collection(collectionName);
   }
 
-  Future<void> close() async {
-    await _db.close();
+  Future<void> insertInto(
+      String collectionName, Map<String, dynamic> document) async {
+    await _ensureConnected(); // Asegurar conexión
+    var collection = getCollection(collectionName);
+    await collection.insertOne(document);
+  }
+
+  Future<Map<String, dynamic>?> findOneFrom(
+      String collectionName, SelectorBuilder? selector) async {
+    await _ensureConnected(); // Asegurar conexión
+    var collection = getCollection(collectionName);
+    if (selector != null) {
+      return await collection.findOne(selector);
+    }
+    return await collection.findOne();
+  }
+
+  Future<List<Map<String, dynamic>>> findManyFrom(
+      String collectionName, SelectorBuilder? selector) async {
+    await _ensureConnected(); // Asegurar conexión
+    var collection = getCollection(collectionName);
+    if (selector != null) {
+      return await collection.find(selector).toList();
+    }
+    return await collection.find().toList();
+  }
+
+  Future<List<Map<String, dynamic>>> findNFrom(
+      String collectionName, int n) async {
+    var collection = await getCollection(collectionName);
+    var documentos = await collection.find().take(n).toList();
+    return documentos;
+  }
+
+  Future<List<Map<String, dynamic>>> findNFromif(
+    String collectionName, 
+    int n, 
+    SelectorBuilder selector) async {
+  var collection = await getCollection(collectionName);
+  var documentos = await collection.find(selector).take(n).toList();
+  return documentos;
+}
+
+
+  Future<void> updateOneFrom(String collectionName, SelectorBuilder selector,
+      ModifierBuilder modifier) async {
+    await _ensureConnected(); // Asegurar conexión
+    var collection = getCollection(collectionName);
+    await collection.updateOne(selector, modifier);
+  }
+
+  Future<void> updateManyFrom(String collectionName, SelectorBuilder selector,
+      ModifierBuilder modifier) async {
+    await _ensureConnected(); // Asegurar conexión
+    var collection = getCollection(collectionName);
+    await collection.updateMany(selector, modifier);
+  }
+
+  Future<void> replaceFrom(String collectionName, SelectorBuilder selector,
+      Map<String, dynamic> newDocument) async {
+    await _ensureConnected(); // Asegurar conexión
+    var collection = getCollection(collectionName);
+    await collection.replaceOne(selector, newDocument);
+  }
+
+  Future<void> deleteOneFrom(
+      String collectionName, SelectorBuilder selector) async {
+    await _ensureConnected(); // Asegurar conexión
+    var collection = getCollection(collectionName);
+    await collection.deleteOne(selector);
+  }
+
+  Future<void> deleteManyFrom(
+      String collectionName, SelectorBuilder selector) async {
+    await _ensureConnected(); // Asegurar conexión
+    var collection = getCollection(collectionName);
+    await collection.deleteMany(selector);
   }
 }
