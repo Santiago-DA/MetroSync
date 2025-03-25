@@ -1,5 +1,5 @@
-//import 'dart:ffi';
 import 'package:uuid/uuid.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:metrosync/MongoManager/MongoDb.dart';
 import '../User/User.dart';
@@ -10,12 +10,16 @@ class VM extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   List<LostItem> lostitem = [];
-  List<String> adminnegocios = ['holyshakes','mipuntgrill','TEEB','elcalvopizza'];
+  List<String> adminnegocios = [
+    'holyshakes',
+    'mipuntgrill',
+    'TEEB',
+    'elcalvopizza'
+  ];
   List<String> adminobjetos = ['objetosperdidos'];
 
   VM() : _currentUser = User();
 
-  // Getters para acceder al estado desde la UI
   User get currentUser => _currentUser;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
@@ -29,13 +33,11 @@ class VM extends ChangeNotifier {
       final success = await _currentUser.loginUser(username, password);
       _isLoading = false;
       notifyListeners();
-
       return success;
     } catch (e) {
       _isLoading = false;
       _errorMessage = 'Error en el login: ${e.toString()}';
       notifyListeners();
-
       return false;
     }
   }
@@ -48,19 +50,17 @@ class VM extends ChangeNotifier {
 
     try {
       final success =
-          await _currentUser.registerUser(password, email, name, lastname);
+      await _currentUser.registerUser(password, email, name, lastname);
 
       if (success) {
         _errorMessage = null;
-        _isLoading = false;
-        notifyListeners();
-        return success;
       } else {
         _errorMessage = 'Credenciales inválidas';
-        _isLoading = false;
-        notifyListeners();
-        return false;
       }
+
+      _isLoading = false;
+      notifyListeners();
+      return success;
     } catch (e) {
       _errorMessage = 'Error en el login: ${e.toString()}';
       _isLoading = false;
@@ -73,112 +73,127 @@ class VM extends ChangeNotifier {
     _currentUser = User();
     notifyListeners();
   }
-  //Cargar 10 Items de BD
 
-  //Crear Item
-  Future<bool> crearItem(String title, String tag, String imageURL) async {
-    //Asignar color de cada tag
-    //Craer id global unico
-    var uuid = Uuid();
-    String id = uuid.v4();
-    //Crear objeto en local
-    //No se como guardar el color en la BD
-    LostItem newitem = LostItem(
-        id: id,
-        title: title,
-        tag: tag,
-        tagColor: 'color',
-        imageUrl: 'imageUrl');
-    //Mandar solicitud para subir a la BD
+  Future<bool> crearItem(String title, String tag, File imageFile) async {
     try {
+      var uuid = Uuid();
+      String id = uuid.v4();
+      String? compressedImage = await LostItem.compressAndConvertImage(imageFile);
+
+      if (compressedImage == null) {
+        print('Failed to compress image');
+        return false;
+      }
+
+      String tagColor = _getTagColor(tag);
+
+      LostItem newItem = LostItem(
+          id: id, title: title, tag: tag, tagColor: tagColor, imageBase64: compressedImage);
+
       await MongoDB.connect();
-      bool v = await newitem.guardarBD();
-      if (v) {
-        //Si es exitoso, guardar objeto en local
-        print('entro');
-        lostitem.add(newitem);
-        return (true);
+      bool success = await newItem.guardarBD();
+
+      if (success) {
+        lostitem.add(newItem);
+        notifyListeners(); // Notify UI of changes
+        print('Item created successfully');
+        return true;
       } else {
-        print('no entro');
-        return (false);
+        print('Failed to save item to database');
+        return false;
       }
     } catch (e) {
-      print('Errror en Crear Item: $e');
-      return (false);
+      print('Error creating item: $e');
+      return false;
     }
   }
 
-  //eliminar/Resolver Item
-  Future<bool> eliminarItem(id) async {
+  String _getTagColor(String tag) {
+    switch (tag.toLowerCase()) {
+      case 'electronics':
+        return 'blue';
+      case 'documents':
+        return 'red';
+      case 'clothing':
+        return 'green';
+      default:
+        return 'gray';
+    }
+  }
+
+  Future<bool> eliminarItem(String id) async {
     try {
-      //Buscar en local
       var item = lostitem.firstWhere((objeto) => objeto.id == id);
-      //Eliminar en BD
+
       await MongoDB.connect();
       if (await item.eliminarBD()) {
-        //Eliminar en local
         lostitem.removeWhere((item) => item.id == id);
+        notifyListeners();
         return true;
-      } else {
-        return false;
       }
+      return false;
     } catch (e) {
-      print('Error al eliminar item: $e');
+      print('Error deleting item: $e');
       return false;
     }
   }
 
-  //Reclamar Item
   Future<bool> reclamarItem(String id) async {
     try {
-      //Buscar en local
       var item = lostitem.firstWhere((objeto) => objeto.id == id);
+
       if (await item.reclamarBD()) {
         item.claimed = true;
+        notifyListeners();
         return true;
-      } else {
-        return false;
       }
+      return false;
     } catch (e) {
-      print('Error al reclamar item $e');
+      print('Error claiming item: $e');
       return false;
     }
   }
 
-  //Buscaar Item en local
   LostItem itemxnombre(String title) {
-    print(lostitem);
-    LostItem item = lostitem.firstWhere((objeto) => objeto.title == title);
-    return item;
+    return lostitem.firstWhere((objeto) => objeto.title == title);
   }
 
   List<LostItem> getlostitems() {
     return lostitem;
   }
 
-  //Cargar 10 items de forma local
   Future<void> loaditemfromBD() async {
     try {
-      LostItem commandblock = LostItem(
-          id: 'command',
-          title: 'title',
-          tag: 'tag',
-          tagColor: 'tagColor',
-          imageUrl: 'imageUrl');
-      lostitem.addAll(await commandblock.cargarnBD(10));
-      print('Items en sistema: ${getlostitems()}');
+      LostItem loader = LostItem(id: 'loader', title: 'loader', tag: 'loader', tagColor: 'loader', imageBase64: '');
+
+      List<LostItem> newItems = await loader.cargarnBD(10);
+
+      // Remove duplicates before updating
+      var uniqueItems = {for (var item in newItems) item.id: item}.values.toList();
+      lostitem.clear();
+      lostitem.addAll(uniqueItems);
+
+      notifyListeners();
+      print('Loaded ${lostitem.length} items from DB');
     } catch (e) {
-      print('Error en la carga local de items $e');
+      print('Error loading items: $e');
     }
   }
 
-  Future<void> loaditemwithtags(String tag) async{
-    LostItem commandblock = LostItem(id: 'id', title: 'title', tag: 'tag', tagColor: 'tagColor', imageUrl: 'imageUrl');
-    //Cambios locales
-    lostitem = lostitem.where((obj) => obj.tag == tag).toList();
-    //Si son pocos agarar desde la BD
-    if (lostitem.length<10){
-      lostitem.addAll(await commandblock.cargarntagsBD((10-lostitem.length), tag));
+  Future<void> loaditemwithtags(String tag) async {
+    try {
+      LostItem loader = LostItem(id: 'loader', title: 'loader', tag: 'loader', tagColor: 'loader', imageBase64: '');
+
+      List<LostItem> filteredItems = await loader.cargarntagsBD(10, tag);
+
+      // Ensure no duplicates in the list
+      var uniqueItems = {for (var item in filteredItems) item.id: item}.values.toList();
+      lostitem.clear();
+      lostitem.addAll(uniqueItems);
+
+      notifyListeners();
+    } catch (e) {
+      print('Error loading tagged items: $e');
     }
   }
 }

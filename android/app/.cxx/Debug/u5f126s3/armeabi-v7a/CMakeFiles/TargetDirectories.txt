@@ -1,0 +1,2 @@
+C:/Users/olvei/Desktop/Metrosync/android/app/.cxx/Debug/u5f126s3/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/olvei/Desktop/Metrosync/android/app/.cxx/Debug/u5f126s3/armeabi-v7a/CMakeFiles/rebuild_cache.dir

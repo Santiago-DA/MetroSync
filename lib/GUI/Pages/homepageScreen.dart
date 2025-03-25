@@ -165,19 +165,19 @@ class _HomePageState extends State<HomePage> {
 
           Row(
             children: [
-              Icon(Icons.filter_list, color: colors.inversePrimary),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () => _filterByLabel('Etiqueta'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.secondary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: Text('Etiquetas', style: theme.textTheme.labelMedium),
-              ),
-              const SizedBox(width: 16),
+              // Icon(Icons.filter_list, color: colors.inversePrimary),
+              // const SizedBox(width: 8),
+              // ElevatedButton(
+              //   onPressed: () => _filterByLabel('Etiqueta'),
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: colors.secondary,
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(20),
+              //     ),
+              //   ),
+              //   child: Text('Etiquetas', style: theme.textTheme.labelMedium),
+              // ),
+              // const SizedBox(width: 16),
               Icon(Icons.access_time, color: colors.inversePrimary),
               const SizedBox(width: 8),
               ElevatedButton(
@@ -228,8 +228,9 @@ class _HomePageState extends State<HomePage> {
                               Padding(
                                 padding: const EdgeInsets.all(16.0),
                                 child: ElevatedButton(
+
                                   onPressed: _loadMorePosts,
-                                  child: Text('Cargar más posts'),
+                                  child: Text('Cargar más posts', style: Theme.of(context).textTheme.labelMedium,),
                                 ),
                               ),
                           ],

@@ -1,14 +1,18 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import '../MongoManager/Constant.dart';
 import '../MongoManager/MongoDB.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 
 class LostItem {
   final String id;
-  final String title; // Título del objeto
-  final String tag; // Etiqueta
-  final String tagColor; // Color de la etiqueta
-  final String imageUrl; // URL de la imagen
+  final String title;
+  final String tag;
+  final String tagColor;
+  final String imageBase64;
   bool claimed = false;
   final MongoDB db = MongoDB();
 
@@ -17,63 +21,97 @@ class LostItem {
     required this.title,
     required this.tag,
     required this.tagColor,
-    required this.imageUrl,
+    required this.imageBase64,
   });
 
   @override
   String toString() {
-    return 'id: $id, claimed: $claimed, title: $title, tag: $tag, tagColor: $tagColor, imageUrl: $imageUrl';
+    return 'id: $id, claimed: $claimed, title: $title, tag: $tag, tagColor: $tagColor';
   }
 
   factory LostItem.fromMap(Map<String, dynamic> map) {
     return LostItem(
-        id: map['_id'].toString(),
-        title: map['title'] ?? '',
-        tag: (map['tag'] ?? ''),
-        tagColor: (map['tagColor']),
-        imageUrl: (map['imageUrl']));
+      id: map['_id'].toString(),
+      title: map['title'] ?? '',
+      tag: (map['tag'] ?? ''),
+      tagColor: (map['tagColor']),
+      imageBase64: (map['imageBase64'] ?? ''),
+    );
   }
 
-  //Guardar en BD
+
+  static Future<String?> compressAndConvertImage(File imageFile) async {
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final targetPath = '${tempDir.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+
+      final result = await FlutterImageCompress.compressAndGetFile(
+        imageFile.absolute.path,
+        targetPath,
+        quality: 70,
+        minWidth: 800,
+        minHeight: 800,
+        rotate: 0,
+        format: CompressFormat.jpeg,
+      );
+
+      if (result == null) return null;
+
+      final bytes = await result.readAsBytes();
+      return base64Encode(bytes);
+    } catch (e) {
+      print('Error en la compresión: $e');
+      return null;
+    }
+  }
+
+
   Future<bool> guardarBD() async {
     try {
       await MongoDB.connect();
-      var newtiem = {
+
+      var newItem = {
         '_id': id,
         'title': title,
         'tag': tag,
         'tagColor': tagColor,
-        'imageUrl': imageUrl,
+        'imageBase64': imageBase64,
         'claimed': claimed,
       };
-      await db.insertInto(LostItems, newtiem);
-      return (true);
-    } catch (e) {
-      print('Error al guardar item en BD: $e');
-      return (false);
-    }
-  }
-
-  //Borrar en BD
-  Future<bool> eliminarBD() async {
-    try {
-      //Establecer conexion
-      await MongoDB.connect();
-      //Buscar y borrar
-      await db.deleteOneFrom(LostItems, where.eq('_id', id));
+      await db.insertInto(LostItems, newItem);
       return true;
     } catch (e) {
-      print('Erorr al eliminar item en BD $e');
+      print('Error al guardar item en BD: $e');
       return false;
     }
   }
 
-  //Reclamar en BD
+
+  Image get compressedImage {
+    return Image.memory(
+      base64Decode(imageBase64),
+      width: 200,
+      height: 200,
+      fit: BoxFit.cover,
+    );
+  }
+
+
+  Future<bool> eliminarBD() async {
+    try {
+      await MongoDB.connect();
+      await db.deleteOneFrom(LostItems, where.eq('_id', id));
+      return true;
+    } catch (e) {
+      print('Error al eliminar item en BD $e');
+      return false;
+    }
+  }
+
   Future<bool> reclamarBD() async {
     try {
-      //Conectar a BD
       await MongoDB.connect();
-      //Reclamar en BD
       await db.updateOneFrom(
           LostItems, where.eq('_id', id), modify.set('claimed', true));
       return true;
@@ -83,39 +121,41 @@ class LostItem {
     }
   }
 
-  //Cargar n desde BD
   Future<List<LostItem>> cargarnBD(int n) async {
     try {
-      //Crear lista vacia
       List<LostItem> list = [];
-      //Conectar a la BD
       await MongoDB.connect();
-      //Agregar 10 elementos
-      var DBlist = await db.findNFrom(LostItems, n);
+
+      print('Fetching $n unclaimed items from DB...');
+
+
+      var DBlist = await db.findNFromif(LostItems, n, where.eq('claimed', false));
       list.addAll(DBlist.map((doc) => LostItem.fromMap(doc)));
+
+      print('Loaded ${list.length} unclaimed items successfully');
+
       return list;
     } catch (e) {
-      print('Error al cargar objetos de la BD $e');
-      List<LostItem> d = [];
-      return d;
+      print('Error al cargar objetos de la BD: $e');
+      return [];
     }
   }
 
-  //Cargar n desde BD con condición
-  Future<List<LostItem>> cargarntagsBD(int n,String tag) async {
+  Future<List<LostItem>> cargarntagsBD(int n, String tag) async {
     try {
-      //Crear lista vacia
       List<LostItem> list = [];
-      //Conectar a la BD
       await MongoDB.connect();
-      //Agregar 10 elementos
-      var DBlist = await db.findNFromif(LostItems, n,where.eq('tag',tag));
+      var DBlist = await db.findNFromif(
+          LostItems,
+          n,
+          where.eq('tag', tag).eq('claimed', false) // Adjust field name if needed
+      );
       list.addAll(DBlist.map((doc) => LostItem.fromMap(doc)));
       return list;
     } catch (e) {
       print('Error al cargar objetos de la BD $e');
-      List<LostItem> d = [];
-      return d;
+      return [];
     }
   }
+
 }

@@ -99,7 +99,7 @@ Future<void> _loadFriends() async {
 
   // Obtener las materias del día actual
   List<TimeSlot> _materiasDelDia() {
-    final diaActual = "Lunes";
+    final diaActual = _obtenerDiaActual();
     final dayEnum = _schedule.strtoenum(diaActual);
     return _schedule.slotsPerDay[dayEnum] ?? [];
   }
@@ -241,7 +241,7 @@ void _sincronizarConAmigo(String friendUsername) async {
     });
 
     // Obtener el día actual
-    final diaActual = "Lunes";
+    final diaActual = _obtenerDiaActual();
 
     // Encontrar huecos comunes
     final huecosComunes = findCommonGaps(_schedule, friendSchedule, diaActual);
@@ -445,7 +445,7 @@ if (noHayMaterias) {
         child: items.isEmpty
             ? Center(
                 child: Text(
-                  'No hay materias agregadas',
+                  '¡Estás libre hoy!',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: theme.colorScheme.inversePrimary,
                   ),

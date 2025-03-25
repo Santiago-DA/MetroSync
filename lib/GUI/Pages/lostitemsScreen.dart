@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'CreateLostItem.dart';
 import 'package:metrosync/ViewModel/ViewModel.dart';
 import 'package:metrosync/lost_item/lost_item.dart';
-import 'CreateLostItem.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'dart:convert';
 
 class LostItemsPage extends StatefulWidget {
   const LostItemsPage({super.key});
@@ -14,12 +15,8 @@ class LostItemsPage extends StatefulWidget {
 
 class _LostItemsPageState extends State<LostItemsPage> {
   final TextEditingController _searchController = TextEditingController();
-  List<LostItem> _allItems = [];
-  List<LostItem> _filteredItems = [];
   bool _isLoading = true;
   bool _hasError = false;
-  int _currentPage = 0;
-  final int _itemsPerPage = 10;
   String _selectedTag = 'Todos';
   final List<String> _availableTags = [
     'Todos',
@@ -29,6 +26,7 @@ class _LostItemsPageState extends State<LostItemsPage> {
     'Accesorios',
     'Otros'
   ];
+  List<LostItem> filteredItems = [];
 
   @override
   void initState() {
@@ -39,26 +37,14 @@ class _LostItemsPageState extends State<LostItemsPage> {
 
   Future<void> _loadItems() async {
     try {
-      final lostItem = LostItem(
-        id: '',
-        title: '',
-        tag: '',
-        tagColor: '',
-        imageUrl: '',
-      );
-      
-      List<LostItem> items = await lostItem.cargarnBD(100);
-      
+      final vm = Provider.of<VM>(context, listen: false);
+      await vm.loaditemfromBD();
+
       setState(() {
-        _allItems = items;
-        _filteredItems = _allItems
-          .where(_matchesSearch)
-          .take((_currentPage + 1) * _itemsPerPage)
-          .toList();
         _isLoading = false;
+        filteredItems = List.from(vm.lostitem);
       });
     } catch (e) {
-      print('Error cargando objetos: $e');
       setState(() {
         _hasError = true;
         _isLoading = false;
@@ -66,28 +52,16 @@ class _LostItemsPageState extends State<LostItemsPage> {
     }
   }
 
-  bool _matchesSearch(LostItem item) {
-    final query = _searchController.text.toLowerCase();
-    return item.title.toLowerCase().contains(query) && 
-          (_selectedTag == 'Todos' || item.tag == _selectedTag);
-  }
-
   void _filterItems() {
-    setState(() {
-      _filteredItems = _allItems
-          .where(_matchesSearch)
-          .take((_currentPage + 1) * _itemsPerPage)
-          .toList();
-    });
-  }
+    final vm = Provider.of<VM>(context, listen: false);
+    final searchText = _searchController.text.toLowerCase();
 
-  void _loadMoreItems() {
     setState(() {
-      _currentPage++;
-      _filteredItems = _allItems
-          .where(_matchesSearch)
-          .take((_currentPage + 1) * _itemsPerPage)
-          .toList();
+      filteredItems = vm.lostitem.where((item) {
+        bool matchesTag = _selectedTag == 'Todos' || item.tag == _selectedTag;
+        bool matchesSearch = item.title.toLowerCase().contains(searchText);
+        return matchesTag && matchesSearch;
+      }).toList();
     });
   }
 
@@ -102,12 +76,13 @@ class _LostItemsPageState extends State<LostItemsPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final vm = Provider.of<VM>(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
           "Objetos perdidos",
-          style: theme.textTheme.titleLarge?.copyWith(color: Colors.white),
+          style: theme.textTheme.titleSmall?.copyWith(color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: colors.primary,
@@ -130,7 +105,7 @@ class _LostItemsPageState extends State<LostItemsPage> {
             _buildTagFilter(theme),
             const SizedBox(height: 20),
             Expanded(
-              child: _buildContent(theme, colors),
+              child: _buildContent(theme, colors, vm),
             ),
           ],
         ),
@@ -172,7 +147,7 @@ class _LostItemsPageState extends State<LostItemsPage> {
     );
   }
 
-  Widget _buildContent(ThemeData theme, ColorScheme colors) {
+  Widget _buildContent(ThemeData theme, ColorScheme colors, VM vm) {
     if (_isLoading) {
       return Center(
         child: SpinKitFadingCube(
@@ -181,7 +156,7 @@ class _LostItemsPageState extends State<LostItemsPage> {
         ),
       );
     }
-    
+
     if (_hasError) {
       return Center(
         child: Column(
@@ -189,14 +164,14 @@ class _LostItemsPageState extends State<LostItemsPage> {
           children: [
             Icon(Icons.error_outline, color: colors.error, size: 50),
             const SizedBox(height: 20),
-            Text('Error al cargar los datos', 
+            Text('Error al cargar los datos',
                 style: theme.textTheme.headlineSmall),
           ],
         ),
       );
     }
 
-    if (_filteredItems.isEmpty) {
+    if (filteredItems.isEmpty) {
       return Center(
         child: Text(
           'No se encontraron objetos',
@@ -206,14 +181,10 @@ class _LostItemsPageState extends State<LostItemsPage> {
       );
     }
 
-    return ListView.separated(
-      itemCount: _filteredItems.length + 1,
-      separatorBuilder: (context, index) => const Divider(height: 30),
+    return ListView.builder(
+      itemCount: filteredItems.length,
       itemBuilder: (context, index) {
-        if (index == _filteredItems.length) {
-          return _buildLoadMoreButton();
-        }
-        final item = _filteredItems[index];
+        final item = filteredItems[index];
         return _buildItemCard(item, theme, colors);
       },
     );
@@ -247,23 +218,21 @@ class _LostItemsPageState extends State<LostItemsPage> {
                 ),
                 const SizedBox(width: 15),
                 Expanded(
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        item.title,
-        style: theme.textTheme.titleLarge?.copyWith(
-          color: Colors.black, // Color negro fijo
-          decoration: item.claimed 
-            ? TextDecoration.lineThrough 
-            : null,
-        ),
-      ),
-      const SizedBox(height: 5),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.title,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: colors.onSurface, // Updated text color
+                          decoration: item.claimed ? TextDecoration.lineThrough : null,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
                       Text(
                         'ID: ${item.id}',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.onSurface.withOpacity(0.6)),
+                            color: colors.onSurface.withOpacity(0.6)),
                       ),
                     ],
                   ),
@@ -276,6 +245,18 @@ class _LostItemsPageState extends State<LostItemsPage> {
               style: theme.textTheme.bodyLarge,
             ),
             const SizedBox(height: 10),
+            // Display the image from Base64
+            if (item.imageBase64.isNotEmpty)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.memory(
+                  base64Decode(item.imageBase64),
+                  width: double.infinity,
+                  height: 150,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            const SizedBox(height: 10),
             Row(
               children: [
                 Icon(
@@ -284,80 +265,34 @@ class _LostItemsPageState extends State<LostItemsPage> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  item.claimed ? 'RECLAMADO' : 'NO RECLAMADO',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: item.claimed ? Colors.green : Colors.orange,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  item.claimed ? 'Reclamado' : 'Sin Reclamar',
+                  style: theme.textTheme.bodyLarge,
                 ),
               ],
             ),
-            const SizedBox(height: 15),
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: const Color.fromARGB(255, 255, 255, 255),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  item.imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.image_not_supported, 
-                            size: 40, 
-                            color: Colors.grey[500]),
-                        Text('Imagen no disponible', 
-                            style: TextStyle(color: Colors.grey[500])),
-                      ],
+            const SizedBox(height: 10),
+            // Button to mark as claimed (only if unclaimed)
+            if (!item.claimed)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => _handleClaim(item, context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  child: const Text('Marcar como Reclamado', style: TextStyle(color: Colors.white)),
                 ),
               ),
-            ),
-            const SizedBox(height: 15),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                icon: Icon(item.claimed ? Icons.check : Icons.report_problem,
-                    color: Colors.white),
-                label: Text(
-                  item.claimed ? 'Ya reclamado' : 'Marcar como reclamado',
-                  style: const TextStyle(color: Colors.white),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: item.claimed ? Colors.grey : colors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                ),
-                onPressed: item.claimed ? null : () => _handleClaim(item),
-              ),
-            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildLoadMoreButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: ElevatedButton(
-        onPressed: _loadMoreItems,
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-        ),
-        child: const Text('Cargar más objetos'),
-      ),
-    );
-  }
-
-  void _handleClaim(LostItem item) async {
+  void _handleClaim(LostItem item, context) async {
     try {
       await item.reclamarBD();
       _loadItems();
